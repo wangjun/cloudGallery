@@ -1,0 +1,29 @@
+{% extends '../../layouts/layout.html' %}
+{% block body %}
+<div class="container">
+	<h1>用户管理</h1>
+	<hr/>
+	<table class="table table-striped">
+		<thead>
+		<tr>
+			<td>手机号码</td>
+			<td>用户名</td>
+			<td>邮箱地址</td>
+			<td>账户类型</td>
+			<td>管理功能</td>
+		</tr>
+		</thead>
+		<tbody>
+		{% for user in users %}
+		<tr>
+			<td>{{ user.mobile }}</td>
+			<td>{{ user.name }}</td>
+			<td>{{ user.email }}</td>
+			<td>{{ user.type }}</td>
+			<td><a href="/admin/users/edit/{{ user.mobile }}" class="btn btn-default">编辑</a></td>
+		</tr>
+		{% endfor %}
+		</tbody>
+	</table>
+</div>
+{% endblock %}

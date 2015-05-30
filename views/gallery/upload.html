@@ -1,0 +1,24 @@
+{% extends '../layouts/layout.html' %}
+
+{% block js %}
+	<script src="/js/plupload/plupload.full.min.js"></script>
+	<script src="/js/qiniu/qiniu.min.js"></script>
+	<script src="/js/gallery/upload.min.js"></script>
+{% endblock %}
+
+{% block css %}
+	<link href="/css/gallery/upload.min.css" rel="stylesheet" type="text/css"/>
+{% endblock %}
+
+{% block body %}
+	<div class="container" id="single">
+		<div id="uploader" class="col-xs-3">
+			<a href="#" id="drop-area" class="text-center center-block thumbnail">
+				<span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
+				<div>
+					把图片拖到这里
+				</div>
+			</a>
+		</div>
+	</div>
+{% endblock %}
