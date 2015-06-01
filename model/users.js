@@ -13,7 +13,8 @@ var usersSchema = new Schema({
     salt: { type: String, default: 'NotSet' },
     authToken: { type: String, default: 'NotSet' },
     register_time: { type: Date, default: Date.now },
-    type:{type:String, default:'RegisteredUser'}
+    type:{type:String, default:'RegisteredUser'},
+    albums:{type:Schema.Types.ObjectId,ref:'Albums'}
 });
 
 

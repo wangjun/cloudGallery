@@ -124,8 +124,10 @@ module.exports = function (grunt) {
                     'public/css/common/common.min.css': ['assets/prefix_css/common/common.css'],
                     'public/css/index/index.min.css': ['assets/prefix_css/index/index.css'],
                     'public/css/users/login.min.css': ['assets/prefix_css/users/login.css'],
+                    'public/css/users/register.min.css': ['assets/prefix_css/users/register.css'],
                     'public/css/admin/users/edit.min.css': ['assets/prefix_css/admin/users/edit.css'],
-                    'public/css/gallery/upload.min.css': ['assets/prefix_css/gallery/upload.css']
+                    'public/css/gallery/upload.min.css': ['assets/prefix_css/gallery/upload.css'],
+                    'public/css/gallery/add-album.min.css': ['assets/prefix_css/gallery/add-album.css']
                 }
             }
         },

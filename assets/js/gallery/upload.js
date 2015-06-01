@@ -36,7 +36,7 @@ $(document).ready(function () {
                 var progress = new FileProgress(file, $target);
                 var chunk_size = plupload.parseSize(up.getOption('chunk_size'));
                 if (up.runtime === 'html5' && chunk_size) {
-                    progress.setStatus('排队ing...');
+                    //progress.setStatus('排队ing...');
                 }
             },
             'UploadProgress': function(up, file) {
@@ -95,12 +95,12 @@ $(document).ready(function () {
             $progressBar
                 .addClass('col-xs-3')
                 .attr('id', id)
-                .css({'display':'none'})
+                .css({'display':'none','min-height':'157px'})
                 .html(
                 '<a href="#" class="thumbnail">' +
                 '<div class="progress">' +
                 '<div class="progress-bar progress-bar-success progress-bar-striped active" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="min-width:3em">' +
-                '0%' +
+                //'0%' +
                 '</div>' +
                 '</div>' +
                 '</a>'
@@ -119,7 +119,7 @@ $(document).ready(function () {
         var $progressBar = this.$progressBar;
         $progressBar
             .find('.progress-bar')
-            .text(progressPercent+'%')
+            //.text(progressPercent+'%')
             .stop(true,true)
             .animate({'width':progressPercent+'%'})
             .attr('aria-valuenow',progressPercent);
