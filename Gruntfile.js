@@ -46,9 +46,9 @@ module.exports = function (grunt) {
                     {'<%= config.public %>/js/qiniu/qiniu.min.js': '<%= config.bower %>/js-sdk/src/qiniu.min.js'}
                 ]
             },
-            blueimpLoadImage: {
+            livereload: {
                 files: [
-                    {'<%= config.public %>/js/load-img/load-img.js': '<%= config.bower %>/blueimp-load-image/js/load-image.all.min.js'}
+                    {'<%= config.public %>/js/livereload/livereload.js': '<%= config.bower %>/livereload/dist/livereload.js'}
                 ]
             }
         },
@@ -73,6 +73,11 @@ module.exports = function (grunt) {
             qiniu: {
                 src: [
                     '<%= config.public %>/js/qiniu/*'
+                ]
+            },
+            livereload: {
+                src: [
+                    '<%= config.public %>/js/livereload/*'
                 ]
             }
 
@@ -148,7 +153,7 @@ module.exports = function (grunt) {
         },
         watch: {
             options: {
-                livereload: 35729
+                livereload: 35728
             },
             css: {
                 files: ['assets/less/**/*'],
