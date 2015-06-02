@@ -6,8 +6,6 @@ var bcrypt = require('bcrypt-nodejs');
 var bodyParser = require('body-parser');
 var csrf = require('csurf');
 
-
-
 //csrf protection
 var csrfProtection = csrf({ cookie: true });
 var parseForm = bodyParser.urlencoded({ extended: false });
@@ -66,6 +64,7 @@ router.post('/register', parseForm, csrfProtection, function (req, res, next) {
                 registerUser.save(function (err, register_user) {
                     if(err) {next(err);}
                     req.session.user = {
+                        id:register_user._id,
                         name:register_user.name,
                         email:register_user.email,
                         type:register_user.type
@@ -86,10 +85,15 @@ router.get('/register/success', function (req, res) {
 
 /* login */
 router.get('/login', csrfProtection, function(req, res){
-    res.render('users/login',{
-        title:'登录',
-        csrfToken: req.csrfToken()
-    });
+    if(req.session.user){
+        req.flash('info','你已经登录，无需再次登录。');
+        res.redirect('back');
+    }else{
+        res.render('users/login',{
+            title:'登录',
+            csrfToken: req.csrfToken()
+        });
+    }
 });
 
 router.post('/login', parseForm, csrfProtection, function (req, res, next) {
@@ -114,6 +118,7 @@ router.post('/login', parseForm, csrfProtection, function (req, res, next) {
                 var hashPassword = bcrypt.hashSync(password, salt);
                 if(hashPassword === Users.hashed_password){
                     req.session.user = {
+                        id:Users._id,
                         mobile:Users.mobile,
                         name:Users.name,
                         type:Users.type
@@ -135,7 +140,7 @@ router.post('/login', parseForm, csrfProtection, function (req, res, next) {
 router.get('/logout', function (req, res) {
     var sess = req.session;
     if(sess.user){
-        delete  sess.user;
+        sess.user = null;
     }
     res.redirect('/');
 });

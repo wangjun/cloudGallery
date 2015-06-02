@@ -10,15 +10,19 @@ var parseForm = bodyParser.urlencoded({ extended: false });
 
 router.use('/upload', upload);
 
-router.get('/add-album', csrfProtection, function (req, res) {
-    res.render('gallery/add-album.html',{
+router.get('/add', csrfProtection, function (req, res) {
+    res.render('gallery/add.html',{
         csrfToken:req.csrfToken()
     });
 });
 
-router.post('/add-album', parseForm, csrfProtection, function (req, res) {
+router.post('/add', parseForm, csrfProtection, function (req, res) {
     var title = req.body.title;
     var story = req.body.story;
+    var user = req.session.user;
+
+    req.checkBody(title,'相册必须有名称。').notEmpty();
+    req.checkBody(title, '相册名称不能多于18个字，也不能少于6个字。').isLength(6, 18);
 });
 
 module.exports = router;

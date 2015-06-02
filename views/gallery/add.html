@@ -1,12 +1,12 @@
 {% extends '../layouts/layout.html' %}
 {% block css %}
-    <link href="/css/gallery/add-album.min.css" type="text/css" rel="stylesheet" />
+    <link href="/css/gallery/add.min.css" type="text/css" rel="stylesheet" />
 {% endblock %}
 {% block body %}
-    <div class="container" id="add-album">
+    <div class="container" id="add">
         <h1>新建相册</h1>
         <hr/>
-        <form action="/gallery/add-album" class="form-horizontal" method="post">
+        <form action="/gallery/add" class="form-horizontal" method="post">
             <input type="hidden" value="{{ csrfToken }}" />
             <div class="form-group">
                 <div class="col-sm-6">
