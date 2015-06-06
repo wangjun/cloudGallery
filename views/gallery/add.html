@@ -1,4 +1,5 @@
 {% extends '../layouts/layout.html' %}
+{% block title %}新建相册{% endblock %}
 {% block css %}
     <link href="/css/gallery/add.min.css" type="text/css" rel="stylesheet" />
 {% endblock %}
@@ -7,7 +8,7 @@
         <h1>新建相册</h1>
         <hr/>
         <form action="/gallery/add" class="form-horizontal" method="post">
-            <input type="hidden" value="{{ csrfToken }}" />
+            <input type="hidden" name="_csrf" value="{{ csrfToken }}">
             <div class="form-group">
                 <div class="col-sm-6">
                     <input type="text" name="title" class="form-control" placeholder="相册名称"/>

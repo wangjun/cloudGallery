@@ -64,7 +64,7 @@ router.post('/register', parseForm, csrfProtection, function (req, res, next) {
                 registerUser.save(function (err, register_user) {
                     if(err) {next(err);}
                     req.session.user = {
-                        id:register_user._id,
+                        _id:register_user._id,
                         name:register_user.name,
                         email:register_user.email,
                         type:register_user.type
@@ -118,19 +118,26 @@ router.post('/login', parseForm, csrfProtection, function (req, res, next) {
                 var hashPassword = bcrypt.hashSync(password, salt);
                 if(hashPassword === Users.hashed_password){
                     req.session.user = {
-                        id:Users._id,
+                        id_:Users._id,
                         mobile:Users.mobile,
                         name:Users.name,
                         type:Users.type
                     };
                     req.flash('success','登录成功~');
-                    res.redirect('/users');
+                    var backTo = req.session.backTo;
+                    if(backTo){
+                        req.session.backTo = null;
+                        res.redirect(backTo);
+                    }else{
+                        res.redirect('/users');
+                    }
+
                 }else{
-                    req.flash('danger', '密码错误');
+                    req.flash('warning', '密码错误');
                     res.redirect('/users/login');
                 }
             }else{
-                req.flash('danger', '没有该用户');
+                req.flash('warning', '没有该用户');
                 res.redirect('/users/login');
             }
         });
