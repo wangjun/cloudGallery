@@ -3,7 +3,7 @@ var mongoose = require('mongoose');
 
 var Schema = mongoose.Schema;
 
-var albumsSchema = new Schema({
+var gallerySchema = new Schema({
     title: { type: String},
     story: { type: String},
     createTime: { type: Date, default: Date.now },
@@ -12,6 +12,6 @@ var albumsSchema = new Schema({
 });
 
 
-var Albums = mongoose.model('Albums', albumsSchema);
+var Gallery = mongoose.model('Gallery', gallerySchema);
 
-module.exports = Albums;
+module.exports = Gallery;

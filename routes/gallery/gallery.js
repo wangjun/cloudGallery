@@ -2,8 +2,11 @@ var express = require('express');
 var router = express.Router();
 var upload = require('./upload');
 var bodyParser = require('body-parser');
+var Users = require('../../model/users');
 var gallery = require('../../model/gallery');
 var csrf = require('csurf');
+var mongoose = require('mongoose');
+var ObjectId = mongoose.Types.ObjectId;
 
 //csrf protection
 var csrfProtection = csrf({ cookie: true });
@@ -24,12 +27,14 @@ router.get('/add', csrfProtection, function (req, res) {
     }
 });
 
-router.post('/add', parseForm, csrfProtection, function (req, res) {
+router.post('/add', parseForm, csrfProtection, function (req, res, next) {
     var title = req.body.title;
     var story = req.body.story;
     var user = req.session.user;
     req.checkBody('title','相册必须有名称。').notEmpty();
-    req.checkBody('title', '相册名称不能多于18个字，也不能少于2个字。').isLength(2, 18);
+    req.checkBody('title', '相册名称不能少于3个字，也不能多于18个字。').isLength(2, 18);
+    req.checkBody('story', '相册的故事不能为空哦，说点什么吧~').notEmpty();
+    req.checkBody('story', '相册的故事至少需要十五个字哦，给大家讲点故事吧~').isLength(15,9999);
     var errors = req.validationErrors();
     if(user){
         if(errors){
@@ -38,10 +43,15 @@ router.post('/add', parseForm, csrfProtection, function (req, res) {
             });
             res.redirect('/gallery/add');
         }else{
-            newGallery = new gallery({
+            var newGallery = new gallery({
                 title : title,
                 story : story,
                 owner : user._id
+            });
+            newGallery.save(function (err, gallery) {
+                if(err){next(err);}
+                req.flash('success', '成功新建相册~');
+                res.redirect('/');
             });
         }
     }else{
@@ -50,6 +60,38 @@ router.post('/add', parseForm, csrfProtection, function (req, res) {
         res.redirect('/users/login');
     }
 
+});
+
+//按用户查找相册
+router.get('/:userId/:galleryId', function (req, res, next) {
+    var userId = new ObjectId(req.params.userId);
+    var galleryId = new ObjectId(req.params.galleryId);
+    var queryUser = Users.where({_id:userId});
+    console.log(userId);
+    queryUser.findOne(function(err, user){
+        if(err){next(err);}
+        if(user){
+            var queryGallery = gallery.where({_id:galleryId});
+            queryGallery.findOne(function(err, gallery){
+                if(err){next(err);}
+                if(gallery){
+                    console.log(gallery);
+                    res.render('gallery/gallery.html',{
+                        gallery:gallery
+                    });
+                }else{
+                    req.flash('warning', '找不到该相册');
+                    res.redirect('back');
+                }
+
+            });
+        }else{
+            console.log('no user found');
+            req.flash('warning', '找不到该相册');
+            res.redirect('back');
+        }
+    });
+    console.log(req.params);
 });
 
 module.exports = router;
