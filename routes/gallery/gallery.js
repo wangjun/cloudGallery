@@ -32,7 +32,7 @@ router.post('/add', parseForm, csrfProtection, function (req, res, next) {
     var story = req.body.story;
     var user = req.session.user;
     req.checkBody('title','相册必须有名称。').notEmpty();
-    req.checkBody('title', '相册名称不能少于3个字，也不能多于18个字。').isLength(2, 18);
+    req.checkBody('title', '相册名称不能少于3个字，也不能多于25个字。').isLength(2, 25);
     req.checkBody('story', '相册的故事不能为空哦，说点什么吧~').notEmpty();
     req.checkBody('story', '相册的故事至少需要十五个字哦，给大家讲点故事吧~').isLength(15,9999);
     var errors = req.validationErrors();
