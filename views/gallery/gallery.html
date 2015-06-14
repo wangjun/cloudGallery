@@ -1,10 +1,31 @@
 {% extends '../layouts/layout.html' %}
 
+{% block title %}{{ gallery.title }}{% endblock %}
+
+{% block js %}
+    <script src="/js/blueimp/load-image.all.min.js"></script>
+    <script src="/js/gallery/gallery.min.js"></script>
+{% endblock %}
+
+{% block css %}
+    <link rel="stylesheet" href="/css/gallery/gallery.min.css"/>
+{% endblock %}
+
 {% block body %}
     <div class="container">
-        <h1>{{ gallery.name }}</h1>
+        <h1>{{ gallery.title }}</h1>
         <p class="text-muted">{{ gallery.story }}</p>
         <hr/>
-
+        <div class="row">
+            <div class="col-xs-6 col-md-3" id="add-images">
+                <a id="upload-box" href="#" class="thumbnail">
+                    <span class="glyphicon glyphicon-random" aria-hidden="true"></span>
+                </a>
+                <div id="upload-button" class="btn btn-block btn-default">点击上传</div>
+                <form id="upload-form" action="/gallery/upload">
+                    <input id="upload-input" multiple type="file" class="hide"/>
+                </form>
+            </div>
+        </div>
     </div>
 {% endblock %}

@@ -8,13 +8,12 @@ var usersSchema = new Schema({
     name: { type: String, default: 'NotSet' },
     email: { type: String, default: 'NotSet' },
     mobile: { type: String, default:'NotSet' },
-    username: { type: String, default: 'NotSet' },
     hashed_password: { type: String, default: 'NotSet' },
     salt: { type: String, default: 'NotSet' },
     authToken: { type: String, default: 'NotSet' },
     register_time: { type: Date, default: Date.now },
     type:{ type:String, default:'RegisteredUser' },
-    gallery:{ type:Schema.Types.ObjectId,ref:'Gallery' }
+    galleries:{ type:Schema.Types.ObjectId, ref:'Galleries' }
 });
 
 

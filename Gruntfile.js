@@ -46,6 +46,11 @@ module.exports = function (grunt) {
                     {'<%= config.public %>/js/qiniu/qiniu.min.js': '<%= config.bower %>/js-sdk/src/qiniu.min.js'}
                 ]
             },
+            loadImage: {
+                files: [
+                    {'<%= config.public %>/js/blueimp/load-image.all.min.js': '<%= config.bower %>/blueimp-load-image/js/load-image.all.min.js'}
+                ]
+            },
             livereload: {
                 files: [
                     {'<%= config.public %>/js/livereload/livereload.js': '<%= config.bower %>/livereload/dist/livereload.js'}
@@ -127,29 +132,19 @@ module.exports = function (grunt) {
                     'public/css/users/register.min.css': ['assets/prefix_css/users/register.css'],
                     'public/css/admin/users/edit.min.css': ['assets/prefix_css/admin/users/edit.css'],
                     'public/css/gallery/upload.min.css': ['assets/prefix_css/gallery/upload.css'],
+                    'public/css/gallery/gallery.min.css': ['assets/prefix_css/gallery/gallery.css'],
                     'public/css/gallery/add.min.css': ['assets/prefix_css/gallery/add.css']
                 }
             }
         },
         uglify: {
-            script: {
+            target: {
                 files: {
-                    'public/js/common/common.min.js': ['assets/js/common/common.js']
-                }
-            },
-            index: {
-                files: {
-                    'public/js/index.min.js': ['assets/js/index/index.js']
-                }
-            },
-            users_register: {
-                files: {
-                    'public/js/users/register.min.js': ['assets/js/users/register/register.js']
-                }
-            },
-            gallery: {
-                files: {
-                    'public/js/gallery/upload.min.js': ['assets/js/gallery/upload.js']
+                    'public/js/common/common.min.js' : ['assets/js/common/common.js'],
+                    'public/js/index.min.js'         : ['assets/js/index/index.js'],
+                    'public/js/users/register.min.js': ['assets/js/users/register/register.js'],
+                    'public/js/gallery/upload.min.js': ['assets/js/gallery/upload.js'],
+                    'public/js/gallery/gallery.min.js': ['assets/js/gallery/gallery.js']
                 }
             }
         },

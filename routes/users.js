@@ -118,7 +118,7 @@ router.post('/login', parseForm, csrfProtection, function (req, res, next) {
                 var hashPassword = bcrypt.hashSync(password, salt);
                 if(hashPassword === Users.hashed_password){
                     req.session.user = {
-                        id_:Users._id,
+                        _id:Users._id,
                         mobile:Users.mobile,
                         name:Users.name,
                         type:Users.type
