@@ -5,6 +5,8 @@ $(document).ready(function(){
     var $uploadInput = $('#upload-input');
     var $addImages = $('#add-images');
 
+    //init variables
+    var orientation = '';
     //trigger input click event
     $uploadBox.on('click', function () {
         $uploadInput.trigger('click');
@@ -17,45 +19,72 @@ $(document).ready(function(){
         var files = this.files;
         for (var i=0;i<files.length;i++){
             var file = files[i];
-            console.log(file);
-            loadImage(
-                file,
-                function(img){
-                    var $previewHtml = $('<div/>');
-                    $previewHtml.addClass('col-xs-6 col-sm-3');
-                    $previewHtml.append('<a/>');
-                    var $a =$previewHtml.find('a');
-                    $a.addClass('thumbnail');
-                    $a.append(img);
-                    $addImages.after($previewHtml);
-                },
-                {
-                    maxWidth:'100%',
-                    orientation:true,
-                    canvas:true
-                }
-            )
+            function getOrientation(file, callback){
+                loadImage.parseMetaData(file, function (data) {
+                    orientation = data.exif.get('Orientation');
+                    if(orientation){
+                        callback(file,orientation);
+                    }
+                });
+            }
+            function showImage(file, orientation){
+                loadImage(
+                    file,
+                    function(img){
+                        var $previewHtml = $('<div/>');
+                        $previewHtml.addClass('col-xs-12 col-sm-4 image')
+                            .append('<a/>')
+                            .find('a')
+                            .addClass('thumbnail')
+                            .append(img)
+                            .append('<div class="progress">' +
+                            '<div class="progress-bar progress-bar-striped active" style="width:100%;">' +
+                            '上传中...' +
+                            '</div>' +
+                            '</div>');
+                        $previewHtml.css({'display':'none'});
+                        $addImages.after($previewHtml);
+                        $previewHtml.fadeIn('slow');
+                    },
+                    {
+                        orientation:orientation,
+                        canvas:true
+                    }
+                );
+            }
+            function uploadImage(file){
+                getUpToken(function(uptoken){
+                    var xhr = new XMLHttpRequest();
+                    var reader = new FileReader();
+                    var fileSize = file.size;
+                    console.log(fileSize);
+                    console.log(uptoken);
+                    xhr.open('POST', 'http://cdn.lazycoffee.com/mkblk/'+fileSize);
+                    xhr.upload.addEventListener('load', function(){
+                        if(xhr.readyState === 4 && xhr.status === 200){
+                            console.log(xhr.response);
+                        }
+                    });
+                    reader.addEventListener('load', function (event) {
+                        var fileBinary = event.target.result;
+                        xhr.setRequestHeader('Content-Type','application/octet-stream');
+                        xhr.setRequestHeader('Authorization','UpToken '+uptoken);
+                        xhr.send(fileBinary);
+                    });
+                    reader.readAsBinaryString(file);
+                });
+            }
+            function getUpToken(callback){
+                $.get('/cdn/uptoken', function(data, status){
+                    if(status === 'success'){
+                        callback(data.uptoken);
+                    }
+                });
+            }
+            getOrientation(file, function (file, orientation) {
+                showImage(file, orientation);
+                uploadImage(file);
+            });
         }
     });
-    //function handleFiles(files) {
-    //    for (var i = 0; i < files.length; i++) {
-    //        var file = files[i];
-    //        console.log(file);
-    //        var imageType = /image.*/;
-    //        if (!file.type.match(imageType)) {
-    //            continue;
-    //        }
-    //        var reader = new FileReader();
-    //        reader.onload = function(event){
-    //            var imgData64 = event.target.result;
-    //            var $preViewHtml = '<div class="col-xs-6 col-sm-3">' +
-    //                '<a href="#" class="thumbnail">' +
-    //                '<img src="'+imgData64+'" />' +
-    //                '</a>' +
-    //                '</div>';
-    //            $($addImages).after($preViewHtml);
-    //        };
-    //        reader.readAsDataURL(file);
-    //    }
-    //}
 });
