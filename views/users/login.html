@@ -7,9 +7,9 @@
 {% endblock %}
 
 {% block body %}
-	<div class="container" id="login">
+	<div class="container" id="login-wrapper">
 		<form method="POST" action="/users/login" id="login-form">
-			<h1>Welcome back!</h1>
+			<h1 id="login-title">Welcome back!</h1>
 			<hr/>
 			<input type="hidden" name="_csrf" value="{{ csrfToken }}">
 			<div class="form-group">
