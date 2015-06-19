@@ -56,22 +56,27 @@ $(document).ready(function(){
                 getUpToken(function(uptoken){
                     var xhr = new XMLHttpRequest();
                     var reader = new FileReader();
+                    var fd = new FormData();
                     var fileSize = file.size;
-                    console.log(fileSize);
-                    console.log(uptoken);
-                    xhr.open('POST', 'http://cdn.lazycoffee.com/mkblk/'+fileSize);
-                    xhr.upload.addEventListener('load', function(){
+                    xhr.open('POST', 'http://cdn.lazycoffee.com', true);
+                    xhr.addEventListener('load', function(){
                         if(xhr.readyState === 4 && xhr.status === 200){
                             console.log(xhr.response);
                         }
                     });
-                    reader.addEventListener('load', function (event) {
-                        var fileBinary = event.target.result;
-                        xhr.setRequestHeader('Content-Type','application/octet-stream');
-                        xhr.setRequestHeader('Authorization','UpToken '+uptoken);
-                        xhr.send(fileBinary);
-                    });
-                    reader.readAsBinaryString(file);
+                    console.log(file);
+                    fd.append('fileBinaryData', file);
+                    fd.append('token', uptoken);
+                    fd.append('file', file.name);
+                    console.log(fd);
+                    xhr.send(fd);
+                    //reader.addEventListener('load', function (event) {
+                    //    var fileBinary = event.target.result;
+                    //    xhr.setRequestHeader('Content-Type','application/octet-stream');
+                    //    xhr.setRequestHeader('Authorization','UpToken '+uptoken);
+                    //    xhr.send(fileBinary);
+                    //});
+                    //reader.readAsBinaryString(file);
                 });
             }
             function getUpToken(callback){
