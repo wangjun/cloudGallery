@@ -3,7 +3,8 @@ var router = express.Router();
 var upload = require('./upload');
 var bodyParser = require('body-parser');
 var Users = require('../../model/users');
-var galleries = require('../../model/galleries');
+var Galleries = require('../../model/galleries');
+var images = require('../../model/images');
 var csrf = require('csurf');
 var mongoose = require('mongoose');
 var ObjectId = mongoose.Types.ObjectId;
@@ -44,7 +45,7 @@ router.post('/add', parseForm, csrfProtection, function (req, res, next) {
             });
             res.redirect('/gallery/add');
         }else{
-            var newGallery = new galleries({
+            var newGallery = new Galleries({
                 title : title,
                 story : story,
                 owner : userObjectId
@@ -57,7 +58,7 @@ router.post('/add', parseForm, csrfProtection, function (req, res, next) {
                         req.flash('success', '成功创建新相册~');
                         var newGalleryUrl = '/gallery/'+user._id+'/'+gallery._id.toHexString();
                         res.redirect(newGalleryUrl);
-                });
+                    });
             });
         }
     }else{
@@ -70,14 +71,15 @@ router.post('/add', parseForm, csrfProtection, function (req, res, next) {
 //按用户查找相册
 router.get('/:userId/:galleryId', function (req, res, next) {
     var userObjectId = new ObjectId(req.params.userId);
-    var galleryObjectId = new ObjectId(req.params.galleryId);
+    var galleryId = req.params.galleryId;
+    var galleryObjectId = new ObjectId(galleryId);
     var queryUser = Users.where({_id:userObjectId});
     queryUser.findOne(function(err, user){
-        if(err){next(err);}
+        if(err){return next(err);}
         if(user){
-            var queryGallery = galleries.where({_id:galleryObjectId});
+            var queryGallery = Galleries.where({_id:galleryObjectId});
             queryGallery.findOne(function(err, gallery){
-                if(err){next(err);}
+                if(err){return next(err);}
                 if(gallery){
                     res.render('gallery/gallery.html',{
                         gallery:gallery
@@ -94,7 +96,54 @@ router.get('/:userId/:galleryId', function (req, res, next) {
             res.redirect('back');
         }
     });
-    console.log(req.params);
+});
+
+//保存图片
+router.post('/save-image', function (req, res) {
+    var hash = req.body.hash;
+    var key = req.body.key;
+    var galleryId = req.body.galleryId;
+    var user = req.session.user;
+    var userObjectId = new ObjectId(user._id);
+    var galleryObjectId = new ObjectId(galleryId);
+    console.log(galleryObjectId.toHexString());
+    if(user){
+        Galleries.findOne({_id:galleryObjectId})
+            .populate('owner')
+            .exec(function (err, gallery) {
+                if(err){return next(err);}
+                if(gallery == null){
+                    res.json({
+                        state:0,
+                        status:'没有找到该相册'
+                    });
+                }else if(gallery.owner._id.toHexString() == user._id){
+                    newImage = new images({
+                        hash:hash,
+                        key:key,
+                        belongGallery:galleryObjectId,
+                        owner:userObjectId
+                    });
+                    newImage.save(function (err, result) {
+                        if(err){return next(err);}
+                        res.json({
+                            state:1,
+                            status:'saved',
+                            result:result
+                        });
+                    });
+                }else{
+                    res.json({
+                        state:0,
+                        status:'这不是你的相册哦。'
+                    });
+                }
+            });
+    }else{
+        req.flash('warning', '请先登陆~');
+        res.redirect('/users/login');
+    }
+
 });
 
 module.exports = router;

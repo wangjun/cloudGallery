@@ -1,5 +1,6 @@
 var express = require('express');
 var router = express.Router();
+var checkUser = require('../lib/checkUser');
 
 //get route object
 var users = require('./users');
@@ -19,13 +20,6 @@ router.use('/articles', articles);
 router.use('/utility', utility);
 router.use('/cdn', cdn);
 router.use('/gallery', gallery);
-router.use('/admin', function (req, res, next) {
-    if(req.session.user.type == 'admin'){
-        next();
-    }else{
-        req.flash('danger', '请勿尝试访问该路径！');
-        res.redirect('/');
-    }
-}, admin);
+router.use('/admin', checkUser.isLogin, checkUser.isAdmin, admin);
 
 module.exports = router;

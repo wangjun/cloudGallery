@@ -36,9 +36,9 @@ router.post('/edit/:mobile', parseForm, csrfProtection, function (req, res, next
     var mobile = req.body.mobile;
     var name  = req.body.name;
     var type = req.body.type;
-    if(req.session.user.type == 'admin'){
-        if(req.session.user.mobile == mobile && req.params.mobile == mobile){
-            if(type == 'RegisteredUser' || type == 'admin'){
+    if(req.session.user.type === 'admin'){
+        if(req.session.user.mobile === mobile && req.params.mobile === mobile){
+            if(type === 'RegisteredUser' || type == 'admin'){
                 Users.findOne({mobile:mobile}, function (err, user) {
                     if(err){next(err);}
                     user.name = name;

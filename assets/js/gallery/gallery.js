@@ -58,31 +58,42 @@ $(document).ready(function(){
                     var reader = new FileReader();
                     var fd = new FormData();
                     var fileSize = file.size;
-                    xhr.open('POST', 'http://cdn.lazycoffee.com', true);
-                    xhr.addEventListener('load', function(){
+                    xhr.open('POST', 'http://upload.qiniu.com', true);
+                    xhr.onreadystatechange = function(){
                         if(xhr.readyState === 4 && xhr.status === 200){
-                            console.log(xhr.response);
+                            saveImageInDatabase(JSON.parse(xhr.response));
                         }
+                    };
+                    reader.addEventListener('load', function (event) {
+                        var fileBinary = event.target.result;
+                        //xhr.setRequestHeader('Content-Type','application/octet-stream');
+                        //xhr.setRequestHeader('Authorization','UpToken '+uptoken);
+                        //fd.append('fileBinaryData', fileBinary);
+                        fd.append('token', uptoken);
+                        fd.append('file', file);
+                        xhr.send(fd);
                     });
-                    console.log(file);
-                    fd.append('fileBinaryData', file);
-                    fd.append('token', uptoken);
-                    fd.append('file', file.name);
-                    console.log(fd);
-                    xhr.send(fd);
-                    //reader.addEventListener('load', function (event) {
-                    //    var fileBinary = event.target.result;
-                    //    xhr.setRequestHeader('Content-Type','application/octet-stream');
-                    //    xhr.setRequestHeader('Authorization','UpToken '+uptoken);
-                    //    xhr.send(fileBinary);
-                    //});
-                    //reader.readAsBinaryString(file);
+                    reader.readAsBinaryString(file);
                 });
             }
             function getUpToken(callback){
                 $.get('/cdn/uptoken', function(data, status){
                     if(status === 'success'){
                         callback(data.uptoken);
+                    }
+                });
+            }
+            function saveImageInDatabase(response){
+                var postData = {};
+                postData.hash = response.hash;
+                postData.key = response.key;
+                postData.galleryId = $('#gallery-id').data('galleryId');
+                console.log(postData);
+                $.post('/gallery/save-image', postData, function (data, status) {
+                    if(status === 'success'){
+                        console.log(data);
+                    }else{
+                        alert('网络出错了');
                     }
                 });
             }
