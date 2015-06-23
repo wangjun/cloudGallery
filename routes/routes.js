@@ -1,3 +1,4 @@
+'use strict';
 var express = require('express');
 var router = express.Router();
 var checkUser = require('../lib/checkUser');
@@ -9,6 +10,7 @@ var utility = require('./utility');
 var admin = require('./admin/admin');
 var cdn = require('./cdn/cdn');
 var gallery = require('./gallery/gallery');
+var showGallery = require('./gallery/showGallery');
 
 /* GET home page. */
 router.get('/', function(req, res) {
@@ -21,5 +23,6 @@ router.use('/utility', utility);
 router.use('/cdn', cdn);
 router.use('/gallery', gallery);
 router.use('/admin', checkUser.isLogin, checkUser.isAdmin, admin);
+router.use('/', showGallery);
 
 module.exports = router;

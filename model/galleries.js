@@ -8,7 +8,8 @@ var galleriesSchema = new Schema({
     story: { type: String},
     createTime: { type: Date, default: Date.now },
     updateTime: { type: Date, default: Date.now },
-    owner:  { type: Schema.Types.ObjectId, ref:'Users'}
+    owner:  { type: Schema.Types.ObjectId, ref:'Users'},
+    images:{type: Schema.Types.ObjectId, ref:'Images'}
 });
 
 

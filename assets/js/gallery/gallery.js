@@ -8,7 +8,8 @@ $(document).ready(function(){
     //init variables
     var orientation = '';
     //trigger input click event
-    $uploadBox.on('click', function () {
+    $uploadBox.on('click', function (event) {
+        event.preventDefault();
         $uploadInput.trigger('click');
     });
     $uploadButton.on('click', function (event) {
@@ -84,6 +85,7 @@ $(document).ready(function(){
                 });
             }
             function saveImageInDatabase(response){
+                console.log(response);
                 var postData = {};
                 postData.hash = response.hash;
                 postData.key = response.key;
