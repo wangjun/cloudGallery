@@ -11,7 +11,7 @@ var session = require('express-session');
 var MongoStore = require('connect-mongo')(session);
 var router = require('./routes/routes');
 var flash = require('express-flash');
-var expressValidator = require('express-validator');
+var validator = require('./lib/validator');
 
 // Connect to mongodb
 var connect = function () {
@@ -36,7 +36,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 
 //use validator
-app.use(expressValidator());
+app.use(validator);
 
 //store session in mongodb
 app.use(session({

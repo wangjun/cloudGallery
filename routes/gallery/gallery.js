@@ -45,6 +45,7 @@ router.post('/add', parseForm, csrfProtection, function (req, res, next) {
             });
             res.redirect('/gallery/add');
         } else {
+
             var newGallery = new Galleries({
                 title: title,
                 story: story,
@@ -69,34 +70,36 @@ router.post('/add', parseForm, csrfProtection, function (req, res, next) {
 });
 
 //按用户查找相册
-router.get('/:userId/:galleryId', function (req, res, next) {
-    var userObjectId = new ObjectId(req.params.userId);
-    var galleryId = req.params.galleryId;
-    var galleryObjectId = new ObjectId(galleryId);
-    var queryUser = Users.where({_id: userObjectId});
-    queryUser.findOne(function (err, user) {
-        if (err) {return next(err);}
-        if (user) {
-            var queryGallery = Galleries.where({_id: galleryObjectId});
-            queryGallery.findOne(function (err, gallery) {
-                if (err) {return next(err);}
-                if (gallery) {
-                    res.render('gallery/gallery.html', {
-                        gallery: gallery
-                    });
-                } else {
-                    req.flash('warning', '找不到该相册');
-                    res.redirect('back');
-                }
+//router.get('/:userId/:galleryId', function (req, res, next) {
+//    var userObjectId = new ObjectId(req.params.userId);
+//    var galleryId = req.params.galleryId;
+//    var galleryObjectId = new ObjectId(galleryId);
+//    var queryUser = Users.where({_id: userObjectId});
+//    queryUser.findOne(function (err, user) {
+//        if (err) {return next(err);}
+//        if (user) {
+//            var queryGallery = Galleries.where({_id: galleryObjectId});
+//            queryGallery.findOne(function (err, gallery) {
+//                if (err) {return next(err);}
+//                if (gallery) {
+//                    res.render('gallery/gallery.html', {
+//                        gallery: gallery
+//                    });
+//                } else {
+//                    req.flash('warning', '找不到该相册');
+//                    res.redirect('back');
+//                }
+//
+//            });
+//        } else {
+//            console.log('no user found');
+//            req.flash('warning', '找不到该相册');
+//            res.redirect('back');
+//        }
+//    });
+//});
 
-            });
-        } else {
-            console.log('no user found');
-            req.flash('warning', '找不到该相册');
-            res.redirect('back');
-        }
-    });
-});
+
 
 //保存图片
 router.post('/save-image', function (req, res, next) {
@@ -174,6 +177,22 @@ router.post('/save-image', function (req, res, next) {
         res.redirect('/users/login');
     }
 
+});
+
+//按相册名称找相册
+router.get('/:galleryName', function (req, res, next) {
+    var galleryName = req.params.galleryName;
+    Galleries.findOne({title:galleryName})
+        .exec(function (err, gallery) {
+            if(err){return next(err);}
+            if(gallery){
+                res.render('gallery/gallery.html', {
+                    gallery:gallery
+                });
+            }else{
+                req.flash('warning', '找不到该相册');
+            }
+        });
 });
 
 module.exports = router;
