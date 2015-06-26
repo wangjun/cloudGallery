@@ -35,6 +35,9 @@ img {
 .navbar-default {
   border: 0;
 }
+.form-control-static {
+  padding-top: 0;
+}
 .footer {
   position: absolute;
   bottom: 0;

@@ -52,12 +52,16 @@ router.post('/add', parseForm, csrfProtection, function (req, res, next) {
                 owner: userObjectId
             });
             newGallery.save(function (err, gallery) {
-                if (err) {return next(err);}
+                if (err) {
+                    return next(err);
+                }
                 Users.findOneAndUpdate({_id: userObjectId}, {$push: {galleries: gallery._id}}, {new: true},
                     function (err, result) {
-                        if (err) {return next(err);}
+                        if (err) {
+                            return next(err);
+                        }
                         req.flash('success', '成功创建新相册~');
-                        var newGalleryUrl = '/gallery/' + user._id + '/' + gallery._id.toHexString();
+                        var newGalleryUrl = '/gallery/' + gallery._id.toHexString();
                         res.redirect(newGalleryUrl);
                     });
             });
@@ -70,35 +74,22 @@ router.post('/add', parseForm, csrfProtection, function (req, res, next) {
 });
 
 //按用户查找相册
-//router.get('/:userId/:galleryId', function (req, res, next) {
-//    var userObjectId = new ObjectId(req.params.userId);
-//    var galleryId = req.params.galleryId;
-//    var galleryObjectId = new ObjectId(galleryId);
-//    var queryUser = Users.where({_id: userObjectId});
-//    queryUser.findOne(function (err, user) {
-//        if (err) {return next(err);}
-//        if (user) {
-//            var queryGallery = Galleries.where({_id: galleryObjectId});
-//            queryGallery.findOne(function (err, gallery) {
-//                if (err) {return next(err);}
-//                if (gallery) {
-//                    res.render('gallery/gallery.html', {
-//                        gallery: gallery
-//                    });
-//                } else {
-//                    req.flash('warning', '找不到该相册');
-//                    res.redirect('back');
-//                }
-//
-//            });
-//        } else {
-//            console.log('no user found');
-//            req.flash('warning', '找不到该相册');
-//            res.redirect('back');
-//        }
-//    });
-//});
-
+router.get('/:galleryId', function (req, res, next) {
+    var galleryId = req.params.galleryId;
+    var galleryObjectId = new ObjectId(galleryId);
+    var queryGallery = Galleries.where({_id: galleryObjectId});
+    queryGallery.findOne(function (err, gallery) {
+        if (err) {return next(err);}
+        if (gallery) {
+            res.render('gallery/gallery.html', {
+                gallery: gallery
+            });
+        } else {
+            req.flash('warning', '找不到该相册');
+            res.redirect('back');
+        }
+    });
+});
 
 
 //保存图片
@@ -113,39 +104,46 @@ router.post('/save-image', function (req, res, next) {
         Galleries.findOne({_id: galleryObjectId})
             .populate('owner')
             .exec(function (err, gallery) {
-                if (err) {return next(err);}
+                if (err) {
+                    return next(err);
+                }
                 if (gallery == null) {
                     res.json({
                         state: 1,
                         status: '没有找到该相册'
                     });
                 } else if (gallery.owner._id.toHexString() == user._id) {
-                    function updateGallery(galleryObjectId, image){
+                    function updateGallery(galleryObjectId, image) {
                         Galleries.findOneAndUpdate(
-                            {_id:galleryObjectId},
-                            {$push:{images:image._id}},
-                            {new:true},
+                            {_id: galleryObjectId},
+                            {$push: {images: image._id}},
+                            {new: true},
                             function (err, result) {
-                                if(err){return next(err);}
+                                if (err) {
+                                    return next(err);
+                                }
                                 return result;
                             }
                         );
                     }
+
                     Images.findOneAndUpdate(
                         {hash: hash},
-                        {$push: {belongGalleries: gallery._id,owners:userObjectId}},
-                        {new:true},
+                        {$push: {belongGalleries: gallery._id, owners: userObjectId}},
+                        {new: true},
                         function (err, result) {
-                            if (err) {return next(err);}
+                            if (err) {
+                                return next(err);
+                            }
                             if (result) {
                                 var pushGallery = updateGallery(galleryObjectId, result);
                                 res.json({
                                     state: 3,
                                     status: '该图片已存在，不必再上传，但保存了图片与相册之间的关系。',
-                                    image:result,
-                                    gallery:pushGallery
+                                    image: result,
+                                    gallery: pushGallery
                                 });
-                            }else{
+                            } else {
                                 newImage = new Images({
                                     hash: hash,
                                     key: key,
@@ -153,13 +151,15 @@ router.post('/save-image', function (req, res, next) {
                                     owners: userObjectId
                                 });
                                 newImage.save(function (err, result) {
-                                    if (err) {return next(err);}
+                                    if (err) {
+                                        return next(err);
+                                    }
                                     var pushGallery = updateGallery(galleryObjectId, result);
                                     res.json({
                                         state: 4,
                                         status: '图片已保存，并更新与相册之间的关系。',
                                         image: result,
-                                        gallery:pushGallery
+                                        gallery: pushGallery
                                     });
                                 });
                             }
@@ -182,14 +182,16 @@ router.post('/save-image', function (req, res, next) {
 //按相册名称找相册
 router.get('/:galleryName', function (req, res, next) {
     var galleryName = req.params.galleryName;
-    Galleries.findOne({title:galleryName})
+    Galleries.findOne({title: galleryName})
         .exec(function (err, gallery) {
-            if(err){return next(err);}
-            if(gallery){
+            if (err) {
+                return next(err);
+            }
+            if (gallery) {
                 res.render('gallery/gallery.html', {
-                    gallery:gallery
+                    gallery: gallery
                 });
-            }else{
+            } else {
                 req.flash('warning', '找不到该相册');
             }
         });
