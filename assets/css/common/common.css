@@ -45,4 +45,11 @@ img {
   height: 50px;
   text-align: center;
   padding-top: 15px;
+  color: #777777;
+}
+.footer a {
+  color: #777777;
+}
+.footer a:hover {
+  color: #337ab7;
 }

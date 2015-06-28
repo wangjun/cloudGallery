@@ -3,7 +3,7 @@ $(document).ready(function(){
     var $uploadButton = $('#upload-button');
     var $uploadBox = $('#upload-box');
     var $uploadInput = $('#upload-input');
-    var $addImages = $('#add-images');
+    var $images = $('#images');
     var $lovelyLink = $('#lovely-link');
     var $lovelyLinkModal = $('#lovely-link-modal');
 
@@ -36,6 +36,13 @@ $(document).ready(function(){
                     loadImage(
                         file,
                         function(img){
+                            var reader = new FileReader();
+                            reader.addEventListener('load', function (event) {
+                                var buffer = event.target.result;
+                                var imageHash = new hash(buffer);
+                                imageHash.getHash();
+                            });
+                            reader.readAsArrayBuffer(file);
                             var $previewHtml = $('<div/>');
                             $previewHtml.addClass('col-xs-12 col-sm-4 image')
                                 .append('<a/>')
@@ -48,7 +55,7 @@ $(document).ready(function(){
                                 '</div>' +
                                 '</div>');
                             $previewHtml.css({'display':'none'});
-                            $addImages.after($previewHtml);
+                            $images.append($previewHtml);
                             $previewHtml.fadeIn('slow');
                         },
                         {
@@ -74,6 +81,7 @@ $(document).ready(function(){
                             //xhr.setRequestHeader('Content-Type','application/octet-stream');
                             //xhr.setRequestHeader('Authorization','UpToken '+uptoken);
                             //fd.append('fileBinaryData', fileBinary);
+
                             fd.append('token', uptoken);
                             fd.append('file', file);
                             xhr.send(fd);
@@ -94,12 +102,11 @@ $(document).ready(function(){
                     postData.hash = response.hash;
                     postData.key = response.key;
                     postData.galleryId = $('#gallery-id').data('galleryId');
-                    console.log(postData);
                     $.post('/gallery/save-image', postData, function (data, status) {
                         if(status === 'success'){
                             console.log(data);
                         }else{
-                            alert('网络出错了');
+                            alert('Sorry,保存相册到数据库的时候出现网络错误了...');
                         }
                     });
                 }

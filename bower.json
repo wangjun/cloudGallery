@@ -29,6 +29,9 @@
     "js-sdk": "qiniu/js-sdk#~1.0.4-beta",
     "jquery": "~2.1.4",
     "livereload": "~2.2.1",
-    "blueimp-load-image": "blueimp/JavaScript-Load-Image#~1.13.0"
+    "blueimp-load-image": "blueimp/JavaScript-Load-Image#~1.13.0",
+    "qetag": "qiniu/qetag#master",
+    "angular": "~1.4.1",
+    "jsSHA": "Caligatio/jsSHA#~2.0.1"
   }
 }

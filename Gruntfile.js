@@ -66,6 +66,8 @@ module.exports = function (grunt) {
             target: {
                 files: {
                     'public/js/common/common.min.js' : ['assets/js/common/common.js'],
+                    'public/js/common/qiniu-hash.min.js' : ['assets/js/common/qiniuHash.js'],
+                    'public/js/common/qetag.js' : ['assets/js/common/qetag.js'],
                     'public/js/index.min.js'         : ['assets/js/index/index.js'],
                     'public/js/users/register.min.js': ['assets/js/users/register/register.js'],
                     'public/js/gallery/upload.min.js': ['assets/js/gallery/upload.js'],

@@ -4,6 +4,8 @@
 
 {% block js %}
     <script src="/vendor/blueimp-load-image/js/load-image.all.min.js"></script>
+    <script src="/vendor/jsSHA/src/sha.js"></script>
+    <script src="/js/common/qiniu-hash.min.js"></script>
     <script src="/js/gallery/gallery.min.js"></script>
 {% endblock %}
 
@@ -12,7 +14,7 @@
 {% endblock %}
 
 {% block body %}
-    <div class="container" ng-app="gallery">
+    <div class="container" ng-app>
         <h1>{{ gallery.title }}</h1>
         <p class="text-muted">{{ gallery.story }}</p>
         <form id="upload-form" action="/gallery/upload">
@@ -20,12 +22,12 @@
         </form>
         <div>
             <div class="btn-group">
-                <button id="upload-button" class="btn btn-primary">点击上传</button>
+                <button id="upload-button" class="btn btn-primary">上传照片</button>
             </div>
             <div class="btn-group" id="share-btn">
                 <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true"
                         aria-expanded="false">
-                    分享 <span class="caret"></span>
+                    分享相册 <span class="caret"></span>
                 </button>
                 <ul class="dropdown-menu">
                     <li><a href="#" id="lovely-link">易记链接</a></li>
@@ -34,10 +36,16 @@
                     <li><a href="#">微信</a></li>
                 </ul>
             </div>
+            <div class="btn-group">
+                <button type="button" class="btn btn-default">设置相册头像</button>
+            </div>
+            <div class="btn-group">
+                <button type="button" class="btn btn-default">设置相册背景</button>
+            </div>
         </div>
         <hr/>
-        <div class="row" id="show">
-            <p id="drop-here" class="text-muted text-center">把图片拖进浏览器即可上传。</p>
+        <div class="row" id="images">
+            <p>相册内目前没有照片，你可以通过点击左上方蓝色按钮上传图片，也可以直接把图片拖进浏览器。</p>
         </div>
     </div>
     <div class="hidden" id="gallery-id" data-gallery-id="{{ gallery._id.toHexString() }}"></div>
@@ -52,7 +60,7 @@
                 <form class="modal-body">
                     <div class="form-group">
                         <label for="lovely-link-result">将此链接发送给你的朋友:</label>
-                        <p class="form-control-static">http://www.lazycoffee.com/gallery/<strong>[[ lovelyLink ]]</strong></p>
+                        <p class="form-control-static">http://www.lazycoffee.com/gallery/<strong>{% raw %}{{ lovelyLink }}{% endraw %}</strong></p>
                     </div>
                     <div class="form-group">
                         <label for="lovely-link">易记链接(仅英文):</label>
