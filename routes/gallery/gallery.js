@@ -45,16 +45,13 @@ router.post('/add', parseForm, csrfProtection, function (req, res, next) {
             });
             res.redirect('/gallery/add');
         } else {
-
             var newGallery = new Galleries({
                 title: title,
                 story: story,
                 owner: userObjectId
             });
             newGallery.save(function (err, gallery) {
-                if (err) {
-                    return next(err);
-                }
+                if (err) {return next(err);}
                 Users.findOneAndUpdate({_id: userObjectId}, {$push: {galleries: gallery._id}}, {new: true},
                     function (err, result) {
                         if (err) {
@@ -98,33 +95,54 @@ router.post('/save-image', function (req, res, next) {
     var key = req.body.key;
     var galleryId = req.body.galleryId;
     var user = req.session.user;
-    var userObjectId = new ObjectId(user._id);
-    var galleryObjectId = new ObjectId(galleryId);
     if (user) {
+        var userObjectId = new ObjectId(user._id);
+        var galleryObjectId = new ObjectId(galleryId);
         Galleries.findOne({_id: galleryObjectId})
             .populate('owner')
             .exec(function (err, gallery) {
-                if (err) {
-                    return next(err);
-                }
+                if (err) {return next(err);}
                 if (gallery == null) {
                     res.json({
                         state: 1,
                         status: '没有找到该相册'
                     });
                 } else if (gallery.owner._id.toHexString() == user._id) {
-                    function updateGallery(galleryObjectId, image) {
-                        Galleries.findOneAndUpdate(
-                            {_id: galleryObjectId},
-                            {$push: {images: image._id}},
-                            {new: true},
-                            function (err, result) {
-                                if (err) {
-                                    return next(err);
+                    function updateGallery(galleryObjectId, image, status) {
+                        if(gallery.images.indexOf(image._id) === -1){
+                            Galleries.findOneAndUpdate(
+                                {_id: galleryObjectId},
+                                {$push: {images: image._id}},
+                                {new: true},
+                                function (err, result) {
+                                    if (err) {return next(err);}
+                                    if(status === 1){
+                                        res.json({
+                                            state: 3,
+                                            status: '该图片已存在，不必再上传，但保存了图片与相册之间的关系。',
+                                            image: image,
+                                            gallery: result
+                                        });
+                                    }else if(status === 2){
+                                        res.json({
+                                            state: 4,
+                                            status: '图片上传成功，并更新与相册之间的关系。',
+                                            image: image,
+                                            gallery: result
+                                        });
+                                    }
+
                                 }
-                                return result;
-                            }
-                        );
+                            );
+                        }else{
+                            res.json({
+                                state: 5,
+                                status: '该图片已存在，不必再上传，而且当前相册也有此图片，不必更新。',
+                                image: image,
+                                gallery: gallery
+                            });
+                        }
+
                     }
 
                     Images.findOneAndUpdate(
@@ -132,17 +150,9 @@ router.post('/save-image', function (req, res, next) {
                         {$push: {belongGalleries: gallery._id, owners: userObjectId}},
                         {new: true},
                         function (err, result) {
-                            if (err) {
-                                return next(err);
-                            }
+                            if (err) {return next(err);}
                             if (result) {
-                                var pushGallery = updateGallery(galleryObjectId, result);
-                                res.json({
-                                    state: 3,
-                                    status: '该图片已存在，不必再上传，但保存了图片与相册之间的关系。',
-                                    image: result,
-                                    gallery: pushGallery
-                                });
+                                updateGallery(galleryObjectId, result, 1);
                             } else {
                                 newImage = new Images({
                                     hash: hash,
@@ -151,16 +161,8 @@ router.post('/save-image', function (req, res, next) {
                                     owners: userObjectId
                                 });
                                 newImage.save(function (err, result) {
-                                    if (err) {
-                                        return next(err);
-                                    }
-                                    var pushGallery = updateGallery(galleryObjectId, result);
-                                    res.json({
-                                        state: 4,
-                                        status: '图片已保存，并更新与相册之间的关系。',
-                                        image: result,
-                                        gallery: pushGallery
-                                    });
+                                    if (err) {return next(err);}
+                                    updateGallery(galleryObjectId, result,2);
                                 });
                             }
                         }

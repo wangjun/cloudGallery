@@ -13,7 +13,7 @@ var usersSchema = new Schema({
     authToken: { type: String, default: 'NotSet' },
     register_time: { type: Date, default: Date.now },
     type:{ type:String, default:'RegisteredUser' },
-    galleries:{ type:Schema.Types.ObjectId, ref:'Galleries' }
+    galleries:[{ type:Schema.Types.ObjectId, ref:'Galleries' }]
 });
 
 

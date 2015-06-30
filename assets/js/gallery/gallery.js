@@ -38,11 +38,11 @@ $(document).ready(function(){
                         function(img){
                             var reader = new FileReader();
                             reader.addEventListener('load', function (event) {
-                                var buffer = event.target.result;
-                                var imageHash = new hash(buffer);
-                                imageHash.getHash();
+                                var binary = event.target.result;
+                                var imageHash = new hash(binary);
+                                imageHash.getSha1();
                             });
-                            reader.readAsArrayBuffer(file);
+                            reader.readAsBinaryString(file);
                             var $previewHtml = $('<div/>');
                             $previewHtml.addClass('col-xs-12 col-sm-4 image')
                                 .append('<a/>')
@@ -102,6 +102,7 @@ $(document).ready(function(){
                     postData.hash = response.hash;
                     postData.key = response.key;
                     postData.galleryId = $('#gallery-id').data('galleryId');
+                    console.log(postData);
                     $.post('/gallery/save-image', postData, function (data, status) {
                         if(status === 'success'){
                             console.log(data);

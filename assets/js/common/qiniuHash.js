@@ -1,20 +1,15 @@
-var hash = function (buffer) {
-    this.fileBinary = buffer;
-    this.blockSize = 4*1024*1024;
-    this.sha1String = [];
-    this.prefix = 0x16;
+var hash = function (fileBinary) {
+    this.fileBinary = fileBinary;
+    this.prefix = '10';
 };
 
-hash.prototype.getHash = function () {
-    var shaObj = new jsSHA("SHA-1", "BYTES");
-    shaObj.update(this.buffer);
-    var hash = shaObj.getHash("HEX");
+hash.prototype.getSha1 = function () {
+    var hash = CryptoJS.SHA1(this.fileBinary).toString();
     console.log(hash);
-    this.hash = hash;
-    var base64Result = btoa(hash);
+    console.log(hash.length);
+    var sha1 = this.prefix+hash;
+    console.log(sha1);
+    this.hash = sha1;
+    var base64Result = btoa(sha1);
     console.log(base64Result);
-};
-
-hash.sha1 = function () {
-
 };
