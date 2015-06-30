@@ -5,7 +5,7 @@ var favicon = require('serve-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
-var swig = require('swig');
+var nunjucks = require('nunjucks')
 var mongoose = require('mongoose');
 var session = require('express-session');
 var MongoStore = require('connect-mongo')(session);
@@ -50,15 +50,12 @@ app.use(session({
 app.use(flash());
 
 // view engine setup
-app.engine('html', swig.renderFile);
+nunjucks.configure('views', {
+    autoescape:true,
+    express:app
+});
 app.set('view engine', 'html');
 app.set('views', __dirname + '/views');
-
-// Swig will cache templates for you, but you can disable
-// that and use Express's caching instead, if you like:
-app.set('view cache', false);
-// To disable Swig's cache, do the following:
-swig.setDefaults({ cache: false });
 
 // uncomment after placing your favicon in /public
 app.use(favicon(__dirname + '/public/favicon.ico'));

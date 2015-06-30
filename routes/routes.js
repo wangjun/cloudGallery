@@ -10,12 +10,14 @@ var utility = require('./utility');
 var admin = require('./admin/admin');
 var cdn = require('./cdn/cdn');
 var gallery = require('./gallery/gallery');
+var myGallery = require('./gallery/myGallery');
 
 /* GET home page. */
 router.get('/', function(req, res) {
   res.render('index');
 });
 
+router.use('/my-gallery', myGallery);
 router.use('/users', users);
 router.use('/articles', articles);
 router.use('/utility', utility);
