@@ -38,11 +38,11 @@ $(document).ready(function(){
                         function(img){
                             var reader = new FileReader();
                             reader.addEventListener('load', function (event) {
-                                var binary = event.target.result;
-                                var imageHash = new hash(binary);
+                                var buffer = event.target.result;
+                                var imageHash = new hash(buffer);
                                 imageHash.getSha1();
                             });
-                            reader.readAsBinaryString(file);
+                            reader.readAsArrayBuffer(file);
                             var $previewHtml = $('<div/>');
                             $previewHtml.addClass('col-xs-12 col-sm-4 image')
                                 .append('<a/>')
