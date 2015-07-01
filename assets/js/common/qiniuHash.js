@@ -4,6 +4,7 @@ var hash = function (buffer) {
     this.blockSize = 4*1024*1024;
     this.sha1String = [];
     this.blockCount = 0;
+    this.Buffer = window.ArrayBuffer;
 };
 
 hash.prototype.getSha1 = function () {
@@ -43,7 +44,7 @@ hash.prototype.calcEtag = function (){
     if(!this.sha1String.length){
         return 'Fto5o-5ea0sNMlW_75VgGJCv2AcJ';
     }
-    var sha1Buffer = Buffer.concat(this.sha1String,this.blockCount * 20);
+    var sha1Buffer = this.Buffer.concat(this.sha1String,this.blockCount * 20);
 
     // 如果大于4M，则对各个块的sha1结果再次sha1
     if(this.blockCount > 1){
@@ -52,7 +53,7 @@ hash.prototype.calcEtag = function (){
     }
 
     sha1Buffer = this.Buffer.concat(
-        [new Buffer([prefix]),sha1Buffer],
+        [new this.Buffer([this.prefix]),sha1Buffer],
         sha1Buffer.length + 1
     );
 
