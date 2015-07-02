@@ -9,8 +9,6 @@ $(document).ready(function(){
 
     //images uploader
     (function(){
-        //init variables
-        var orientation = '';
         //trigger input click event
         $uploadBox.on('click', function (event) {
             event.preventDefault();
@@ -24,7 +22,7 @@ $(document).ready(function(){
             var files = this.files;
             for (var i=0;i<files.length;i++){
                 var file = files[i];
-                var imageUploader = new uploader(file);
+                var imageUploader = new uploader(file,$images);
                 imageUploader.upload();
             }
         });

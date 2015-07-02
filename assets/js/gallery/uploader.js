@@ -1,32 +1,40 @@
 var uploader = function (file, $dom) {
     this.file = file;
     this.$dom = $dom;
+    this.deferred = $.Deferred();
 };
 
 uploader.prototype.upload = function () {
-    this.getOrientation();
-    this.showImage();
-    this.getUpToken();
-    this.uploadImage();
-    this.saveImageInDatabase();
+    var self = this;
+    self.getOrientation(function () {
+        self.showImage(function () {
+            self.getUpToken(function () {
+                self.uploadImage(function () {
+                    self.saveImageInDatabase()
+                });
+            });
+        });
+    });
+
 };
 
-uploader.prototype.getOrientation = function (){
+uploader.prototype.getOrientation = function (cb){
     var self = this;
-    loadImage.parseMetaData(this.file, function (data) {
+    loadImage.parseMetaData(self.file, function (data) {
         var orientation = data.exif.get('Orientation');
         if(orientation){
             self.orientation = orientation;
+            cb();
         }
     });
 };
-uploader.prototype.showImage = function (){
+uploader.prototype.showImage = function (cb){
     var self = this;
     loadImage(
         this.file,
         function(img){
-            self.$previewHtml = $('<div/>');
-            self.$previewHtml.addClass('col-xs-12 col-sm-4 image')
+            var $previewHtml = $('<div/>');
+            $previewHtml.addClass('col-xs-12 col-sm-4 image')
                 .append('<a/>')
                 .find('a')
                 .addClass('thumbnail')
@@ -36,9 +44,12 @@ uploader.prototype.showImage = function (){
                 '上传中...' +
                 '</div>' +
                 '</div>');
-            self.$previewHtml.css({'display':'none'});
-            self.$dom.append(self.$previewHtml);
-            self.$previewHtml.fadeIn('slow');
+            $previewHtml.css({'display':'none'});
+            self.$dom.append($previewHtml);
+            self.$dom.find('p').remove();
+            $previewHtml.fadeIn('slow');
+            self.$preview =  $previewHtml;
+            cb();
         },
         {
             orientation:self.orientation,
@@ -46,29 +57,36 @@ uploader.prototype.showImage = function (){
         }
     );
 };
-uploader.prototype.uploadImage = function (){
+uploader.prototype.uploadImage = function (cb){
     var self = this;
     var xhr = new XMLHttpRequest();
     var fd = new FormData();
     xhr.open('POST', 'http://upload.qiniu.com', true);
     xhr.onreadystatechange = function(){
         if(xhr.readyState === 4 && xhr.status === 200){
-            self.saveImageInDatabase(JSON.parse(xhr.response));
+            self.uploadResponse = JSON.parse(xhr.response);
+            self.$preview.find('.progress').slideUp();
+            cb();
         }
     };
     fd.append('token', self.upToken);
     fd.append('file', self.file);
     xhr.send(fd);
 };
-uploader.prototype.getUpToken = function (){
+uploader.prototype.getUpToken = function (cb){
     var self = this;
     $.get('/cdn/uptoken', function(data, status){
         if(status === 'success'){
             self.upToken = data.uptoken;
+            cb();
+        }else{
+            alert('获取上传Token时发生网络错误。');
         }
     });
 };
-uploader.prototype.saveImageInDatabase = function (response){
+uploader.prototype.saveImageInDatabase = function (){
+    var self = this;
+    var response = self.uploadResponse;
     var postData = {};
     postData.hash = response.hash;
     postData.key = response.key;
@@ -76,7 +94,6 @@ uploader.prototype.saveImageInDatabase = function (response){
     console.log(postData);
     $.post('/gallery/save-image', postData, function (data, status) {
         if(status === 'success'){
-
             console.log(data);
         }else{
             alert('Sorry,保存相册到数据库的时候出现网络错误了...');

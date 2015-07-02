@@ -35,6 +35,6 @@
     "jsSHA": "Caligatio/jsSHA#~2.0.1",
     "crypto-js": "~3.1.5",
     "holderjs": "~2.8.0",
-    "q": "~2.0.2"
+    "q": "1.0.1"
   }
 }
