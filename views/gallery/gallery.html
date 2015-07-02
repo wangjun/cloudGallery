@@ -44,7 +44,24 @@
         </div>
         <hr/>
         <div class="row" id="images">
+            {% if gallery.images %}
+                {% for item in gallery.images %}
+                <div class="col-xs-12 col-sm-4 image" id="{{ item.hash }}">
+                    <div class="thumbnail">
+                        <img src="//cdn.lazycoffee.com/{{ item.key }}" />
+                        <div class="caption">
+                            <p>
+                                <a href="#" class="btn btn-primary">查看</a>
+                                <a href="#" class="btn btn-default">分享</a>
+                                <a href="#" class="btn btn-default">删除</a>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            {% else %}
             <p class="text-center text-muted">相册内目前没有照片，你可以通过点击左上方蓝色按钮上传图片，也可以直接把图片拖进浏览器。</p>
+            {% endif %}
         </div>
     </div>
     <div class="hidden" id="gallery-id" data-gallery-id="{{ gallery._id.toHexString() }}"></div>

@@ -74,8 +74,9 @@ router.post('/add', parseForm, csrfProtection, function (req, res, next) {
 router.get('/:galleryId', function (req, res, next) {
     var galleryId = req.params.galleryId;
     var galleryObjectId = new ObjectId(galleryId);
-    var queryGallery = Galleries.where({_id: galleryObjectId});
-    queryGallery.findOne(function (err, gallery) {
+    Galleries.findOne({_id: galleryObjectId})
+        .populate('images')
+        .exec(function (err, gallery) {
         if (err) {return next(err);}
         if (gallery) {
             res.render('gallery/gallery.html', {
@@ -179,6 +180,37 @@ router.post('/save-image', function (req, res, next) {
         res.redirect('/users/login');
     }
 
+});
+
+//删除照片
+router.post('/remove-image', function (req, res, next) {
+    var user = req.session.user;
+    if(user){
+        var hash = req.params.hash;
+        Images.findOneAndRemove({hash:hash})
+            .exec(function (err, image) {
+                if(err){return next(err);}
+                var client = new qiniu.rs.Client();
+                client.remove(bucketName, key, function(err, ret) {
+                    if (!err) {
+                        // ok
+                        image.state = 4;
+                        image.status = 'Item remove success.';
+                        res.json(image);
+                    } else {
+                        image.state = 2;
+                        image.status = 'Item remove in database success, but fail in CDN.';
+                        image.err = err;
+                        res.json(image);
+                        // http://developer.qiniu.com/docs/v6/api/reference/codes.html
+                    }
+                })
+
+            });
+    }else{
+        req.flash('warning', '请先登录~');
+        res.redirect('/users/login');
+    }
 });
 
 //按相册名称找相册

@@ -65,6 +65,7 @@ uploader.prototype.uploadImage = function (cb){
     xhr.onreadystatechange = function(){
         if(xhr.readyState === 4 && xhr.status === 200){
             self.uploadResponse = JSON.parse(xhr.response);
+            self.$preview.attr('id',self.uploadResponse.hash);
             self.$preview.find('.progress').slideUp();
             cb();
         }
@@ -98,5 +99,11 @@ uploader.prototype.saveImageInDatabase = function (){
         }else{
             alert('Sorry,保存相册到数据库的时候出现网络错误了...');
         }
+    });
+};
+uploader.prototype.removeItem = function (){
+    var self = this;
+    self.getUpToken(function () {
+
     });
 };
