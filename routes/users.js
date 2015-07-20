@@ -3,7 +3,7 @@ var express = require('express');
 var router = express.Router();
 var Users = require('../model/users');
 var bcrypt = require('bcrypt-nodejs');
-var bodyParser = require('body-parser');
+var validator = require('validator-js');
 var csrf = require('csurf');
 
 //csrf protection
@@ -16,7 +16,7 @@ router.get('/', function(req, res) {
     if(sess.user){
         res.render('users/user');
     }else{
-        req.flash('warning','请先登陆');
+        req.flash('warning', '请先登陆');
         res.redirect('/users/login');
     }
 });
@@ -26,23 +26,23 @@ router.get('/register', csrfProtection, function (req, res) {
     //req.session.nodedump = nodedump(captcha,{collapse : true});
     var frontValue = {
         csrfToken: req.csrfToken(),
-        title:'注册'
+        title: '注册'
     };
-    res.render('users/register',frontValue);
+    res.render('users/register', frontValue);
 });
 
 router.post('/register', parseForm, csrfProtection, function (req, res, next) {
-    var user_mobile = req.body.mobile;
-    var user_password = req.body.password;
+    var userMobile = req.body.mobile;
+    var userPassword = req.body.password;
     //var user_rePassword = req.body.rePassword;
     req.checkBody('mobile', '手机未填写').notEmpty();
-    req.checkBody('mobile_captcha', '手机验证码未填写').notEmpty();
-    req.checkBody('mobile_captcha', '手机验证码不一致').equals(req.session.mobileCaptcha);
+    req.checkBody('mobileCaptcha', '手机验证码未填写').notEmpty();
+    req.checkBody('mobileCaptcha', '手机验证码不一致').equals(req.session.mobileCaptcha);
     req.checkBody('password', '密码未填写').notEmpty();
     req.checkBody('rePassword', '确认密码未填写').notEmpty();
     req.checkBody('mobile', '手机格式不正确').isMobilePhone('zh-CN');
-    req.checkBody('password', '密码长度必须在6-16位之间').isLength(6,16);
-    req.checkBody('rePassword', '确认密码与密码不一致').equals(user_password);
+    req.checkBody('password', '密码长度必须在6-16位之间').isLength(6, 16);
+    req.checkBody('rePassword', '确认密码与密码不一致').equals(userPassword);
     var errors = req.validationErrors();
     if(errors){
         errors.forEach(function(error){
@@ -50,24 +50,24 @@ router.post('/register', parseForm, csrfProtection, function (req, res, next) {
         });
         res.redirect('/users/register');
     }else{
-        var registerUser = new Users({
-            mobile:user_mobile,
-            password:user_password
+        var newUser = new Users({
+            mobile: userMobile,
+            password: userPassword
         });
-        var query  = Users.where({ mobile: registerUser.mobile });
-        query.findOne(function (err, Users) {
-            if (err) {next(err);}
-            if (Users) {
-                req.flash('warning','手机号码已被注册');
+        var query = Users.where({ mobile: newUser.mobile });
+        query.findOne(function (err, findUsers) {
+            if (err) {next(err); }
+            if (findUsers) {
+                req.flash('warning', '手机号码已被注册');
                 res.redirect('/users/register');
             }else{
-                registerUser.save(function (err, register_user) {
-                    if(err) {next(err);}
+                newUser.save(function (saveUserErr, savedUser) {
+                    if(saveUserErr) {next(saveUserErr); }
                     req.session.user = {
-                        _id:register_user._id,
-                        name:register_user.name,
-                        email:register_user.email,
-                        type:register_user.type
+                        _id: savedUser._id,
+                        name: savedUser.name,
+                        email: savedUser.email,
+                        type: savedUser.type
                     };
                     res.redirect('/users/register/success');
                 });
@@ -76,21 +76,42 @@ router.post('/register', parseForm, csrfProtection, function (req, res, next) {
     }
 });
 
+/* email register */
+router.get('/email-register', function (req, res, next) {
+    var frontValue = {
+        title: '使用邮箱注册'
+    };
+    res.render('users/email_register', frontValue);
+});
+
+router.post('/email-register', function (req, res, next) {
+    if(req.checkBody('email').isEmail()){
+        res.json({
+            state: 2,
+            msg: '我们会向这个邮箱发送验证邮件'
+        });
+    }else{
+        res.flash('邮箱地址不正确');
+        res.redirect('/email-register');
+    }
+});
+
+/* register successful */
 router.get('/register/success', function (req, res) {
     var frontValue = {
-        title:'注册成功'
+        title: '注册成功'
     };
-    res.render('users/register_success',frontValue);
+    res.render('users/register_success', frontValue);
 });
 
 /* login */
 router.get('/login', csrfProtection, function(req, res){
     if(req.session.user){
-        req.flash('info','你已经登录，无需再次登录。');
+        req.flash('info', '你已经登录，无需再次登录。');
         res.redirect('back');
     }else{
-        res.render('users/login',{
-            title:'登录',
+        res.render('users/login', {
+            title: '登录',
             csrfToken: req.csrfToken()
         });
     }
@@ -109,21 +130,21 @@ router.post('/login', parseForm, csrfProtection, function (req, res, next) {
         });
         res.redirect('/users/login');
     }else{
-        var query  = Users.where({ mobile: mobile });
-        query.findOne(function (err, Users) {
-            if (err) {next(err);}
-            if (Users) {
+        var query = Users.where({ mobile: mobile });
+        query.findOne(function (err, foundUsers) {
+            if (err) {next(err); }
+            if (foundUsers) {
                 //req.session.nodedump = nodedump(Users,{collapse : true});
-                var salt = Users.salt;
+                var salt = foundUsers.salt;
                 var hashPassword = bcrypt.hashSync(password, salt);
-                if(hashPassword === Users.hashed_password){
+                if(hashPassword === foundUsers.hashed_password){
                     req.session.user = {
-                        _id:Users._id,
-                        mobile:Users.mobile,
-                        name:Users.name,
-                        type:Users.type
+                        _id: foundUsers._id,
+                        mobile: foundUsers.mobile,
+                        name: foundUsers.name,
+                        type: foundUsers.type
                     };
-                    req.flash('success','登录成功~');
+                    req.flash('success', '登录成功~');
                     var backTo = req.session.backTo;
                     if(backTo){
                         req.session.backTo = null;

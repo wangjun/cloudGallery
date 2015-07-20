@@ -4,10 +4,20 @@ var router = express.Router();
 var bodyParser = require('body-parser');
 var csrf = require('csurf');
 var captcha = require('ascii-captcha');
-
 var https = require('https');
 var querystring = require('querystring');
-
+var moment = require('moment');
+var crypto = require('crypto');
+var utility = require('../lib/handy/utility');
+//config variables
+var smsAccountSid = 'aaf98f894d328b13014d40c204a7092c';
+var smsToken = '030abd6906ec426bb7404f631bc8984d';
+var smsChildAccount = 'aaf98f894d328b13014d40c239fb0930';
+var smsSendBaseUrl = 'sandboxapp.cloopen.com';
+var smsSendUrlPort = 8883;
+var smsAppId = 'aaf98f894d328b13014d40c239df092f';
+var smsAppToken = 'dbd650290dae11e5ac73ac853d9f54f2';
+var smsTemplateId = '1';
 //csrf protection
 var csrfProtection = csrf({ cookie: true });
 var parseForm = bodyParser.urlencoded({ extended: false });
@@ -51,12 +61,11 @@ router.get('/check-is-human', function (req, res) {
     if(req.session.isHuman){
         res.json({
             isHuman:true
-        })
+        });
     }else{
-
         res.json({
             isHuman:false
-        })
+        });
     }
 });
 
@@ -75,28 +84,28 @@ router.get('/clean-session-is-human', function (req, res) {
 function isAllowedToSendSms(session){
     if(session.isHuman){
         if(session.sentTime){
-            var waiteTime = (Date.now()-session.sentTime)/1000;
+            var waiteTime = (Date.now() - session.sentTime)/1000;
             if(waiteTime>60){
                 return {
-                    status:true,
-                    reason:'enough waiting time'
+                    status: true,
+                    reason: 'enough waiting time'
                 };
             }else{
                 return {
-                    status:false,
-                    reason:(60-waiteTime)
+                    status: false,
+                    reason: (60 - waiteTime)
                 };
             }
         }else{
             return {
-                status:true,
-                reason:'send sms first time'
+                status: true,
+                reason: 'send sms first time'
             };
         }
     }else{
         return {
-            status:false,
-            reason:'请使用正常途径使用本网站'
+            status: false,
+            reason: '请使用正常途径使用本网站'
         };
     }
 }
@@ -120,30 +129,38 @@ router.post('/send-sms', function (req, res) {
         var mobile = req.body.mobile;
         var code = parseInt(Math.random()*10000);
         req.session.mobileCaptcha = code;
-        var message = '你的验证码是:'+code+'，请勿向任何人泄露。【LazyCoffee】';
+        var message = '你的验证码是:' + code + '，请勿向任何人泄露。【LazyCoffee】';
         var postData = {
-            mobile:mobile,
-            message:message
+            to: mobile,
+            appId: smsAppId,
+            templateId: smsTemplateId,
+            datas: [code, 1]
         };
-        var content = querystring.stringify(postData);
+        var content = JSON.stringify(postData);
+        var currentTime = moment().format('YYYYMMDDHHmmss');
+        var parameter = smsAccountSid + smsToken + currentTime;
+        var sigParameter = utility.md5(parameter).toUpperCase();
+        var authParameter = smsAccountSid + ':' + currentTime;
+        var authorizationBase64 = new Buffer(authParameter).toString('base64');
         var options = {
-            host:'sms-api.luosimao.com',
-            path:'/v1/send.json',
+            host: smsSendBaseUrl,
+            path:'/2013-12-26/Accounts/' + smsAccountSid + '/SMS/TemplateSMS?sig=' + sigParameter,
+            port: smsSendUrlPort,
             method:'POST',
-            auth:'api:key-c1a6bdb2094128098021620783e41c8f',
-            agent:false,
-            rejectUnauthorized : false,
-            headers:{
-                'Content-Type' : 'application/x-www-form-urlencoded',
-                'Content-Length' :content.length
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json;charset=utf-8',
+                'Content-Length': content.length,
+                'Authorization': authorizationBase64
             }
         };
-        var request = https.request(options,function(res){
-            res.setEncoding('utf8');
-            res.on('data', function (chunk) {
-                console.log(JSON.parse(chunk));
+        console.log(options);
+        var request = https.request(options, function(httpsRes){
+            httpsRes.setEncoding('utf8');
+            httpsRes.on('data', function (chunk) {
+                console.log(chunk.toString());
             });
-            res.on('end',function(){
+            httpsRes.on('end',function(){
                 console.log('over');
             });
         });
@@ -156,7 +173,7 @@ router.post('/send-sms', function (req, res) {
         res.json({
             smsStatus:false,
             reason:isAllowedSms.reason
-        })
+        });
     }
 });
 

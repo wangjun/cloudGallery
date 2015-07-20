@@ -1,7 +1,5 @@
 {% extends '../layouts/layout.html' %}
-
 {% block title %}{{ gallery.title }}{% endblock %}
-
 {% block js %}
     <script src="/vendor/blueimp-load-image/js/load-image.all.min.js"></script>
     <script src="/js/gallery/uploader.js"></script>
@@ -13,9 +11,11 @@
 {% endblock %}
 
 {% block body %}
-    <div class="container" ng-app>
+    <div class="container">
         <h1>{{ gallery.title }}</h1>
+
         <p class="text-muted">{{ gallery.story }}</p>
+
         <form id="upload-form" action="/gallery/upload">
             <input id="upload-input" multiple type="file" class="hide"/>
         </form>
@@ -46,21 +46,14 @@
         <div class="row" id="images">
             {% if gallery.images %}
                 {% for item in gallery.images %}
-                <div class="col-xs-12 col-sm-4 image" id="{{ item.hash }}">
-                    <div class="thumbnail">
-                        <img src="//cdn.lazycoffee.com/{{ item.key }}" />
-                        <div class="caption">
-                            <p>
-                                <a href="#" class="btn btn-primary">查看</a>
-                                <a href="#" class="btn btn-default">分享</a>
-                                <a href="#" class="btn btn-default">删除</a>
-                            </p>
-                        </div>
+                    <div class="col-sm-3 image">
+                        <a href="" class="thumbnail" data-hash="{{ item.hash }}" id="{{ item.hash }}">
+                            <img src="//cdn.lazycoffee.com/{{ item.key }}-auto"/>
+                        </a>
                     </div>
-                </div>
                 {% endfor %}
             {% else %}
-            <p class="text-center text-muted">相册内目前没有照片，你可以通过点击左上方蓝色按钮上传图片，也可以直接把图片拖进浏览器。</p>
+                <p class="text-center text-muted" id="upload-des">相册内目前没有照片，你可以通过点击左上方蓝色按钮上传图片，也可以直接把图片拖进浏览器。</p>
             {% endif %}
         </div>
     </div>
@@ -70,23 +63,46 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                                aria-hidden="true">&times;</span></button>
                     <h4 class="modal-title">创建该相册的短链接</h4>
                 </div>
                 <form class="modal-body">
                     <div class="form-group">
                         <label for="lovely-link-result">将此链接发送给你的朋友:</label>
-                        <p class="form-control-static">http://www.lazycoffee.com/gallery/<strong>{% raw %}{{ lovelyLink }}{% endraw %}</strong></p>
+
+                        <p class="form-control-static">
+                            http://www.lazycoffee.com/gallery/<strong>{% raw %}{{ lovelyLink }}{% endraw %}</strong></p>
                     </div>
                     <div class="form-group">
                         <label for="lovely-link">易记链接(仅英文):</label>
-                        <input name="lovely-link" type="text" ng-model="lovelyLink" class="form-control" placeholder="输入一个易记的英文名称，例如:james-australia-trip" />
+                        <input name="lovely-link" type="text" ng-model="lovelyLink" class="form-control"
+                               placeholder="输入一个易记的英文名称，例如:james-australia-trip"/>
                     </div>
                     <input type="hidden" value="{{ csrfToken }}"/>
                 </form>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
                     <button type="button" class="btn btn-primary">确定</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="show-image-modal">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                                aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title">image name</h4>
+                </div>
+                <div class="modal-body">
+                    <img src="" alt=""/>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                    <button type="button" class="btn btn-danger" id="remove-image-button" data-action="deleteItem" data-hash="">删除</button>
                 </div>
             </div>
         </div>

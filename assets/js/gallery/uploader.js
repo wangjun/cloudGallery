@@ -1,24 +1,26 @@
-var uploader = function (file, $dom) {
-    this.file = file;
-    this.$dom = $dom;
-    this.deferred = $.Deferred();
+'use strict';
+var Uploader = function (file, $dom) {
+    this.file = file || null;
+    this.$dom = $dom || null;
+    this.removeUrl = '/gallery/remove-image';
+    this.getUpTokenUrl = '/cdn/uptoken';
+    this.uploadUrl = 'http://upload.qiniu.com';
 };
 
-uploader.prototype.upload = function () {
+Uploader.prototype.upload = function () {
     var self = this;
     self.getOrientation(function () {
         self.showImage(function () {
             self.getUpToken(function () {
                 self.uploadImage(function () {
-                    self.saveImageInDatabase()
+                    self.saveImageInDatabase();
                 });
             });
         });
     });
-
 };
 
-uploader.prototype.getOrientation = function (cb){
+Uploader.prototype.getOrientation = function (cb){
     var self = this;
     loadImage.parseMetaData(self.file, function (data) {
         var orientation = data.exif.get('Orientation');
@@ -28,45 +30,47 @@ uploader.prototype.getOrientation = function (cb){
         }
     });
 };
-uploader.prototype.showImage = function (cb){
+Uploader.prototype.showImage = function (cb){
     var self = this;
     loadImage(
         this.file,
         function(img){
             var $previewHtml = $('<div/>');
-            $previewHtml.addClass('col-xs-12 col-sm-4 image')
-                .append('<a/>')
-                .find('a')
-                .addClass('thumbnail')
-                .append(img)
-                .append('<div class="progress">' +
-                '<div class="progress-bar progress-bar-striped active" style="width:100%;">' +
-                '上传中...' +
+            $previewHtml.addClass('col-xs-3 image')
+                .append('<a class="thumbnail" data-name="' + self.file.name + '"></a>');
+            $previewHtml.find('.thumbnail').append(img)
+                .append('<div class="caption">' +
+                '<div class="progress">' +
+                '<div class="progress-bar progress-bar-striped active" style="width:100%">上传中</div>' +
                 '</div>' +
                 '</div>');
-            $previewHtml.css({'display':'none'});
+            $previewHtml.css({'display': 'none'});
             self.$dom.append($previewHtml);
-            self.$dom.find('p').remove();
+            self.$dom.find('#upload-des').remove();
             $previewHtml.fadeIn('slow');
-            self.$preview =  $previewHtml;
+            self.$preview = $previewHtml;
             cb();
         },
         {
-            orientation:self.orientation,
-            canvas:true
+            orientation: self.orientation,
+            canvas: true
         }
     );
 };
-uploader.prototype.uploadImage = function (cb){
+Uploader.prototype.uploadImage = function (cb){
     var self = this;
     var xhr = new XMLHttpRequest();
     var fd = new FormData();
-    xhr.open('POST', 'http://upload.qiniu.com', true);
+    xhr.open('POST', self.uploadUrl, true);
     xhr.onreadystatechange = function(){
         if(xhr.readyState === 4 && xhr.status === 200){
             self.uploadResponse = JSON.parse(xhr.response);
-            self.$preview.attr('id',self.uploadResponse.hash);
-            self.$preview.find('.progress').slideUp();
+            console.log(self.uploadResponse);
+            self.$preview.find('.thumbnail').attr('data-hash', self.uploadResponse.hash);
+            var $img = '<img src="//cdn.lazycoffee.com/' + self.uploadResponse.key + '-auto" alt="' + self.file.name + '">';
+            self.$preview.find('canvas').fadeOut(function () {
+                $(this).replaceWith($img).fadeIn();
+            });
             cb();
         }
     };
@@ -74,36 +78,46 @@ uploader.prototype.uploadImage = function (cb){
     fd.append('file', self.file);
     xhr.send(fd);
 };
-uploader.prototype.getUpToken = function (cb){
+Uploader.prototype.getUpToken = function (cb){
     var self = this;
-    $.get('/cdn/uptoken', function(data, status){
+    $.get(self.getUpTokenUrl, function(data, status){
         if(status === 'success'){
             self.upToken = data.uptoken;
             cb();
         }else{
-            alert('获取上传Token时发生网络错误。');
+            console.error('获取上传Token时发生网络错误。');
         }
     });
 };
-uploader.prototype.saveImageInDatabase = function (){
+Uploader.prototype.saveImageInDatabase = function (){
     var self = this;
     var response = self.uploadResponse;
     var postData = {};
     postData.hash = response.hash;
     postData.key = response.key;
     postData.galleryId = $('#gallery-id').data('galleryId');
-    console.log(postData);
+    postData.fileName = self.file.name;
     $.post('/gallery/save-image', postData, function (data, status) {
         if(status === 'success'){
-            console.log(data);
+            self.$preview.find('.caption').slideUp(function () {
+                $(this).remove();
+            });
         }else{
-            alert('Sorry,保存相册到数据库的时候出现网络错误了...');
+            self.$preview.find('.progress-bar').addClass('progress-bar-danger').text('上传失败。');
+            console.error('Sorry,保存相册到数据库的时候出现网络错误了...');
         }
     });
 };
-uploader.prototype.removeItem = function (){
+Uploader.prototype.removeItem = function (hash, cb){
     var self = this;
+    var callback = cb || function (){};
     self.getUpToken(function () {
-
+        $.post(self.removeUrl, {hash: hash}, function (data, status) {
+            if(status === 'success'){
+                callback(data);
+            }else{
+                console.error('删除照片时发生网络错误，这种情况一般源于网络传输故障，与本站无关，请与你的电信服务商联系。');
+            }
+        });
     });
 };

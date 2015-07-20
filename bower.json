@@ -24,13 +24,14 @@
     "tests"
   ],
   "dependencies": {
-    "bootstrap": "~3.3.4",
+    "bootstrap": "^3.3.4",
     "js-sdk": "qiniu/js-sdk#~1.0.4-beta",
-    "jquery": "~2.1.4",
-    "livereload": "~2.2.1",
+    "jquery": "^2.1.4",
+    "livereload": "^2.2.1",
     "blueimp-load-image": "blueimp/JavaScript-Load-Image#~1.13.0",
     "qetag": "qiniu/qetag#master",
-    "angular": "~1.4.1",
-    "holderjs": "~2.8.0"
+    "angular": "^1.4.1",
+    "holderjs": "^2.8.0",
+    "validator-js": "^3.41.2"
   }
 }

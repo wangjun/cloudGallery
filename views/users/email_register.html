@@ -1,0 +1,33 @@
+{% extends '../layouts/layout.html' %}
+
+{% block css %}
+    <link rel="stylesheet" href="/css/users/email-register.min.css"/>
+{% endblock %}
+{% block js %}
+    <script type="text/javascript" src="/vendor/validator-js/validator.min.js"></script>
+    <script type="text/javascript" src="/js/users/email-register.min.js"></script>
+{% endblock %}
+
+{% block body %}
+    <div class="container shadow-box email-register" id="email-form-step1">
+        <form class="form">
+            <h1>请输入邮箱地址</h1>
+            <hr/>
+            <div class="form-group">
+                <input type="text" name="email" class="form-control" id="email-register-input" placeholder="邮箱地址"/>
+            </div>
+            <div class="form-group" id="next-btn-wrapper">
+                <button class="btn btn-primary btn-block" id="email-register-next-btn" disabled>下一步</button>
+            </div>
+        </form>
+    </div>
+    <div class="container shadow-box email-register hidden" id="email-form-step2">
+        <form action="" class="form">
+            <h1>我们给你发了封邮件</h1>
+            <hr/>
+            <p>
+                邮件里面有验证链接，点击后会跳转到下一步注册页面，按提示继续完成注册。
+            </p>
+        </form>
+    </div>
+{% endblock %}

@@ -1,3 +1,4 @@
+'use strict';
 var express = require('express');
 var router = express.Router();
 var Galleries = require('../../model/galleries');
@@ -9,12 +10,12 @@ router.get('/', function (req, res, next) {
     var user = req.session.user;
     if(user){
         var userObjectId = new ObjectId(user._id);
-        Galleries.find({owner:userObjectId})
+        Galleries.find({owner: userObjectId})
             .populate('thumbnail')
             .exec(function (err, galleries) {
-                if(err){next(err)}
-                res.render('gallery/myGallery.html',{
-                    galleries:galleries
+                if(err){return next(err); }
+                res.render('gallery/myGallery.html', {
+                    galleries: galleries
                 });
             });
     }else{

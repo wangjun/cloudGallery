@@ -5,7 +5,6 @@ module.exports = function (grunt) {
     var config = {
         bower: 'bower_components',
         routes: 'routes',
-        public: 'public',
         views: 'views',
         assets:'assets'
     };
@@ -55,6 +54,7 @@ module.exports = function (grunt) {
                     'public/css/index/index.min.css': ['assets/prefix_css/index/index.css'],
                     'public/css/users/login.min.css': ['assets/prefix_css/users/login.css'],
                     'public/css/users/register.min.css': ['assets/prefix_css/users/register.css'],
+                    'public/css/users/email-register.min.css': ['assets/prefix_css/users/email-register.css'],
                     'public/css/admin/users/edit.min.css': ['assets/prefix_css/admin/users/edit.css'],
                     'public/css/gallery/upload.min.css': ['assets/prefix_css/gallery/upload.css'],
                     'public/css/gallery/gallery.min.css': ['assets/prefix_css/gallery/gallery.css'],
@@ -68,6 +68,7 @@ module.exports = function (grunt) {
                     'public/js/common/common.min.js' : ['assets/js/common/common.js'],
                     'public/js/index.min.js'         : ['assets/js/index/index.js'],
                     'public/js/users/register.min.js': ['assets/js/users/register/register.js'],
+                    'public/js/users/email-register.min.js': ['assets/js/users/register/email-register.js'],
                     'public/js/gallery/upload.min.js': ['assets/js/gallery/upload.js'],
                     'public/js/gallery/uploader.js': ['assets/js/gallery/uploader.js'],
                     'public/js/gallery/gallery.min.js': ['assets/js/gallery/gallery.js']
