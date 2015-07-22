@@ -6,7 +6,8 @@ module.exports = function (grunt) {
         bower: 'bower_components',
         routes: 'routes',
         views: 'views',
-        assets:'assets'
+        assets:'assets',
+        dist: 'public'
     };
     grunt.initConfig({
         pkg: grunt.file.readJSON('package.json'),
@@ -64,15 +65,13 @@ module.exports = function (grunt) {
         },
         uglify: {
             target: {
-                files: {
-                    'public/js/common/common.min.js' : ['assets/js/common/common.js'],
-                    'public/js/index.min.js'         : ['assets/js/index/index.js'],
-                    'public/js/users/register.min.js': ['assets/js/users/register/register.js'],
-                    'public/js/users/email-register.min.js': ['assets/js/users/register/email-register.js'],
-                    'public/js/gallery/upload.min.js': ['assets/js/gallery/upload.js'],
-                    'public/js/gallery/uploader.js': ['assets/js/gallery/uploader.js'],
-                    'public/js/gallery/gallery.min.js': ['assets/js/gallery/gallery.js']
-                }
+                files: [{
+                    cwd: '<%= config.assets %>/js/',
+                    dest: '<%= config.dist %>/js/',
+                    ext:'.js',
+                    src: '**/*.js',
+                    expand: true
+                }]
             }
         },
         watch: {

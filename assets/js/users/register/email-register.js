@@ -4,23 +4,17 @@ $(document).ready(function () {
     var $nextStepBtn = $('#email-register-next-btn');
     var $emailInput = $('#email-register-input');
     var $nextStepWrapper = $('#next-btn-wrapper');
+    var wizard = new Wizard($('.wizard'));
     $nextStepBtn.on('click', function (event) {
         event.preventDefault();
         var inputVal = $emailInput.val();
         $.post('/users/email-register', {
             email: inputVal
         }, function (data, status) {
+            console.log(data);
             if(status === 'success'){
-                if(data.state === 1){
-                    $emailRegisterStep1.animate({
-                        left: '-500px'
-                    }).fadeOut(function () {
-                        $emailRegisterStep2.css({
-                            right: '500px'
-                        }).animate({
-                            right: 0
-                        }).fadeIn();
-                    });
+                if(data.state === 2){
+                    wizard.nextStep();
                 }
             }else{
                 console.log('网络错误');

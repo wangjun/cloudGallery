@@ -46,7 +46,7 @@
                             <li><a href="/users/logout">退出</a></li>
                         </ul>
                     {% else %}
-                        <li><a href="/users/register">注册</a></li>
+                        <li><a href="/users/email-register">注册</a></li>
                         <li><a href="/users/login">登陆</a></li>
                     {% endif %}
                 </ul>
@@ -134,8 +134,8 @@
 <script src="http://cdn.bootcss.com/jquery/2.1.4/jquery.min.js"></script>
 <script src="http://cdn.bootcss.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
 <script src="/vendor/holderjs/holder.min.js"></script>
-<script src="/js/livereload/livereload.js?host=localhost&port=35728"></script>
-<script src="/js/common/common.min.js"></script>
+<script src="/vendor/livereload/dist/livereload.js?host=localhost&port=35728"></script>
+<script src="/js/common/common.js"></script>
 {% block js %}{% endblock %}
 </body>
 </html>

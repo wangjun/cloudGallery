@@ -27,6 +27,18 @@ img{
 .shadow-box{
   box-shadow: 1px 2px 10px #ddd;
 }
+//wizard
+.wizard{
+  position:relative;
+  >[data-step]{
+    position: absolute;
+    display: none;
+    width:100%;
+  }
+  >.active{
+    display:block;
+  }
+}
 //animation
 .spin{
   animation-name: spin;

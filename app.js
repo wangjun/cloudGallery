@@ -52,7 +52,8 @@ app.use(flash());
 // view engine setup
 nunjucks.configure('views', {
     autoescape: true,
-    express: app
+    express: app,
+    noCache: true
 });
 app.set('view engine', 'html');
 app.set('views', __dirname + '/views');
