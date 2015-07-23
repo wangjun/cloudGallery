@@ -1,0 +1,13 @@
+{
+  "name": "qetag",
+  "homepage": "https://github.com/qiniu/qetag",
+  "_release": "de4941305b",
+  "_resolution": {
+    "type": "branch",
+    "branch": "master",
+    "commit": "de4941305b064f87f054a0b969982b701226b3b9"
+  },
+  "_source": "git://github.com/qiniu/qetag.git",
+  "_target": "master",
+  "_originalSource": "qiniu/qetag"
+}
