@@ -56,6 +56,7 @@ module.exports = function (grunt) {
                     'public/css/users/login.min.css': ['assets/prefix_css/users/login.css'],
                     'public/css/users/register.min.css': ['assets/prefix_css/users/register.css'],
                     'public/css/users/email-register.min.css': ['assets/prefix_css/users/email-register.css'],
+                    'public/css/users/email-register-step2.min.css': ['assets/prefix_css/users/email-register-step2.css'],
                     'public/css/admin/users/edit.min.css': ['assets/prefix_css/admin/users/edit.css'],
                     'public/css/gallery/upload.min.css': ['assets/prefix_css/gallery/upload.css'],
                     'public/css/gallery/gallery.min.css': ['assets/prefix_css/gallery/gallery.css'],
