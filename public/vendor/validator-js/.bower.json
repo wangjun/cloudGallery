@@ -24,7 +24,6 @@
     "commit": "1e5acbcbcbb1a3ff187daeabe9c36890c9b8d97e"
   },
   "_source": "git://github.com/chriso/validator.js.git",
-  "_target": "~3.41.2",
-  "_originalSource": "validator-js",
-  "_direct": true
+  "_target": "^3.41.2",
+  "_originalSource": "validator-js"
 }

@@ -1,10 +1,8 @@
+'use strict';
 $(document).ready(function () {
-    var $emailRegisterStep1 = $('#email-form-step1');
-    var $emailRegisterStep2 = $('#email-form-step2');
     var $nextStepBtn = $('#email-register-next-btn');
     var $emailInput = $('#email-register-input');
     var $nextStepWrapper = $('#next-btn-wrapper');
-    var wizard = new Wizard($('.wizard'));
     $nextStepBtn.on('click', function (event) {
         event.preventDefault();
         var inputVal = $emailInput.val();
@@ -14,7 +12,9 @@ $(document).ready(function () {
             console.log(data);
             if(status === 'success'){
                 if(data.state === 2){
-                    wizard.nextStep();
+                    window.location.href = '/users/email-register/email-sent';
+                }else if(data.state === 3){
+                    window.location.reload(true);
                 }
             }else{
                 console.log('网络错误');

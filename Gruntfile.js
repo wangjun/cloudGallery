@@ -6,7 +6,7 @@ module.exports = function (grunt) {
         bower: 'bower_components',
         routes: 'routes',
         views: 'views',
-        assets:'assets',
+        assets: 'assets',
         dist: 'public'
     };
     grunt.initConfig({
@@ -20,7 +20,7 @@ module.exports = function (grunt) {
                 files: [{
                     cwd: '<%= config.assets %>/less/',
                     dest: '<%= config.assets %>/css/',
-                    ext:'.css',
+                    ext: '.css',
                     src: '**/*.less',
                     expand: true
                 }]
@@ -38,7 +38,7 @@ module.exports = function (grunt) {
                 files: [{
                     cwd: '<%= config.assets %>/css/',
                     dest: '<%= config.assets %>/prefix_css/',
-                    ext:'.css',
+                    ext: '.css',
                     src: '**/*.css',
                     expand: true
                 }]
@@ -50,18 +50,13 @@ module.exports = function (grunt) {
                 roundingPrecision: -1
             },
             target: {
-                files: {
-                    'public/css/common/common.min.css': ['assets/prefix_css/common/common.css'],
-                    'public/css/index/index.min.css': ['assets/prefix_css/index/index.css'],
-                    'public/css/users/login.min.css': ['assets/prefix_css/users/login.css'],
-                    'public/css/users/register.min.css': ['assets/prefix_css/users/register.css'],
-                    'public/css/users/email-register.min.css': ['assets/prefix_css/users/email-register.css'],
-                    'public/css/users/email-register-step2.min.css': ['assets/prefix_css/users/email-register-step2.css'],
-                    'public/css/admin/users/edit.min.css': ['assets/prefix_css/admin/users/edit.css'],
-                    'public/css/gallery/upload.min.css': ['assets/prefix_css/gallery/upload.css'],
-                    'public/css/gallery/gallery.min.css': ['assets/prefix_css/gallery/gallery.css'],
-                    'public/css/gallery/add.min.css': ['assets/prefix_css/gallery/add.css']
-                }
+                files: [{
+                    cwd: '<%= config.assets %>/prefix_css/',
+                    dest: '<%= config.dist %>/css/',
+                    ext: '.css',
+                    src: '**/*.css',
+                    expand: true
+                }]
             }
         },
         uglify: {
@@ -69,7 +64,7 @@ module.exports = function (grunt) {
                 files: [{
                     cwd: '<%= config.assets %>/js/',
                     dest: '<%= config.dist %>/js/',
-                    ext:'.js',
+                    ext: '.js',
                     src: '**/*.js',
                     expand: true
                 }]

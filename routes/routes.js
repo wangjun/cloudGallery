@@ -4,7 +4,7 @@ var router = express.Router();
 var checkUser = require('../lib/user/check');
 
 //get route object
-var users = require('./users');
+var users = require('./users/users');
 var articles = require('./articles');
 var utility = require('./utility');
 var admin = require('./admin/admin');
@@ -14,7 +14,7 @@ var myGallery = require('./gallery/myGallery');
 
 /* GET home page. */
 router.get('/', function(req, res) {
-  res.render('index');
+    res.render('index');
 });
 
 router.use('/my-gallery', myGallery);

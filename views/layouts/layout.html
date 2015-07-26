@@ -6,8 +6,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     {% block meta %}{% endblock %}
     <title>{% block title %}LazyCoffee{% endblock %}</title>
-    <link href="http://cdn.bootcss.com/bootstrap/3.3.4/css/bootstrap.min.css" rel="stylesheet">
-    <link href="/css/common/common.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/vendor/bootstrap/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/vendor/bootstrap/dist/css/bootstrap-theme.min.css"/>
+    <link href="/css/common/common.css" rel="stylesheet">
     {% block css %}{% endblock %}
 </head>
 <body>
@@ -131,8 +132,8 @@
         </div>
     </div>
 {% endblock %}
-<script src="http://cdn.bootcss.com/jquery/2.1.4/jquery.min.js"></script>
-<script src="http://cdn.bootcss.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+<script src="/vendor/jquery/dist/jquery.min.js"></script>
+<script src="/vendor/bootstrap/dist/js/bootstrap.min.js"></script>
 <script src="/vendor/holderjs/holder.min.js"></script>
 <script src="/vendor/livereload/dist/livereload.js?host=localhost&port=35728"></script>
 <script src="/js/common/common.js"></script>

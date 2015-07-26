@@ -42,7 +42,7 @@
     "grunt-contrib-less": "^1.0.1",
     "grunt-contrib-uglify": "^0.9.1",
     "grunt-contrib-watch": "^0.6.1",
-    "grunt-postcss": "^0.4.0",
+    "grunt-postcss": "^0.5.0",
     "less-plugin-autoprefix": "^1.4.1",
     "nodedump": "^0.0.8"
   }

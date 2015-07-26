@@ -24,7 +24,7 @@
     "tests"
   ],
   "dependencies": {
-    "bootstrap": "^3.3.4",
+    "bootstrap": "^3.3.5",
     "js-sdk": "qiniu/js-sdk#~1.0.4-beta",
     "jquery": "^2.1.4",
     "livereload": "^2.2.1",

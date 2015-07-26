@@ -1,25 +1,27 @@
 {% extends '../layouts/layout.html' %}
 
 {% block css %}
-    <link rel="stylesheet" href="/css/users/email-register-step2.min.css"/>
+    <link rel="stylesheet" href="/css/users/email-register/email-register-step2.css"/>
+{% endblock %}
+
+{% block js %}
+    <script type="text/javascript" src="/vendor/validator-js/validator.min.js"></script>
+    <script type="text/javascript" src="/js/users/register/email-register-step2.js"></script>
 {% endblock %}
 
 {% block body %}
 <div class="container">
     <form class="form center-block shadow-box" id="email-register-step2">
-        <h1>注册成为LazyCoffee会员</h1>
+        <h1>请输入密码</h1>
         <hr/>
         <div class="form-group">
-            <input type="text" name="userName" id="user-name" placeholder="用户名" class="form-control"/>
+            <input type="password" class="form-control" id="password" name="password" placeholder="密码"/>
         </div>
         <div class="form-group">
-            <input type="text" class="form-control" id="password" name="password" placeholder="密码"/>
+            <input type="password" class="form-control" id="re-password" name="rePassword" placeholder="确认密码"/>
         </div>
         <div class="form-group">
-            <input type="text" class="form-control" id="re-password" name="rePassword" placeholder="确认密码"/>
-        </div>
-        <div class="form-group">
-            <a href="" id="email-register-step2-btn" class="btn btn-primary btn-block">确认</a>
+            <button id="email-register-step2-btn" class="btn btn-primary btn-block" disabled="disabled">确认</button>
         </div>
     </form>
 </div>

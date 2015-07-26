@@ -1,18 +1,18 @@
 {% extends '../layouts/layout.html' %}
 
 {% block css %}
-    <link rel="stylesheet" href="/css/users/email-register.min.css"/>
+    <link rel="stylesheet" href="/css/users/email-register/email-register.css"/>
 {% endblock %}
+
 {% block js %}
     <script type="text/javascript" src="/vendor/validator-js/validator.min.js"></script>
-    <script type="text/javascript" src="/js/common/wizard.js"></script>
     <script type="text/javascript" src="/js/users/register/email-register.js"></script>
 {% endblock %}
 
 {% block body %}
     <div class="container">
-        <div class="wizard center-block" id="email-register-wizard">
-            <form class="form shadow-box center-block active" data-step="1">
+        <div class="center-block" id="email-register">
+            <form class="form shadow-box center-block active">
                 <h1>请输入邮箱地址</h1>
                 <hr/>
                 <div class="form-group">
@@ -21,16 +21,6 @@
                 <div class="form-group" id="next-btn-wrapper">
                     <button class="btn btn-primary btn-block" id="email-register-next-btn" disabled>下一步</button>
                 </div>
-            </form>
-            <form class="form shadow-box center-block" data-step="2">
-                <h1>我们给你发了封邮件</h1>
-                <hr/>
-                <p>
-                    邮件里面有验证链接，请在当前浏览器打开该链接，并按提示继续完成注册。
-                </p>
-                <p>
-                    <a href="/" class="btn btn-default btn-block">返回首页</a>
-                </p>
             </form>
         </div>
     </div>
