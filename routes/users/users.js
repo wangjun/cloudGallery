@@ -5,6 +5,8 @@ var Users = require('../../model/users');
 var bcrypt = require('bcrypt-nodejs');
 var csrf = require('csurf');
 var bodyParser = require('body-parser');
+var transporter = require('../lib/admin/email');
+var randomstring = require('randomstring');
 
 //get router objects
 var emailRegister = require('./email-register');
@@ -87,6 +89,59 @@ router.post('/register', parseForm, csrfProtection, function (req, res, next) {
 });
 
 
+router.post('/email-register', function (req, res) {
+    var email = req.body.email;
+    req.checkBody('email', 'false').isEmail();
+    var errors = req.validationErrors();
+    if (errors) {
+        for (let error in errors) {
+            if (errors.hasOwnProperty(error)) {
+                if (error.param === 'email' && error.msg === 'false') {
+                    req.flash('邮箱地址不正确');
+                    res.redirect('/email-register');
+                }
+            }
+        }
+    } else {
+        var buf = randomstring.generate(5);
+        req.session.emailCode = buf;
+        req.session.registerEmail = email;
+        console.log(email);
+        console.log(buf);
+        var mailOptions = {
+            from: 'system@lazycoffee.com',
+            to: email,
+            subject: '来自Lazycoffee的验证邮件',
+            html: '<h1>请点击下方链接继续完成注册</h1>' +
+            '<p>' +
+            '<a href="http://www.lazycoffee.com/users/email-register/step2/' + buf + '">' +
+            'http://www.lazycoffee.com/users/email-register/step2/' + buf + '' +
+            '</a>' +
+            '</p>'
+        };
+        transporter.sendMail(mailOptions, function (error, info) {
+            if (error) {return console.log(error); }
+            console.log(info);
+            res.json({
+                state: 2,
+                msg: '我们会向这个邮箱发送验证邮件'
+            });
+        });
+    }
+});
+
+/* email register next step (after email verification)  */
+router.get('/email-register/step2/:code', function (req, res) {
+    var code = req.params.code;
+    if (code === req.session.emailCode && req.session.registerEmail) {
+        let frontValue = {
+            title: '注册 - 第二步'
+        };
+        res.render('users/email-register-step2', frontValue);
+    }
+});
+
+
 /* register successful page */
 router.get('/register/success', function (req, res) {
     var frontValue = {
@@ -123,22 +178,22 @@ router.post('/login', parseForm, csrfProtection, function (req, res, next) {
         res.redirect('/users/login');
     } else {
         var query = Users.where({mobile: mobile});
-        query.findOne(function (err, foundUser) {
+        query.findOne(function (err, foundUsers) {
             if (err) {
                 next(err);
             }
-            if (foundUser) {
+            if (foundUsers) {
                 //req.session.nodedump = nodedump(Users,{collapse : true});
-                var salt = foundUser.salt;
+                var salt = foundUsers.salt;
                 var hashPassword = bcrypt.hashSync(password, salt);
-                if (hashPassword === foundUser.hashedPassword) {
+                if (hashPassword === foundUsers.hashedPassword) {
                     req.session.user = {
-                        _id: foundUser._id,
-                        mobile: foundUser.mobile,
-                        name: foundUser.name,
-                        type: foundUser.type
+                        _id: foundUsers._id,
+                        mobile: foundUsers.mobile,
+                        name: foundUsers.name,
+                        type: foundUsers.type
                     };
-                    req.flash('success', '登录成功！');
+                    req.flash('success', '登录成功~');
                     var backTo = req.session.backTo;
                     if (backTo) {
                         req.session.backTo = null;
