@@ -1,1 +1,1 @@
-"use strict";$(document).ready(function(){});
+"use strict";$(document).ready(function(){$("input").on("keypress keyup keydown",function(a){13===a.keyCode&&a.preventDefault()})});

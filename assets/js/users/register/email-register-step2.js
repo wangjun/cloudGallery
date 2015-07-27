@@ -12,9 +12,13 @@ $(document).ready(function(){
     //initiate status
     $emailRegisterStep2Btn.prop('disabled', true);
     //functions
+    function checkIsSame(){
+        return password === rePassword;
+    }
     function checkButton(){
-        console.log(isPasswordGood, isRePasswordGood);
-        if(isPasswordGood && isRePasswordGood){
+        if(isPasswordGood && isRePasswordGood && checkIsSame()){
+            $password.tooltip('destroy');
+            $rePassword.tooltip('destroy');
             $emailRegisterStep2Btn.prop('disabled', false);
         }else{
             $emailRegisterStep2Btn.prop('disabled', true);
@@ -23,14 +27,14 @@ $(document).ready(function(){
     //dom event
     $password.on('input', function () {
         password = $(this).val();
-        if(validator.isLength(password, 8, 20)){
+        if(validator.isLength(password, 7, 20)){
             $(this).data('bs.tooltip', false);
             isPasswordGood = true;
         }else{
             $(this).data('bs.tooltip', false).tooltip({
-                title: '密码长度在8-20位之间',
+                title: '密码长度在7-20位之间',
                 placement: 'right',
-                trigger: 'hover'
+                trigger: 'manual'
             });
             isPasswordGood = false;
         }
@@ -39,13 +43,14 @@ $(document).ready(function(){
     $rePassword.on('input', function () {
         rePassword = $(this).val();
         if(validator.equals(rePassword, password)){
+            $(this).tooltip('destroy');
             isRePasswordGood = true;
         }else{
-            $(this).data('bs.tooltip', false).tooltip({
+            $(this).tooltip({
                 title: '确认密码与密码不一致',
                 placement: 'right',
-                trigger: 'hover'
-            });
+                trigger: 'manual'
+            }).tooltip('show');
             isRePasswordGood = false;
         }
         checkButton();

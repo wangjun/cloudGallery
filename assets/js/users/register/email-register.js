@@ -6,13 +6,13 @@ $(document).ready(function () {
     $nextStepBtn.on('click', function (event) {
         event.preventDefault();
         var inputVal = $emailInput.val();
-        $.post('/users/email-register', {
+        $.post('/users/email/register', {
             email: inputVal
         }, function (data, status) {
             console.log(data);
             if(status === 'success'){
                 if(data.state === 2){
-                    window.location.href = '/users/email-register/email-sent';
+                    window.location.href = '/users/email/email-sent';
                 }else if(data.state === 3){
                     window.location.reload(true);
                 }

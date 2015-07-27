@@ -1,7 +1,7 @@
 {% extends '../layouts/layout.html' %}
 
 {% block css %}
-    <link rel="stylesheet" href="/css/users/email-register/email-register.css"/>
+    <link rel="stylesheet" href="/css/users/email/register.css"/>
 {% endblock %}
 
 {% block js %}
@@ -10,18 +10,16 @@
 {% endblock %}
 
 {% block body %}
-    <div class="container">
-        <div class="center-block" id="email-register">
-            <form class="form shadow-box center-block active">
-                <h1>请输入邮箱地址</h1>
-                <hr/>
-                <div class="form-group">
-                    <input type="text" name="email" class="form-control" id="email-register-input" placeholder="邮箱地址"/>
-                </div>
-                <div class="form-group" id="next-btn-wrapper">
-                    <button class="btn btn-primary btn-block" id="email-register-next-btn" disabled>下一步</button>
-                </div>
-            </form>
-        </div>
+    <div class="container" id="email-register">
+        <form class="form shadow-box" method="POST" id="email-register-form" action="/users/email/register">
+            <h1>请输入邮箱地址</h1>
+            <hr/>
+            <div class="form-group">
+                <input type="text" name="email" class="form-control" id="email-register-input" placeholder="邮箱地址"/>
+            </div>
+            <div class="form-group" id="next-btn-wrapper">
+                <button class="btn btn-primary btn-block" id="email-register-next-btn" disabled>下一步</button>
+            </div>
+        </form>
     </div>
 {% endblock %}
