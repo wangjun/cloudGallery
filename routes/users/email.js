@@ -39,8 +39,8 @@ router.post('/register', function (req, res, next) {
                         subject: '来自Lazycoffee的验证邮件',
                         html: '<h1>请点击下方链接继续注册</h1>' +
                         '<p>' +
-                        '<a href="http://localhost:3100/users/email/register/step2/' + buf + '">' +
-                        'http:/localhost:3100/users/email/register/step2/' + buf + '' +
+                        '<a href="http://www.lazycoffee.com/users/email/register/step2/' + buf + '">' +
+                        'http://www.lazycoffee.com/users/email/register/step2/' + buf + '' +
                         '</a>' +
                         '</p>'
                     };
