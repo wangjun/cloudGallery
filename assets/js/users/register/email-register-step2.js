@@ -61,7 +61,7 @@ $(document).ready(function(){
             password: password,
             rePassword: rePassword
         };
-        $.post('/users/email-register/step2', postDate, function (data, status) {
+        $.post('/users/email/register/step2', postDate, function (data, status) {
             if(status === 'success'){
                 console.log(data);
                 if(data.state === 1){
