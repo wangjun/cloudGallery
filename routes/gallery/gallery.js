@@ -90,7 +90,6 @@ router.get('/:galleryId', function (req, res, next) {
         });
 });
 
-
 //保存图片
 router.post('/save-image', function (req, res, next) {
     var hash = req.body.hash;
@@ -154,7 +153,7 @@ router.post('/save-image', function (req, res, next) {
                     Images.findOneAndUpdate(
                         {hash: hash},
                         {$push: {belongGalleries: gallery._id, owners: userObjectId}},
-                        {new: true},
+                        {'new': true},
                         function (updateImageErr, result) {
                             if (updateImageErr) {
                                 return next(updateImageErr);

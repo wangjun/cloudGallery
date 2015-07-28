@@ -177,6 +177,16 @@ router.post('/send-sms', function (req, res) {
     }
 });
 
+/* index add gallery link */
+router.get('/add-gallery', function (req, res) {
+    if(req.session.user){
+        res.redirect('/gallery/add');
+    }else{
+        req.flash('info', '注册一个账号即可创建相册，过程非常简单哦！<a href="/users/email/login">已有账号？</a>');
+        res.redirect('/users/email/register');
+    }
+});
+
 //a function test page
 router.get('/test', function (req, res) {
     var now = new Date.now();

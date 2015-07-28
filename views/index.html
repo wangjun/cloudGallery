@@ -1,14 +1,17 @@
 {% extends 'layouts/layout.html' %}
 
+{% block css %}
+    <link rel="stylesheet" href="/css/index/index.css"/>
+{% endblock %}
+
 {% block js %}
     <script src="/js/index/index.js"></script>
 {% endblock %}
 
 {% block title %}LazyCoffee云相册{% endblock %}
 {% block body %}
-	<div class="container">
-		<h1>我们Our的网站Website尚未开放，敬请期待~~</h1>
-        <hr/>
-
+	<div class="container" id="index">
+        <p class="text-center" id="lead">LazyCoffee轻云相册，极速、简约、方便...</p>
+        <p class="text-center"><a href="/utility/add-gallery" class="btn btn-primary">开始创建我的相册</a></p>
 	</div>
 {% endblock %}
