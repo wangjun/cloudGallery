@@ -47,8 +47,8 @@
             {% if gallery.images %}
                 {% for item in gallery.images %}
                     <div class="col-sm-3 image">
-                        <a href="" class="thumbnail" data-hash="{{ item.hash }}" id="{{ item.hash }}">
-                            <img src="//cdn.lazycoffee.com/{{ item.key }}-auto"/>
+                        <a href="" class="thumbnail" data-key="{{ item.key }}" data-hash="{{ item.hash }}" id="{{ item.hash }}">
+                            <img src="//cdn.lazycoffee.com/{{ item.key }}-w1024"/>
                         </a>
                     </div>
                 {% endfor %}
