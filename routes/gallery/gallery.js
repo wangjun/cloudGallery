@@ -5,6 +5,7 @@ var upload = require('./upload');
 var bodyParser = require('body-parser');
 var Users = require('../../model/users');
 var Galleries = require('../../model/galleries');
+var gallery = require('../../lib/gallery/gallery');
 var Images = require('../../model/images');
 var csrf = require('csurf');
 var mongoose = require('mongoose');
@@ -53,13 +54,13 @@ router.post('/add', parseForm, csrfProtection, function (req, res, next) {
                 story: story,
                 owner: userObjectId
             });
-            newGallery.save(function (saveGalleryErr, gallery) {
+            newGallery.save(function (saveGalleryErr, savedGallery) {
                 if (saveGalleryErr) {return next(saveGalleryErr); }
-                Users.findOneAndUpdate({_id: userObjectId}, {$push: {galleries: gallery._id}}, {new: true},
-                    function (findUserErr, result) {
+                Users.findOneAndUpdate({_id: userObjectId}, {$push: {galleries: savedGallery._id}}, {'new': true},
+                    function (findUserErr) {
                         if (findUserErr) {return next(findUserErr); }
                         req.flash('success', '成功创建新相册~');
-                        var newGalleryUrl = '/gallery/' + result._id.toHexString();
+                        var newGalleryUrl = '/gallery/' + savedGallery._id.toHexString();
                         res.redirect(newGalleryUrl);
                     });
             });
@@ -69,6 +70,43 @@ router.post('/add', parseForm, csrfProtection, function (req, res, next) {
         req.flash('warning', '请先登录');
         res.redirect('/users/login');
     }
+});
+//remove gallery
+router.post('/remove', function (req, res, next) {
+    var galleryId = req.body.galleryId;
+    Galleries.findOne({_id: galleryId})
+            .populate('owner')
+            .exec(function (findErr, foundGallery) {
+            if(findErr){return next(findErr); }
+            if(foundGallery){
+                if(foundGallery.owner._id.toHexString() === req.session.user._id){
+                    gallery.removeOne(galleryId ,function (removeRes) {
+                        if(removeRes.state === 1){
+                            res.json({
+                                state: 3,
+                                msg: 'Remove gallery success!'
+                            });
+                        }else{
+                            res.json({
+                                state: 4,
+                                msg: 'We found the gallery and we gonna to remove it. But faild.' +
+                                'probably because the database error.'
+                            });
+                        }
+                    });
+                }else{
+                    res.json({
+                        state: 2,
+                        msg: 'This is not your gallery, remove failed.'
+                    });
+                }
+            }else{
+                res.json({
+                    state: 1,
+                    msg: 'Sorry, we can not find the gallery, no gallery removed.'
+                });
+            }
+        });
 });
 
 //按相册ID查找相册
@@ -117,7 +155,7 @@ router.post('/save-image', function (req, res, next) {
                             Galleries.findOneAndUpdate(
                                 {_id: formalGalleryObjectId},
                                 {$push: {images: image._id}},
-                                {new: true},
+                                {'new': true},
                                 function (err, result) {
                                     if (err) {
                                         return next(err);
@@ -149,7 +187,6 @@ router.post('/save-image', function (req, res, next) {
                             });
                         }
                     };
-
                     Images.findOneAndUpdate(
                         {hash: hash},
                         {$push: {belongGalleries: gallery._id, owners: userObjectId}},
@@ -194,8 +231,8 @@ router.post('/save-image', function (req, res, next) {
 //删除照片
 router.post('/remove-image', function (req, res, next) {
     var user = req.session.user;
-    qiniu.conf.ACCESS_KEY = config.cdn.AccessKey;
-    qiniu.conf.SECRET_KEY = config.cdn.SecretKey;
+    qiniu.conf.ACCESS_KEY = config.cdn.qiniu.AccessKey;
+    qiniu.conf.SECRET_KEY = config.cdn.qiniu.SecretKey;
     if (user) {
         var hash = req.body.hash;
         Images.findOneAndRemove({hash: hash})
@@ -205,7 +242,7 @@ router.post('/remove-image', function (req, res, next) {
                 }
                 var client = new qiniu.rs.Client();
                 if (image) {
-                    client.remove(config.cdn.BucketName, image.key, function (err, ret) {
+                    client.remove(config.cdn.qiniu.BucketName, image.key, function (err, ret) {
                         var returnData = {};
                         returnData.image = image;
                         if (err) {
@@ -233,7 +270,7 @@ router.post('/remove-image', function (req, res, next) {
                     });
                 } else {
                     //数据库没有此照片
-                    client.remove(config.cdn.BucketName, hash, function (err, ret) {
+                    client.remove(config.cdn.qiniu.BucketName, hash, function (err, ret) {
                         var returnData = {};
                         returnData.image = image;
                         if (err) {

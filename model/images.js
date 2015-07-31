@@ -10,7 +10,7 @@ var imagesSchema = new Schema({
     story: { type: String },
     fileName: { type: String},
     belongGalleries: [{ type: Schema.Types.ObjectId, ref: 'Galleries'}],
-    createTime: { type: Date, default: Date.now },
+    createTime: { type: Date, 'default': Date.now },
     owners: [{ type: Schema.Types.ObjectId, ref: 'Users'}]
 });
 

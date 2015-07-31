@@ -11,22 +11,22 @@ var parseForm = bodyParser.urlencoded({ extended: false });
 //user manager index
 router.get('/', function (req, res, next) {
     Users.find({}, function (err, users) {
-        if(err){next(err)}
+        if(err){next(err); }
         res.render('admin/users/users.html', {
-            users:users
+            users: users
         });
     });
 });
 
 //get user edit form
-router.get('/edit/:mobile', csrfProtection, function (req, res) {
+router.get('/edit/:mobile', csrfProtection, function (req, res, next) {
     var mobile = req.params.mobile;
-    Users.findOne({mobile:mobile}, function (err, user) {
-        if(err){next(err)}
-        res.render('admin/users/edit',{
-            user:user,
-            mobile : mobile,
-            csrfToken:req.csrfToken()
+    Users.findOne({mobile: mobile}, function (err, user) {
+        if(err){return next(err); }
+        res.render('admin/users/edit', {
+            user: user,
+            mobile: mobile,
+            csrfToken: req.csrfToken()
         });
     });
 });
@@ -34,20 +34,20 @@ router.get('/edit/:mobile', csrfProtection, function (req, res) {
 //change user property
 router.post('/edit/:mobile', parseForm, csrfProtection, function (req, res, next) {
     var mobile = req.body.mobile;
-    var name  = req.body.name;
+    var name = req.body.name;
     var type = req.body.type;
     if(req.session.user.type === 'admin'){
         if(req.session.user.mobile === mobile && req.params.mobile === mobile){
-            if(type === 'RegisteredUser' || type == 'admin'){
-                Users.findOne({mobile:mobile}, function (err, user) {
-                    if(err){next(err);}
+            if(type === 'RegisteredUser' || type === 'admin'){
+                Users.findOne({mobile: mobile}, function (err, user) {
+                    if(err){next(err); }
                     user.name = name;
                     user.type = type;
-                    user.save(function (err, updateUser) {
-                        if(err){next(err);}
+                    user.save(function (saveErr, updateUser) {
+                        if(err){return next(saveErr); }
                         req.session.user = updateUser;
-                        req.flash('success', updateUser.mobile+' 用户资料更新成功！');
-                        res.redirect('/admin/users/edit/'+updateUser.mobile);
+                        req.flash('success', updateUser.mobile + ' 用户资料更新成功！');
+                        res.redirect('/admin/users/edit/' + updateUser.mobile);
                     });
                 });
             }

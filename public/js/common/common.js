@@ -1,1 +1,1 @@
-"use strict";$(document).ready(function(){$("input").on("keypress keyup keydown",function(a){13===a.keyCode&&a.preventDefault()})});
+"use strict";$(document).ready(function(){var a=$("#alertModal");window.alertModal=function(b,c){var d=c||"提示";a.find(".modal-body").html(b),a.find("#alertModalLabel").text(d),a.modal("show")},a.on("hidden.bs.modal",function(){a.find(".modal-body").html(""),a.find("#alertModalLabel").text("提示")})});

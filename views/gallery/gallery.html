@@ -13,9 +13,7 @@
 {% block body %}
     <div class="container">
         <h1>{{ gallery.title }}</h1>
-
         <p class="text-muted">{{ gallery.story }}</p>
-
         <form id="upload-form" action="/gallery/upload">
             <input id="upload-input" multiple type="file" class="hide"/>
         </form>
@@ -44,27 +42,27 @@
         </div>
         <hr/>
         <div class="row" id="images">
-            {% if gallery.images %}
+            {% if gallery.images.length %}
                 {% for item in gallery.images %}
                     <div class="col-sm-3 image">
-                        <a href="" class="thumbnail" data-key="{{ item.key }}" data-hash="{{ item.hash }}" id="{{ item.hash }}">
+                        <a href="" class="thumbnail" data-name="{{ item.fileName }}" data-key="{{ item.key }}" data-hash="{{ item.hash }}" id="{{ item.hash }}">
                             <img src="//cdn.lazycoffee.com/{{ item.key }}-w1024"/>
                         </a>
                     </div>
                 {% endfor %}
             {% else %}
-                <p class="text-center text-muted" id="upload-des">相册内目前没有照片，你可以通过点击左上方蓝色按钮上传图片，也可以直接把图片拖进浏览器。</p>
+                <p class="text-center text-muted" id="no-image-gallery">相册内目前没有照片，你可以通过点击左上方蓝色按钮上传图片，也可以直接把图片拖进浏览器。</p>
             {% endif %}
         </div>
     </div>
     <div class="hidden" id="gallery-id" data-gallery-id="{{ gallery._id.toHexString() }}"></div>
-
     <div class="modal fade" id="lovely-link-modal">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
-                                aria-hidden="true">&times;</span></button>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
                     <h4 class="modal-title">创建该相册的短链接</h4>
                 </div>
                 <form class="modal-body">
@@ -88,21 +86,21 @@
             </div>
         </div>
     </div>
-
     <div class="modal fade" id="show-image-modal">
-        <div class="modal-dialog">
+        <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
-                                aria-hidden="true">&times;</span></button>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
                     <h4 class="modal-title">image name</h4>
                 </div>
                 <div class="modal-body">
                     <img src="" alt=""/>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
                     <button type="button" class="btn btn-danger" id="remove-image-button" data-action="deleteItem" data-hash="">删除</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
                 </div>
             </div>
         </div>

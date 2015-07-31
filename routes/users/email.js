@@ -185,7 +185,7 @@ router.post('/login', function (req, res, next) {
                                 email: foundUser.email,
                                 type: foundUser.type
                             };
-                            res.redirect('/users');
+                            res.redirect('/my-gallery');
                         }else{
                             req.flash('warning', '密码错误');
                             res.redirect('/users/email/register');

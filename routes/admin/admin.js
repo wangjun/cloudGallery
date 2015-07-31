@@ -12,6 +12,6 @@ router.get('/', function (req, res) {
 
 //user manger
 router.use('/users', usersManager);
-router.use('/test',test);
+router.use('/test', test);
 
 module.exports = router;

@@ -25,7 +25,6 @@ usersSchema.methods.checkPassword = function (inPassword, cb) {
     bcrypt.hash(inPassword, salt, blankFunction, function(hashErr, encrypted) {
         if(hashErr){return hashErr; }
         if(encrypted){
-            console.log(encrypted);
             var isPasswordCorrect = (encrypted === user.hashedPassword);
             callback(isPasswordCorrect);
         }else{
