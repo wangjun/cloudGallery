@@ -97,7 +97,8 @@ Uploader.prototype.saveImageInDatabase = function (){
     postData.key = response.key;
     postData.galleryId = $('#gallery-id').data('galleryId');
     postData.fileName = self.file.name;
-    $.post('/gallery/save-image', postData, function (data, status) {
+    $.post('/image/save', postData, function (data, status) {
+        console.log(data);
         if(status === 'success'){
             self.$preview.find('.caption').slideUp(function () {
                 $(this).remove();

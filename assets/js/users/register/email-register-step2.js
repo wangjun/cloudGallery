@@ -31,11 +31,10 @@ $(document).ready(function(){
             $(this).data('bs.tooltip', false);
             isPasswordGood = true;
         }else{
-            $(this).data('bs.tooltip', false).tooltip({
+            $(this).tooltip({
                 title: '密码长度在7-20位之间',
-                placement: 'right',
-                trigger: 'manual'
-            });
+                placement: 'right'
+            }).tooltip('show');
             isPasswordGood = false;
         }
         checkButton();
@@ -48,8 +47,7 @@ $(document).ready(function(){
         }else{
             $(this).tooltip({
                 title: '确认密码与密码不一致',
-                placement: 'right',
-                trigger: 'manual'
+                placement: 'right'
             }).tooltip('show');
             isRePasswordGood = false;
         }

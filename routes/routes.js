@@ -24,5 +24,6 @@ router.use('/utility', utility);
 router.use('/cdn', cdn);
 router.use('/gallery', gallery);
 router.use('/admin', checkUser.isLogin, checkUser.isAdmin, admin);
+router.use('/image', require('./gallery/image'));
 
 module.exports = router;

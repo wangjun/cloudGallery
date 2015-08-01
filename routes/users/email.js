@@ -197,7 +197,7 @@ router.post('/login', function (req, res, next) {
                 }
             });
     }else{
-        req.flash('邮箱地址格式有误');
+        req.flash('info', '邮箱地址格式有误');
         res.redirect('/users/email/login');
     }
 });
