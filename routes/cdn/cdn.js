@@ -17,11 +17,11 @@ router.get('/uptoken', function (req, res) {
         //putPolicy.expires = expires;
         return putPolicy.token();
     };
-    res.header("Cache-Control", "max-age=0, private, must-revalidate");
-    res.header("Pragma", "no-cache");
-    res.header("Expires", 0);
+    res.header('Cache-Control', 'max-age=0, private, must-revalidate');
+    res.header('Pragma', 'no-cache');
+    res.header('Expires', 0);
     res.json({
-        uptoken:uptoken()
+        uptoken: uptoken()
     });
 });
 

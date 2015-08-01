@@ -43,6 +43,9 @@
                         </a>
                         <ul class="dropdown-menu" role="menu">
                             <li><a href="/users">个人资料</a></li>
+                            {%  if session.user.type == 'admin' %}
+                                <li><a href="/admin">管理后台</a></li>
+                            {% endif %}
                             <li><a href="/users/logout">退出</a></li>
                         </ul>
                     {% else %}

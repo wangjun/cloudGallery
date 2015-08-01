@@ -115,11 +115,11 @@ router.get('/:galleryId', function (req, res, next) {
     var galleryObjectId = new ObjectId(galleryId);
     Galleries.findOne({_id: galleryObjectId})
         .populate('images')
-        .exec(function (err, gallery) {
+        .exec(function (err, foundGallery) {
             if (err) {return next(err); }
             if (gallery) {
                 res.render('gallery/gallery.html', {
-                    gallery: gallery
+                    gallery: foundGallery
                 });
             } else {
                 req.flash('warning', '找不到该相册');
@@ -140,7 +140,7 @@ router.post('/save-image', function (req, res, next) {
         var galleryObjectId = new ObjectId(galleryId);
         Galleries.findOne({_id: galleryObjectId})
             .populate('owner')
-            .exec(function (findGalleryErr, gallery) {
+            .exec(function (findGalleryErr, foundGallery) {
                 if (findGalleryErr) {
                     return next(findGalleryErr);
                 }
@@ -149,9 +149,9 @@ router.post('/save-image', function (req, res, next) {
                         state: 1,
                         status: '没有找到该相册'
                     });
-                } else if (gallery.owner._id.toHexString() === user._id) {
+                } else if (foundGallery.owner._id.toHexString() === user._id) {
                     var updateGallery = function (formalGalleryObjectId, image, status) {
-                        if (gallery.images.indexOf(image._id) === -1) {
+                        if (foundGallery.images.indexOf(image._id) === -1) {
                             Galleries.findOneAndUpdate(
                                 {_id: formalGalleryObjectId},
                                 {$push: {images: image._id}},
@@ -183,7 +183,7 @@ router.post('/save-image', function (req, res, next) {
                                 state: 5,
                                 status: '该图片已存在，不必再上传，而且当前相册也有此图片，不必更新。',
                                 image: image,
-                                gallery: gallery
+                                gallery: foundGallery
                             });
                         }
                     };
