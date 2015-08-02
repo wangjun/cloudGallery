@@ -32,6 +32,7 @@
     "qetag": "qiniu/qetag#master",
     "angular": "^1.4.1",
     "holderjs": "^2.8.0",
-    "validator-js": "^3.41.2"
+    "validator-js": "^3.41.2",
+    "imagesloaded": "~3.1.8"
   }
 }

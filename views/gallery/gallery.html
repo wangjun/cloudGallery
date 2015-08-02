@@ -1,9 +1,11 @@
 {% extends '../layouts/layout.html' %}
 {% block title %}{{ gallery.title }}{% endblock %}
 {% block js %}
+    <script src="/vendor/imagesloaded/imagesloaded.pkgd.min.js"></script>
     <script src="/vendor/blueimp-load-image/js/load-image.all.min.js"></script>
     <script src="/js/gallery/image.js"></script>
     <script src="/js/gallery/uploader.js"></script>
+
     <script src="/js/gallery/gallery.js"></script>
 {% endblock %}
 
@@ -68,10 +70,10 @@
                 </div>
                 <form class="modal-body">
                     <div class="form-group">
-                        <label for="lovely-link-result">将此链接发送给你的朋友:</label>
-
+                        <label id="lovely-link-result">将此链接发送给你的朋友:</label>
                         <p class="form-control-static">
-                            http://www.lazycoffee.com/gallery/<strong>{% raw %}{{ lovelyLink }}{% endraw %}</strong></p>
+                            http://www.lazycoffee.com/gallery/<strong>{% raw %}{{ lovelyLink }}{% endraw %}</strong>
+                        </p>
                     </div>
                     <div class="form-group">
                         <label for="lovely-link">易记链接(仅英文):</label>
@@ -100,7 +102,7 @@
                     <img src="" alt=""/>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-danger" id="remove-image-button" data-action="deleteItem" data-hash="">删除</button>
+                    <button type="button" class="btn btn-danger" id="remove-image-button" data-action="deleteItem" data-key="">删除</button>
                     <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
                 </div>
             </div>

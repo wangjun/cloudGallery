@@ -35,13 +35,14 @@ Uploader.prototype.showImage = function (cb){
     loadImage(
         this.file,
         function(img){
+            $('#no-image-gallery').remove();
             var $previewHtml = $('<div/>');
             $previewHtml.addClass('col-xs-3 image')
                 .append('<a class="thumbnail" data-name="' + self.file.name + '"></a>');
             $previewHtml.find('.thumbnail').append(img)
                 .append('<div class="caption">' +
                 '<div class="progress">' +
-                '<div class="progress-bar progress-bar-striped active" style="width:100%">上传中</div>' +
+                '<div class="progress-bar progress-bar-striped active" style="width:0"></div>' +
                 '</div>' +
                 '</div>');
             $previewHtml.css({'display': 'none'});
@@ -53,6 +54,8 @@ Uploader.prototype.showImage = function (cb){
         },
         {
             orientation: self.orientation,
+            maxWidth: 300,
+            maxHeight: 500,
             canvas: true
         }
     );
@@ -61,16 +64,24 @@ Uploader.prototype.uploadImage = function (cb){
     var self = this;
     var xhr = new XMLHttpRequest();
     var fd = new FormData();
+    self.$preview.find('.thumbnail').addClass('uploading');
     xhr.open('POST', self.uploadUrl, true);
+    xhr.upload.onprogress = function(event){
+        var percent = Math.ceil((event.loaded / event.total) * 100);
+        self.$preview.find('.progress-bar').css({width: percent + '%'}).text(percent + '%');
+    };
     xhr.onreadystatechange = function(){
         if(xhr.readyState === 4 && xhr.status === 200){
             self.uploadResponse = JSON.parse(xhr.response);
-            console.log(self.uploadResponse);
-            self.$preview.find('.thumbnail').attr('data-hash', self.uploadResponse.hash);
-            var $img = '<img src="//cdn.lazycoffee.com/' + self.uploadResponse.key + '-auto" alt="' + self.file.name + '">';
+            self.$preview.find('.thumbnail')
+                .attr('data-hash', self.uploadResponse.hash)
+                .attr('data-key', self.uploadResponse.key)
+                .removeClass('uploading');
+            var $img = '<img src="//cdn.lazycoffee.com/' + self.uploadResponse.key + '_w1024" alt="' + self.file.name + '">';
             self.$preview.find('canvas').fadeOut(function () {
                 $(this).replaceWith($img).fadeIn();
             });
+            self.$preview.find('.progress-bar').text('上传成功！');
             cb();
         }
     };

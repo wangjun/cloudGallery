@@ -18,8 +18,8 @@ window.image.uploadImage = function (file, galleryId) {
                             if(saveStatus === 'success'){
                                 console.log(saveRes);
                             }
-                        });
-                    console.log(uploadRes, galleryId);
+                        }
+                    );
                 }
             };
             fd.append('token', tokenRes.uptoken);

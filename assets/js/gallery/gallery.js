@@ -24,14 +24,10 @@ $(document).ready(function () {
         $uploadInput.on('change', function () {
             var files = this.files;
             var galleryId = $galleryId.data('galleryId');
-            if(files.length > 5){
-                window.image.uploadImage(file, galleryId);
-            }else{
-                for (var i = 0; i < files.length; i++) {
-                    var file = files[i];
-                    var imageUploader = new Uploader(file, $images);
-                    imageUploader.upload();
-                }
+            for (var i = 0; i < files.length; i++) {
+                var file = files[i];
+                var imageUploader = new Uploader(file, $images);
+                imageUploader.upload();
             }
         });
     })();
@@ -40,39 +36,55 @@ $(document).ready(function () {
         event.preventDefault();
         $lovelyLinkModal.modal('show');
     });
+
+    //show image
+    var imgSrc;
+    var $modalImg;
+    var $modalBody = $showImageModal.find('.modal-body');
+    $(document).on('click', '.thumbnail', function (event) {
+        event.preventDefault();
+        if($(this).hasClass('uploading')){
+            window.alertModal('上传中，请稍等~');
+        }else{
+            var fileName = $(this).attr('data-name');
+            imgSrc = '//cdn.lazycoffee.com/' + $(this).attr('data-key') + '_w868';
+            $modalImg = $('<img src="' + imgSrc + '" alt="' + fileName + '" />').hide();
+            var key = $(this).attr('data-key');
+            $modalBody.html('<span class="glyphicon glyphicon-refresh spin" aria-hidden="true"></span>');
+            $showImageModal.find('[data-key]').attr('data-key', key);
+            $showImageModal.find('.modal-title').text(fileName);
+            $showImageModal.modal('show');
+        }
+    });
+    $showImageModal.on('shown.bs.modal', function () {
+        $modalBody.html('').prepend($modalImg);
+        $showImageModal.imagesLoaded(function () {
+            var windowHeight = $(window).height();
+            $modalImg.css({'max-height': windowHeight - 150});
+            $modalImg.slideDown();
+        });
+    });
     //remove image
     $(document).on('click', '[data-action=deleteItem]', function (event) {
         event.preventDefault();
-        var hash = $(this).attr('data-hash');
+        var key = $(this).attr('data-key');
         var successStatus = [2, 4, 6, 7];
         var uploader = new Uploader();
-        $removeImageButton.html('<span class="glyphicon glyphicon-refresh spin" aria-hidden="true"></span>');
-        uploader.removeItem(hash, function (data) {
+        $removeImageButton.html('<span class="glyphicon glyphicon-refresh spin" aria-hidden="true"></span>').prop('disabled', true);
+        uploader.removeItem(key, function (data) {
             if (successStatus.indexOf(data.state) === -1) {
-                $removeImageButton.html('删除失败').prop('disable', true);
+                $removeImageButton.html('删除失败').prop('disabled', true);
             } else {
-                $removeImageButton.html('删除成功').prop('disable', true);
+                $removeImageButton.html('删除成功').prop('disabled', false);
                 $showImageModal.modal('hide');
-                $('[data-hash=' + hash + ']').closest('.image').fadeOut(function () {
+                $('[data-key=' + key + ']').closest('.image').fadeOut(function () {
                     $(this).remove();
                 });
             }
         });
     });
-    $showImageModal.on('hide.bs.modal', function () {
-        $removeImageButton.text('删除').prop('disable', false);
-    });
-    //show image
-    $(document).on('click', '.thumbnail', function (event) {
-        event.preventDefault();
-        var $img = $(this).find('img');
-        var imgSrc = '//cdn.lazycoffee.com/' + $(this).attr('data-key') + '_auto';
-        var imgAlt = $img.attr('alt');
-        var hash = $(this).attr('data-hash');
-        var fileName = $(this).attr('data-name');
-        $showImageModal.find('img').attr({src: imgSrc, alt: imgAlt});
-        $showImageModal.find('[data-hash]').attr('data-hash', hash);
-        $showImageModal.find('.modal-title').text(fileName);
-        $showImageModal.modal('show');
+    $showImageModal.on('hidden.bs.modal', function () {
+        $removeImageButton.text('删除').prop('disabled', false);
+        $modalBody.html('<span class="glyphicon glyphicon-refresh spin" aria-hidden="true"></span>');
     });
 });
