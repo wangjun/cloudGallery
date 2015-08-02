@@ -11,7 +11,7 @@ var admin = require('./admin/admin');
 var cdn = require('./cdn/cdn');
 var gallery = require('./gallery/gallery');
 var myGallery = require('./gallery/myGallery');
-
+var image = require('./gallery/image');
 /* GET home page. */
 router.get('/', function(req, res) {
     res.render('index');
@@ -24,6 +24,6 @@ router.use('/utility', utility);
 router.use('/cdn', cdn);
 router.use('/gallery', gallery);
 router.use('/admin', checkUser.isLogin, checkUser.isAdmin, admin);
-router.use('/image', require('./gallery/image'));
+router.use('/image', image);
 
 module.exports = router;

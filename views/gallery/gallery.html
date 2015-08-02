@@ -2,6 +2,7 @@
 {% block title %}{{ gallery.title }}{% endblock %}
 {% block js %}
     <script src="/vendor/blueimp-load-image/js/load-image.all.min.js"></script>
+    <script src="/js/gallery/image.js"></script>
     <script src="/js/gallery/uploader.js"></script>
     <script src="/js/gallery/gallery.js"></script>
 {% endblock %}
@@ -46,7 +47,7 @@
                 {% for item in gallery.images %}
                     <div class="col-sm-3 image">
                         <a href="" class="thumbnail" data-name="{{ item.fileName }}" data-key="{{ item.key }}" data-hash="{{ item.hash }}" id="{{ item.hash }}">
-                            <img src="//cdn.lazycoffee.com/{{ item.key }}-w1024"/>
+                            <img src="//cdn.lazycoffee.com/{{ item.key }}_w1024"/>
                         </a>
                     </div>
                 {% endfor %}

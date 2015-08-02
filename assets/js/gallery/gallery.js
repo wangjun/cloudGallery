@@ -9,7 +9,7 @@ $(document).ready(function () {
     var $lovelyLinkModal = $('#lovely-link-modal');
     var $removeImageButton = $('#remove-image-button');
     var $showImageModal = $('#show-image-modal');
-
+    var $galleryId = $('#gallery-id');
     //images uploader
     (function () {
         //trigger input click event
@@ -23,10 +23,15 @@ $(document).ready(function () {
         });
         $uploadInput.on('change', function () {
             var files = this.files;
-            for (var i = 0; i < files.length; i++) {
-                var file = files[i];
-                var imageUploader = new Uploader(file, $images);
-                imageUploader.upload();
+            var galleryId = $galleryId.data('galleryId');
+            if(files.length > 5){
+                window.image.uploadImage(file, galleryId);
+            }else{
+                for (var i = 0; i < files.length; i++) {
+                    var file = files[i];
+                    var imageUploader = new Uploader(file, $images);
+                    imageUploader.upload();
+                }
             }
         });
     })();
@@ -61,7 +66,7 @@ $(document).ready(function () {
     $(document).on('click', '.thumbnail', function (event) {
         event.preventDefault();
         var $img = $(this).find('img');
-        var imgSrc = '//cdn.lazycoffee.com/' + $(this).attr('data-key') + '-auto';
+        var imgSrc = '//cdn.lazycoffee.com/' + $(this).attr('data-key') + '_auto';
         var imgAlt = $img.attr('alt');
         var hash = $(this).attr('data-hash');
         var fileName = $(this).attr('data-name');

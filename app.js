@@ -56,10 +56,10 @@ nunjucks.configure('views', {
     noCache: true
 });
 app.set('view engine', 'html');
-app.set('views', __dirname + '/views');
+app.set('views', path.join(__dirname, '/views'));
 
 // uncomment after placing your favicon in /public
-app.use(favicon(__dirname + '/public/favicon.ico'));
+app.use(favicon(path.join(__dirname, '/public/favicon.ico')));
 app.use(logger('dev'));
 app.use(express.static(path.join(__dirname, 'public')));
 
@@ -81,7 +81,7 @@ app.use(function (req, res, next) {
 
 //csrf form protection
 app.use(function (err, req, res, next) {
-    if (err.code !== 'EBADCSRFTOKEN') return next(err);
+    if (err.code !== 'EBADCSRFTOKEN'){return next(err); }
     // handle CSRF token errors here
     res.status(403);
     res.send('请按正常途径填写表格。');
