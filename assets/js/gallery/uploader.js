@@ -111,20 +111,29 @@ Uploader.prototype.saveImageInDatabase = function (){
     $.post('/image/save', postData, function (data, status) {
         console.log(data);
         if(status === 'success'){
-            self.$preview.find('.caption').slideUp(function () {
-                $(this).remove();
-            });
+            if(data.state === 5) {
+                self.$preview.fadeOut(function () {
+                    $(this).remove();
+                });
+            }else if([2, 4].indexOf(data.state) === -1){
+                window.alertModal('抱歉，服务器发生错误，保存不了你的图片...');
+            }else {
+                self.$preview.find('.caption').slideUp(function () {
+                    $(this).remove();
+                });
+            }
         }else{
             self.$preview.find('.progress-bar').addClass('progress-bar-danger').text('上传失败。');
             console.error('Sorry,保存相册到数据库的时候出现网络错误了...');
         }
     });
 };
-Uploader.prototype.removeItem = function (hash, cb){
+Uploader.prototype.removeItem = function (hash, galleryId, cb){
     var self = this;
     var callback = cb || function (){};
     self.getUpToken(function () {
-        $.post(self.removeUrl, {hash: hash}, function (data, status) {
+        $.post(self.removeUrl, {hash: hash, galleryId: galleryId}, function (data, status) {
+            console.log(data);
             if(status === 'success'){
                 callback(data);
             }else{

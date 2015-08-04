@@ -11,64 +11,86 @@ router.post('/save', function(req, res, next){
     var imageHash = req.body.hash;
     var imageKey = req.body.key;
     var imageName = req.body.fileName;
-    galleries.findOne({_id: galleryId}, function (findGalleryErr, foundGallery) {
+    var isImageExist = false;
+    galleries.findOne({_id: galleryId})
+        .populate('images')
+        .exec(function (findGalleryErr, foundGallery) {
         if(findGalleryErr){return next(findGalleryErr); }
         if(foundGallery){
-            images.findOneAndUpdate({hash: imageHash}, {$push: {belongGalleries: galleryId}}, function (findImageErr, updatedImage) {
-                if(findImageErr){return next(findImageErr); }
-                if(updatedImage){
-                    galleries.findOneAndUpdate({_id: galleryId}, {$push: {images: updatedImage._id}}, function (updateGalleryErr, updatedGallery) {
-                        if(updateGalleryErr){return next(updateGalleryErr); }
-                        if(updatedGallery){
-                            res.json({
-                                state: 4,
-                                gallery: updatedGallery,
-                                msg: 'We have updated the image. Add a new gallery id to it.'
-                            });
-                        }else{
-                            res.json({
-                                state: 5,
-                                msg: 'Before update this gallery. I found the gallery. But do not know why now can not find it again.'
-                            });
-                        }
+            let searchImage = function (cb){
+                foundGallery.images.forEach(function (image) {
+                    if(image.hash === imageHash){
+                        isImageExist = true;
+                    }
+                });
+                cb(isImageExist);
+            };
+            searchImage(function (isExit) {
+                if(isExit){
+                    res.json({
+                        state: 5,
+                        gallery: foundGallery,
+                        msg: 'Image has already exist in this gallery. No need to update anything.'
                     });
                 }else{
-                    var newImage = new images({
-                        hash: imageHash,
-                        key: imageKey,
-                        fileName: imageName,
-                        belongGalleries: galleryId,
-                        owners: new ObjectId(req.session.user._id)
-                    });
-                    newImage.save(function (saveImageErr, savedImage) {
-                        if(saveImageErr){return next(saveImageErr); }
-                        if(savedImage){
-                            galleries.findOneAndUpdate({_id: galleryId}, {$push: {images: savedImage._id}}, function (updateGalleryErr, updatedGallery) {
+                    images.findOneAndUpdate({hash: imageHash}, {$push: {belongGalleries: galleryId}}, function (findImageErr, updatedImage) {
+                        if(findImageErr){return next(findImageErr); }
+                        if(updatedImage){
+                            galleries.findOneAndUpdate({_id: galleryId}, {$push: {images: updatedImage._id}}, function (updateGalleryErr, updatedGallery) {
                                 if(updateGalleryErr){return next(updateGalleryErr); }
                                 if(updatedGallery){
                                     res.json({
-                                        state: 2,
-                                        file: savedImage,
-                                        gallery: updatedGallery,
-                                        msg: 'New image saved in database.Add image to the gallery. Image add a new belongGallery.'
+                                        state: 4,
+                                        image: updatedImage,
+                                        gallery: foundGallery,
+                                        msg: 'Someone have uploaded the image before. Add a new gallery id to it.'
                                     });
                                 }else{
                                     res.json({
                                         state: 5,
-                                        file: savedImage,
-                                        msg: 'Before update this gallery. I found the gallery. But do not know why now can not find it again. ' +
-                                        'At least we save the image.'
+                                        msg: 'Before update this gallery. I found the gallery. But do not know why now can not find it again.'
                                     });
                                 }
                             });
                         }else{
-                            res.json({
-                                state: 3,
-                                msg: 'Saved error. Can not save into database.'
+                            var newImage = new images({
+                                hash: imageHash,
+                                key: imageKey,
+                                fileName: imageName,
+                                belongGalleries: galleryId,
+                                owners: new ObjectId(req.session.user._id)
                             });
+                            newImage.save(function (saveImageErr, savedImage) {
+                                if(saveImageErr){return next(saveImageErr); }
+                                if(savedImage){
+                                    galleries.findOneAndUpdate({_id: galleryId}, {$push: {images: savedImage._id}}, function (updateGalleryErr, updatedGallery) {
+                                        if(updateGalleryErr){return next(updateGalleryErr); }
+                                        if(updatedGallery){
+                                            res.json({
+                                                state: 2,
+                                                file: savedImage,
+                                                gallery: updatedGallery,
+                                                msg: 'New image saved in database.Add image to the gallery. Image add a new belongGallery.'
+                                            });
+                                        }else{
+                                            res.json({
+                                                state: 5,
+                                                file: savedImage,
+                                                msg: 'Before update this gallery. I found the gallery. But do not know why now can not find it again. ' +
+                                                'At least we save the image.'
+                                            });
+                                        }
+                                    });
+                                }else{
+                                    res.json({
+                                        state: 3,
+                                        msg: 'Saved error. Can not save into database.'
+                                    });
+                                }
+                            });
+
                         }
                     });
-
                 }
             });
         }else{

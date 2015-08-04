@@ -11,6 +11,7 @@ var csrf = require('csurf');
 var mongoose = require('mongoose');
 var ObjectId = mongoose.Types.ObjectId;
 var config = require('../../lib/admin/config');
+var log = require('../../lib/admin/log');
 var qiniu = require('qiniu');
 
 //csrf protection
@@ -117,7 +118,24 @@ router.get('/:galleryId', function (req, res, next) {
         .populate('images')
         .exec(function (err, foundGallery) {
             if (err) {return next(err); }
-            if (gallery) {
+            if (foundGallery) {
+                foundGallery.images.forEach(function (eachImage) {
+                    Images.findOne({_id: eachImage._id}, function (findImageErr, foundImage) {
+                        if(!foundImage){
+                            Galleries.findOneAndUpdate({_id: galleryObjectId},
+                                {$pull: {images: {_id: eachImage._id}}},
+                                function (updateGalleryErr, updatedGallery) {
+                                    if(updateGalleryErr){return next(updateGalleryErr); }
+                                    if(updatedGallery){
+                                        log.add('warning',
+                                            'Can not find this image: ' + eachImage._id + ' in ' + updatedGallery._id.toHexString() + '. So I am going to remove that gallery in database.',
+                                            'remove a unrelated image in a gallery.');
+                                    }
+                                }
+                            );
+                        }
+                    });
+                });
                 res.render('gallery/gallery.html', {
                     gallery: foundGallery
                 });
@@ -235,39 +253,57 @@ router.post('/remove-image', function (req, res, next) {
     qiniu.conf.SECRET_KEY = config.cdn.qiniu.SecretKey;
     if (user) {
         var hash = req.body.hash;
+        var galleryId = req.body.galleryId;
         Images.findOneAndRemove({hash: hash})
+            .populate('belongGalleries')
             .exec(function (findImageErr, image) {
                 if (findImageErr) {
                     return next(findImageErr);
                 }
                 var client = new qiniu.rs.Client();
                 if (image) {
-                    client.remove(config.cdn.qiniu.BucketName, image.key, function (err, ret) {
-                        var returnData = {};
-                        returnData.image = image;
-                        if (err) {
-                            let situation1 = function* () {
-                                returnData.state = 2;
-                                returnData.status = '照片已从数据库中删除，但ＣＤＮ上删除失败，具体原因请查看控制台。';
-                                returnData.err = err;
-                                returnData.ret = ret;
-                                console.log(returnData);
-                                console.log(err);
-                                console.log(ret);
-                                yield res.json(returnData);
-                            };
-                            situation1().next();
-                            // http://developer.qiniu.com/docs/v6/api/reference/codes.html
-                        } else {
-                            // ok
-                            let situation2 = function* () {
-                                returnData.state = 4;
-                                returnData.status = '数据库和ＣＤＮ都已把照片删除。';
-                                yield res.json(returnData);
-                            };
-                            situation2().next();
-                        }
-                    });
+                    if(image.belongGalleries.length > 1){
+                        image.belongGalleries.forEach(function (eachGallery) {
+                            if(eachGallery._id.toHexString() === galleryId){
+                                Galleries.findOneAndUpdate({_id: eachGallery._id}, {$pull: {images: {_id: image._id}}}, function (updateGalleryErr, updatedGallery) {
+                                    if(updateGalleryErr){return next(updateGalleryErr); }
+                                    res.json({
+                                        image: image,
+                                        gallery: updatedGallery,
+                                        state: 1,
+                                        msg: 'Image removed and removed imageId in gallery'
+                                    });
+                                });
+                            }
+                        });
+                    }else{
+                        client.remove(config.cdn.qiniu.BucketName, image.key, function (err, ret) {
+                            var returnData = {};
+                            returnData.image = image;
+                            if (err) {
+                                let situation1 = function* () {
+                                    returnData.state = 2;
+                                    returnData.status = '照片已从数据库中删除，但ＣＤＮ上删除失败，具体原因请查看控制台。';
+                                    returnData.err = err;
+                                    returnData.ret = ret;
+                                    console.log(returnData);
+                                    console.log(err);
+                                    console.log(ret);
+                                    yield res.json(returnData);
+                                };
+                                situation1().next();
+                                // http://developer.qiniu.com/docs/v6/api/reference/codes.html
+                            } else {
+                                // ok
+                                let situation2 = function* () {
+                                    returnData.state = 4;
+                                    returnData.status = '数据库和ＣＤＮ都已把照片删除。';
+                                    yield res.json(returnData);
+                                };
+                                situation2().next();
+                            }
+                        });
+                    }
                 } else {
                     //数据库没有此照片
                     client.remove(config.cdn.qiniu.BucketName, hash, function (err, ret) {
@@ -308,13 +344,13 @@ router.post('/remove-image', function (req, res, next) {
 router.get('/:galleryName', function (req, res, next) {
     var galleryName = req.params.galleryName;
     Galleries.findOne({title: galleryName})
-        .exec(function (err, gallery) {
+        .exec(function (err, foundGallery) {
             if (err) {
                 return next(err);
             }
-            if (gallery) {
+            if (foundGallery) {
                 res.render('gallery/gallery.html', {
-                    gallery: gallery
+                    gallery: foundGallery
                 });
             } else {
                 req.flash('warning', '找不到该相册');

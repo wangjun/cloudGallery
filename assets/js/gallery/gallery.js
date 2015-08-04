@@ -10,6 +10,7 @@ $(document).ready(function () {
     var $removeImageButton = $('#remove-image-button');
     var $showImageModal = $('#show-image-modal');
     var $galleryId = $('#gallery-id');
+    var galleryId = $galleryId.data('galleryId');
     //images uploader
     (function () {
         //trigger input click event
@@ -23,7 +24,6 @@ $(document).ready(function () {
         });
         $uploadInput.on('change', function () {
             var files = this.files;
-            var galleryId = $galleryId.data('galleryId');
             for (var i = 0; i < files.length; i++) {
                 var file = files[i];
                 var imageUploader = new Uploader(file, $images);
@@ -71,7 +71,7 @@ $(document).ready(function () {
         var successStatus = [2, 4, 6, 7];
         var uploader = new Uploader();
         $removeImageButton.html('<span class="glyphicon glyphicon-refresh spin" aria-hidden="true"></span>').prop('disabled', true);
-        uploader.removeItem(key, function (data) {
+        uploader.removeItem(key, galleryId, function (data) {
             if (successStatus.indexOf(data.state) === -1) {
                 $removeImageButton.html('删除失败').prop('disabled', true);
             } else {
