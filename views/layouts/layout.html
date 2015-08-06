@@ -6,93 +6,99 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     {% block meta %}{% endblock %}
     <title>{% block title %}LazyCoffee{% endblock %}</title>
-    <link rel="stylesheet" href="/vendor/bootstrap/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/vendor/semantic-ui/dist/semantic.min.css">
     <link href="/css/common/common.css" rel="stylesheet">
     {% block css %}{% endblock %}
 </head>
 <body>
-{% block nav %}
-    <nav class="navbar navbar-default">
-        <div class="container">
-            <div class="navbar-header">
-                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#lazycoffee-navbar">
-                    <span class="sr-only">Toggle navigation</span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                </button>
-                <a class="navbar-brand" href="/">LazyCoffee</a>
-            </div>
-            <div class="collapse navbar-collapse" id="lazycoffee-navbar">
-                {#<ul class="nav navbar-nav">#}
-                {#<li><a href="#">Link <span class="sr-only">(current)</span></a></li>#}
-                {#<li><a href="#">Link</a></li>#}
-                {#</ul>#}
-                <ul class="nav navbar-nav navbar-right">
-                    {% if session.user %}
-                        <li>
-                            <a href="/my-gallery">
-                                <span class="glyphicon glyphicon-picture" aria-hidden="true"></span>
-                                我的相册
-                            </a>
-                        </li>
-                        <li class="dropdown">
-                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
-                            <span class="glyphicon glyphicon-user" aria-hidden="true"></span>&nbsp;&nbsp;用户菜单
-                            <span class="caret"></span>
-                        </a>
-                        <ul class="dropdown-menu" role="menu">
-                            <li><a href="/users">个人资料</a></li>
-                            {%  if session.user.type == 'admin' %}
-                                <li><a href="/admin">管理后台</a></li>
-                            {% endif %}
-                            <li><a href="/users/logout">退出</a></li>
-                        </ul>
-                    {% else %}
-                        <li><a href="/users/email/register">注册</a></li>
-                        <li><a href="/users/email/login">登陆</a></li>
+<div class="pusher">
+<div class="ui container">
+    {% block nav %}
+        <div class="ui secondary large pointing menu">
+            <a class="active item" href="/">
+                LazyCoffee云相册
+            </a>
+            <div class="right menu">
+                {% if session.user %}
+                    <a href="/my-gallery" class="item">
+                        <i class="cloud icon"></i>我的相册
+                    </a>
+                    {% if session.user.type == 'admin' %}
+                        <a href="/admin" class="ui item"><i class="spy icon"></i>管理后台</a>
                     {% endif %}
-                </ul>
+                    <a href="/users" class="item"><i class="user icon"></i>用户菜单</a>
+                {% else %}
+                    <a class="ui item" href="/users/email-register">
+                        注册
+                    </a>
+                    <a href="/users/email-login" class="ui item">
+                        登录
+                    </a>
+                {% endif %}
             </div>
         </div>
-    </nav>
-{% endblock %}
+    {% endblock %}
+</div>
 {% block flashMessages %}
     {% if messages.success or messages.info or messages.warning or messages.danger %}
-        <div class="container">
+        <div class="ui container">
+            {% if messages.base %}
+                {% for msg in messages.base %}
+                    <div class="ui message">
+                        <div class="header">
+                            提示:
+                        </div>
+                        <p>{{ msg }}</p>
+                    </div>
+                {% endfor %}
+            {% endif %}
             {% if messages.success %}
                 {% for msg in messages.success %}
-                    <div class="alert alert-success" role="alert">
-                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                            <span aria-hidden="true">&times;</span></button>
-                        {{ msg }}
+                    <div class="ui success message">
+                        <i class="close icon"></i>
+
+                        <div class="header">
+                            成功:
+                        </div>
+                        <p>{{ msg }}</p>
                     </div>
                 {% endfor %}
             {% endif %}
             {% if messages.info %}
                 {% for msg in messages.info %}
-                    <div class="alert alert-info" role="alert">
-                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                            <span aria-hidden="true">&times;</span></button>
-                        {{ msg|safe }}
+                    <div class="ui info message">
+                        <i class="close icon"></i>
+
+                        <div class="header">
+                            温馨提示:
+                        </div>
+                        <p>{{ msg|safe }}</p>
                     </div>
                 {% endfor %}
             {% endif %}
             {% if messages.warning %}
                 {% for msg in messages.warning %}
-                    <div class="alert alert-warning" role="alert">
-                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                            <span aria-hidden="true">&times;</span></button>
-                        {{ msg }}
+                    <div class="ui warning message">
+                        <i class="close icon"></i>
+
+                        <div class="header">
+                            提示:
+                        </div>
+                        <p>
+                            {{ msg }}
+                        </p>
                     </div>
                 {% endfor %}
             {% endif %}
             {% if messages.danger %}
                 {% for msg in messages.danger %}
-                    <div class="alert alert-danger" role="alert">
-                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                            <span aria-hidden="true">&times;</span></button>
-                        {{ msg }}
+                    <div class="ui negative message">
+                        <i class="close icon"></i>
+
+                        <div class="header">
+                            错误:
+                        </div>
+                        <p>{{ msg }}</p>
                     </div>
                 {% endfor %}
             {% endif %}
@@ -103,57 +109,43 @@
 {% block body %}
 {% endblock %}
 
-{% block footer %}
-    <footer class="footer">
-        <div class="container">
-            <a href="http://www.miitbeian.gov.cn">粤ICP备13049010号-3</a>&nbsp;&nbsp;
-            LazyCoffee &copy;2015
-        </div>
-    </footer>
-{% endblock %}
-
+{% block footer %}{% endblock %}
 {% block modal %}
-    <div class="modal fade" id="modal" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                    <h4 class="modal-title" id="modalLabel">{% block modalTitle %}{% endblock %}</h4>
-                </div>
-                <div class="modal-body">
-                    {% block modalBody %}{% endblock %}
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
-                    <button type="button" class="btn btn-primary" id="ok">确定</button>
-                </div>
+    <div class="ui modal" id="modal">
+        <i class="close icon"></i>
+        <div class="header">
+            {% block modalTitle %}{% endblock %}
+        </div>
+        <div class="content">
+            {% block modalBody %}{% endblock %}
+        </div>
+        <div class="actions">
+            <div class="ui black deny button">
+                关闭
+            </div>
+            <div class="ui positive right labeled icon button">
+                确定
             </div>
         </div>
     </div>
 {% endblock %}
 {% block alertModal %}
-    <div class="modal fade" id="alertModal" tabindex="-1" role="dialog" aria-labelledby="alertModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                    <h4 class="modal-title" id="alertModalLabel"></h4>
-                </div>
-                <div class="modal-body">
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
-                </div>
+    <div class="ui modal" id="alertModal">
+        <i class="close icon"></i>
+        <div class="header">
+        </div>
+        <div class="content">
+        </div>
+        <div class="actions">
+            <div class="ui black deny button">
+                关闭
             </div>
         </div>
     </div>
 {% endblock %}
+</div>
 <script src="/vendor/jquery/dist/jquery.min.js"></script>
-<script src="/vendor/bootstrap/dist/js/bootstrap.min.js"></script>
+<script src="/vendor/semantic-ui/dist/semantic.min.js"></script>
 <script src="/vendor/holderjs/holder.min.js"></script>
 <script src="/vendor/livereload/dist/livereload.js?host=localhost&port=35728"></script>
 <script src="/js/common/common.js"></script>

@@ -10,8 +10,17 @@
 
 {% block title %}LazyCoffee云相册{% endblock %}
 {% block body %}
-	<div class="container" id="index">
-        <p class="text-center" id="lead">LazyCoffee轻云相册，极速、简约、方便...</p>
-        <p class="text-center"><a href="/utility/add-gallery" class="btn btn-primary">开始创建我的相册</a></p>
-	</div>
+    <div class="ui text container center aligned" id="index">
+        <h1 class="ui header">LazyCoffee是一个简单易用的云相册。</h1>
+        <p>每张照片都是一段难能珍贵的回忆，因此LazyCoffee一直努力保证网站稳定和可靠。</p>
+        <p>
+            <a href="/utility/add-gallery" class="ui black button">
+                开始创建我的相册
+                <i class="right arrow icon"></i>
+            </a>
+        </p>
+    </div>
+{% endblock %}
+{% block footer %}
+    {% include './blocks/footer1.twig' %}
 {% endblock %}

@@ -1,3 +1,4 @@
+'use strict';
 var express = require('express');
 var Logs = require('../../model/logs');
 var router = express.Router();
