@@ -14,11 +14,16 @@
 {% endblock %}
 
 {% block body %}
-    <div class="container">
-        <h1>{{ gallery.title }}</h1>
-        <p class="text-muted">{{ gallery.story }}</p>
-        <form id="upload-form" action="/gallery/upload">
-            <input id="upload-input" multiple type="file" class="hide"/>
+    <div class="ui container">
+        <h2 class="ui header">
+            <i class="photo icon"></i>
+            <div class="content">
+                {{ gallery.title }}
+                <div class="sub header">{{ gallery.story }}</div>
+            </div>
+        </h2>
+        <form id="upload-form" action="/gallery/upload" method="POST" class="lc-hidden">
+            <input id="upload-input" multiple type="file"/>
         </form>
         <div>
             <div class="btn-group">
@@ -43,7 +48,7 @@
                 <button type="button" class="btn btn-default">设置相册背景</button>
             </div>
         </div>
-        <hr/>
+        <div class="ui divider"></div>
         <div class="row" id="images">
             {% if gallery.images.length %}
                 {% for item in gallery.images %}
