@@ -13,6 +13,7 @@ var ObjectId = mongoose.Types.ObjectId;
 var config = require('../../lib/admin/config');
 var log = require('../../lib/admin/log');
 var qiniu = require('qiniu');
+var moment = require('moment');
 
 //csrf protection
 var csrfProtection = csrf({cookie: true});
@@ -106,42 +107,6 @@ router.post('/remove', function (req, res, next) {
                     state: 1,
                     msg: 'Sorry, we can not find the gallery, no gallery removed.'
                 });
-            }
-        });
-});
-
-//按相册ID查找相册
-router.get('/:galleryId', function (req, res, next) {
-    var galleryId = req.params.galleryId;
-    var galleryObjectId = new ObjectId(galleryId);
-    Galleries.findOne({_id: galleryObjectId})
-        .populate('images')
-        .exec(function (err, foundGallery) {
-            if (err) {return next(err); }
-            if (foundGallery) {
-                foundGallery.images.forEach(function (eachImage) {
-                    Images.findOne({_id: eachImage._id}, function (findImageErr, foundImage) {
-                        if(!foundImage){
-                            Galleries.findOneAndUpdate({_id: galleryObjectId},
-                                {$pull: {images: {_id: eachImage._id}}},
-                                function (updateGalleryErr, updatedGallery) {
-                                    if(updateGalleryErr){return next(updateGalleryErr); }
-                                    if(updatedGallery){
-                                        log.add('warning',
-                                            'Can not find this image: ' + eachImage._id + ' in ' + updatedGallery._id.toHexString() + '. So I am going to remove that gallery in database.',
-                                            'remove a unrelated image in a gallery.');
-                                    }
-                                }
-                            );
-                        }
-                    });
-                });
-                res.render('gallery/gallery.html', {
-                    gallery: foundGallery
-                });
-            } else {
-                req.flash('warning', '找不到该相册');
-                res.redirect('back');
             }
         });
 });
@@ -338,6 +303,42 @@ router.post('/remove-image', function (req, res, next) {
         req.flash('warning', '请先登录~');
         res.redirect('/users/login');
     }
+});
+
+//按相册ID查找相册
+router.get('/:galleryId', function (req, res, next) {
+    var galleryId = req.params.galleryId;
+    var galleryObjectId = new ObjectId(galleryId);
+    Galleries.findOne({_id: galleryObjectId})
+        .populate('images')
+        .exec(function (err, foundGallery) {
+            if (err) {return next(err); }
+            if (foundGallery) {
+                foundGallery.images.forEach(function (eachImage) {
+                    Images.findOne({_id: eachImage._id}, function (findImageErr, foundImage) {
+                        if(!foundImage){
+                            Galleries.findOneAndUpdate({_id: galleryObjectId},
+                                {$pull: {images: {_id: eachImage._id}}},
+                                function (updateGalleryErr, updatedGallery) {
+                                    if(updateGalleryErr){return next(updateGalleryErr); }
+                                    if(updatedGallery){
+                                        log.add('warning',
+                                            'Can not find this image: ' + eachImage._id + ' in ' + updatedGallery._id.toHexString() + '. So I am going to remove that gallery in database.',
+                                            'remove a unrelated image in a gallery.');
+                                    }
+                                }
+                            );
+                        }
+                    });
+                });
+                res.render('gallery/gallery.html', {
+                    gallery: foundGallery
+                });
+            } else {
+                req.flash('warning', '找不到该相册');
+                res.redirect('back');
+            }
+        });
 });
 
 //按相册名称找相册

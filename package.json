@@ -19,7 +19,7 @@
     "express-session": "^1.8.2",
     "express-validator": "^2.10.0",
     "forms": "^1.1.1",
-    "moment": "^2.10.3",
+    "moment": "^2.10.6",
     "mongoose": "^4.0.0",
     "morgan": "^1.5.1",
     "nodemailer": "^1.4.0",

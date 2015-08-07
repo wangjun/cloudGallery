@@ -82,7 +82,6 @@ router.get('/register/step2/:code', function (req, res) {
         };
         res.render('users/email-register-step2', frontValue);
     }
-
     if (req.session.isEmailVerified) {
         resToStep2();
     } else if (code === req.session.emailCode && req.session.registerEmail) {
@@ -157,7 +156,6 @@ router.post('/register/step2', function (req, res, next) {
         });
     }
 });
-
 /* email login page */
 router.get('/login', function (req, res) {
     var frontValues = {
@@ -165,6 +163,7 @@ router.get('/login', function (req, res) {
     };
     res.render('users/email_login', frontValues);
 });
+
 
 /* email login controller */
 router.post('/login', function (req, res, next) {
@@ -188,7 +187,7 @@ router.post('/login', function (req, res, next) {
                             res.redirect('/my-gallery');
                         }else{
                             req.flash('warning', '密码错误');
-                            res.redirect('/users/email/register');
+                            res.redirect('/users/email/login');
                         }
                     });
                 }else{

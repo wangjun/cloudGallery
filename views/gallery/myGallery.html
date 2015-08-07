@@ -11,16 +11,6 @@
 {% block body %}
     <div class="ui container">
         {% if galleries.length %}
-            <h2 class="ui header" id="my-gallery-head">
-                <i class="book icon"></i>
-
-                <div class="content">
-                    我的相册
-                    <div class="sub header">
-                        你可以新建、查看、整理相册，也可以把相册分享给你的朋友~
-                    </div>
-                </div>
-            </h2>
             <div>
                 <a href="/gallery/add" class="ui button primary"><i class="plus icon"></i>新增相册</a>
             </div>
@@ -38,7 +28,7 @@
                         <div class="content">
                             <div class="header">{{ item.title }}</div>
                             <div class="meta">
-                                <a>Friends</a>
+                                <a>{{ item.date }}</a>
                             </div>
                             <div class="description">
                                 {% if item.story %}
@@ -65,9 +55,6 @@
     <div class="ui modal" id="otherFeaturesModal">
         <div class="header">相册选项</div>
         <div class="content">
-            <div>
-                这里是相册的其他一些功能
-            </div>
             <div>
                 <div class="ui button red remove-gallery-btn">
                     删除相册

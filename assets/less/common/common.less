@@ -3,6 +3,18 @@ html{
   position: relative;
   min-height: 100%;
 }
+//reset default font
+.ui.header,.ui.menu,.ui.form input:not([type]),
+.ui.form input[type=text], .ui.form input[type=email],
+.ui.form input[type=search], .ui.form input[type=password],
+.ui.form input[type=date], .ui.form input[type=datetime-local],
+.ui.form input[type=tel], .ui.form input[type=time],
+.ui.form input[type=url], .ui.form input[type=number]{
+  font-family: @font-family-base;
+}
+.ui.form .field>label{
+  font-weight: 400;
+}
 body{
   font-family:@font-family-base;
   margin-bottom: 60px;
@@ -23,6 +35,7 @@ img{
   max-width:100%;
   max-height: 100%;
 }
+
 .lc-hidden{
   display:none;
 }
@@ -54,16 +67,6 @@ img{
   0%{transform: rotate(0deg)}
   100%{transform: rotate(360deg)}
 }
-//navigation
-.navbar-brand{
-  font-family: @west-sans-serif;
-}
-.navbar-default{
-  border:0;
-}
-.form-control-static{
-  padding-top:0;
-}
 .footer{
   position: absolute;
   bottom:0;
@@ -78,4 +81,12 @@ img{
       color:@brand-primary;
     }
   }
+}
+//header
+#header1{
+  margin-bottom: 2em;
+}
+//message
+.ui.message{
+  margin-bottom: 2em;
 }

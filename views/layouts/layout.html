@@ -12,7 +12,7 @@
 </head>
 <body>
 <div class="pusher">
-<div class="ui container">
+<div class="ui container" id="header1">
     {% block nav %}
         <div class="ui secondary large pointing menu">
             <a class="active item" href="/">
@@ -26,12 +26,12 @@
                     {% if session.user.type == 'admin' %}
                         <a href="/admin" class="ui item"><i class="spy icon"></i>管理后台</a>
                     {% endif %}
-                    <a href="/users" class="item"><i class="user icon"></i>用户菜单</a>
+                    <a href="/users/logout" class="item"><i class="sign out icon"></i>退出</a>
                 {% else %}
-                    <a class="ui item" href="/users/email-register">
+                    <a class="ui item" href="/users/email/register">
                         注册
                     </a>
-                    <a href="/users/email-login" class="ui item">
+                    <a href="/users/email/login" class="ui item">
                         登录
                     </a>
                 {% endif %}
@@ -46,7 +46,7 @@
                 {% for msg in messages.base %}
                     <div class="ui message">
                         <div class="header">
-                            提示:
+                            提示
                         </div>
                         <p>{{ msg }}</p>
                     </div>
@@ -58,7 +58,7 @@
                         <i class="close icon"></i>
 
                         <div class="header">
-                            成功:
+                            成功
                         </div>
                         <p>{{ msg }}</p>
                     </div>
@@ -70,7 +70,7 @@
                         <i class="close icon"></i>
 
                         <div class="header">
-                            温馨提示:
+                            温馨提示
                         </div>
                         <p>{{ msg|safe }}</p>
                     </div>
@@ -82,7 +82,7 @@
                         <i class="close icon"></i>
 
                         <div class="header">
-                            提示:
+                            提示
                         </div>
                         <p>
                             {{ msg }}
@@ -96,7 +96,7 @@
                         <i class="close icon"></i>
 
                         <div class="header">
-                            错误:
+                            错误
                         </div>
                         <p>{{ msg }}</p>
                     </div>
