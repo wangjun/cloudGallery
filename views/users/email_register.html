@@ -10,16 +10,18 @@
 {% endblock %}
 
 {% block body %}
-    <div class="container" id="email-register">
-        <form class="form shadow-box" method="POST" id="email-register-form" action="/users/email/register">
-            <h1>请输入邮箱地址</h1>
-            <hr/>
-            <div class="form-group">
-                <input type="text" name="email" class="form-control" id="email-register-input" placeholder="邮箱地址"/>
-            </div>
-            <div class="form-group" id="next-btn-wrapper">
-                <button class="btn btn-primary btn-block" id="email-register-next-btn" disabled>下一步</button>
-            </div>
-        </form>
+    <div class="ui center aligned grid">
+        <div class="column" id="email-register">
+            <form class="ui form" method="POST" id="email-register-form" action="/users/email/register">
+                <h1>请输入邮箱地址</h1>
+                <div class="ui divider"></div>
+                <div class="field">
+                    <input type="text" name="email" id="email-register-input" placeholder="邮箱地址"/>
+                </div>
+                <div class="field" id="next-btn-wrapper">
+                    <button class="btn btn-primary btn-block" id="email-register-next-btn" disabled>下一步</button>
+                </div>
+            </form>
+        </div>
     </div>
 {% endblock %}
