@@ -1,0 +1,58 @@
+{% extends '../layouts/layout.html' %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block css %}
+    <link rel="stylesheet" href="/css/users/register.css" type="text/css"/>
+{% endblock %}
+
+{% block js %}
+    <script src="/js/users/register/register.js"></script>
+{% endblock %}
+
+{% block body %}
+    <div class="container" id="register-wrapper">
+        <form action="/users/register" method="POST" id="register-form" class="form-horizontal shadow-box center-block">
+            <h1 id="register-title">Join LazyCoffee</h1>
+            <hr/>
+            <input type="hidden" name="_csrf" value="{{ csrfToken }}">
+            <div class="form-group">
+                <div class="col-sm-12">
+                    <input type="text" typ="userName" class="form-control" id="user-name" name="userName" placeholder="用户名"/>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-7">
+                    <input name="mobile" type="tel" class="form-control" id="mobile" placeholder="手机号码">
+                </div>
+                <div class="col-sm-5" id="get-mobile-captcha-wrap">
+                    <button type="button" class="btn btn-default btn-block" id="get-mobile-captcha">
+                        获取验证码
+                    </button>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-12">
+                    <input name="mobile-captcha" type="text" class="form-control" id="mobile-captcha"
+                           placeholder="短信的验证码" disabled="disabled">
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-12">
+                    <input name="password" type="password" class="form-control" id="password" placeholder="请输入6-16位密码">
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-12">
+                    <input name="rePassword" type="password" class="form-control" id="re-password" placeholder="再输入一次密码">
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-12">
+                    <button type="submit" class="btn btn-primary btn-block">确定</button>
+                </div>
+            </div>
+            <p class="text-right">或 <a href="/users/email-register">用邮箱注册</a></p>
+        </form>
+    </div>
+{% endblock %}

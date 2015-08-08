@@ -5,7 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     {% block meta %}{% endblock %}
-    <title>{% block title %}LazyCoffee{% endblock %}</title>
+    <title>{% block title %}{{ title }} | LazyCoffee{% endblock %}</title>
     <link rel="stylesheet" href="/vendor/semantic-ui/dist/semantic.min.css">
     <link href="/css/common/common.css" rel="stylesheet">
     {% block css %}{% endblock %}
@@ -41,7 +41,7 @@
 </div>
 {% block flashMessages %}
     {% if messages.success or messages.info or messages.warning or messages.danger %}
-        <div class="ui container">
+        <div class="ui container" id="messages">
             {% if messages.base %}
                 {% for msg in messages.base %}
                     <div class="ui message">

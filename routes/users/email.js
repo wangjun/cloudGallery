@@ -65,7 +65,7 @@ router.post('/register', function (req, res, next) {
 });
 
 /* email sent page */
-router.get('/email-sent', function (req, res) {
+router.get('/sent', function (req, res) {
     var fontValues = {
         title: '验证邮件发送成功！'
     };

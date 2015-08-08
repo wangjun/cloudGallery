@@ -1,33 +1,22 @@
 {% extends '../layouts/layout.html' %}
-
-{% block title %}{{ title }}{% endblock %}
-
 {% block css %}
-	<link href="/css/users/login.css" rel="stylesheet">
+    <link rel="stylesheet" href="/css/users/phone/login.css"/>
 {% endblock %}
-
+{% block js %}
+    <script src="/js/users/login.js"></script>
+{% endblock %}
 {% block body %}
-	<div class="container shadow-box" id="login-wrapper">
-		<form method="POST" action="/users/login" id="login-form">
-			<h1 id="login-title">Welcome back!</h1>
-			<hr/>
-			<input type="hidden" name="_csrf" value="{{ csrfToken }}">
-			<div class="form-group">
-					<input type="text" name="mobile" class="form-control" id="inputEmail" placeholder="手机号码">
-			</div>
-			<div class="form-group">
-					<input type="password" name="password" class="form-control" id="inputPassword" placeholder="密码">
-			</div>
-			<div class="form-group">
-				<div class="checkbox">
-					<label>
-						<input name="remember" type="checkbox">记住我
-					</label>
-				</div>
-			</div>
-			<div class="form-group">
-					<button type="submit" class="btn btn-primary btn-block">登陆</button>
-			</div>
-		</form>
-	</div>
+<div class="ui center aligned grid">
+    <div class="column" id="choose-login">
+        <h2 class="ui header">
+            <i class="sign in icon"></i>
+            <div class="content">
+                任意选择一种登录方式
+            </div>
+        </h2>
+        <div class="ui divider"></div>
+        <a href="/users/email/login" class="ui black button"><i class="mail outline icon"></i>邮箱</a>
+        <a href="/users/phone/login" class="ui disabled button" id="phone-login"><i class="mobile icon"></i>手机</a>
+    </div>
+</div>
 {% endblock %}
