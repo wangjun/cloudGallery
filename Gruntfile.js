@@ -21,7 +21,7 @@ module.exports = function (grunt) {
                     cwd: '<%= config.assets %>/less/',
                     dest: '<%= config.assets %>/css/',
                     ext: '.css',
-                    src: '**/*.less',
+                    src: ['**/*.less', '!variables/**/*.less', '!mixins/**/*.less'],
                     expand: true
                 }]
             }

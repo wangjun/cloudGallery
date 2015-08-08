@@ -1,14 +1,14 @@
 {% extends '../layouts/layout.html' %}
 
 {% block css %}
-    <link rel="stylesheet" href="/css/users/email-register/email-sent.css"/>
+    <link rel="stylesheet" href="/css/users/email/sent.css"/>
 {% endblock %}
 {% block title %}成功发送验证邮件 | LazyCoffee{% endblock %}
 {% block body %}
-<div class="ui center aligned grid">
-    <div class="column" id="email-sent">
-        <form class="ui form">
-            <h1>我们给你发了封邮件</h1>
+    {% include '../blocks/email-register-step.html' %}
+    <div id="email-sent">
+        <div>
+            <h2 class="ui header">我们给你发了封邮件</h2>
             <hr/>
             <p>
                 邮件里面有验证链接，请在当前浏览器打开该链接，并按提示继续完成注册。
@@ -16,7 +16,6 @@
             <p>
                 <a href="/" class="ui black basic button">返回首页</a>
             </p>
-        </form>
+        </div>
     </div>
-</div>
 {% endblock %}

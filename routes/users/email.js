@@ -9,7 +9,8 @@ var validator = require('validator');
 /* email register */
 router.get('/register', function (req, res) {
     var frontValue = {
-        title: '使用邮箱注册 - 第一步'
+        title: '使用邮箱注册 - 第一步',
+        step: 'step1'
     };
     res.render('users/email_register', frontValue);
 });
@@ -67,7 +68,8 @@ router.post('/register', function (req, res, next) {
 /* email sent page */
 router.get('/sent', function (req, res) {
     var fontValues = {
-        title: '验证邮件发送成功！'
+        title: '验证邮件发送成功！',
+        step: 'step2'
     };
     res.render('users/email-sent', fontValues);
 });
@@ -78,7 +80,8 @@ router.get('/register/step2/:code', function (req, res) {
 
     function resToStep2() {
         let frontValue = {
-            title: '注册 - 第二步'
+            title: '邮箱注册 - 第三步',
+            step: 'step3'
         };
         res.render('users/email-register-step2', frontValue);
     }

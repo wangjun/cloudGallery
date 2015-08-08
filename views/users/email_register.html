@@ -8,26 +8,25 @@
 
 {% block js %}
     <script type="text/javascript" src="/vendor/validator-js/validator.min.js"></script>
-    <script type="text/javascript" src="/js/users/register/email-register.js"></script>
+    <script type="text/javascript" src="/js/users/email/email-register.js"></script>
 {% endblock %}
 
 {% block body %}
-    <div class="ui center aligned grid">
-        <div class="column" id="email-register">
-            <form class="ui form" method="POST" id="email-register-form" action="/users/email/register">
-                <h2 class="ui header">
-                    <div class="content">
-                        邮箱注册 <a class="ui tag label">第一步</a>
-                    </div>
-                </h2>
-                <div class="ui divider"></div>
-                <div class="field">
-                    <input type="text" name="email" id="email-register-input" placeholder="邮箱地址"/>
+    {% include '../blocks/email-register-step.html' %}
+    <div id="email-register">
+        <form class="ui form" method="POST" id="email-register-form" action="/users/email/register">
+            <h2 class="ui header">
+                <div class="content">
+                    请填写你的邮箱地址
                 </div>
-                <div class="field">
-                    <button class="ui button black fluid" type="submit" id="email-register-next-btn" disabled>下一步</button>
-                </div>
-            </form>
-        </div>
+            </h2>
+            <div class="ui divider"></div>
+            <div class="field">
+                <input type="email" name="email" id="email-register-input" placeholder="邮箱地址"/>
+            </div>
+            <div class="field">
+                <button class="ui button black fluid" type="submit" id="email-register-next-btn" disabled>下一步</button>
+            </div>
+        </form>
     </div>
 {% endblock %}

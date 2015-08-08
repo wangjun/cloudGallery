@@ -25,9 +25,8 @@ $(document).ready(function () {
         submit();
     });
     var isPopup = false;
-    $emailInput.on('keypress', function (event) {
+    $emailInput.on('input', function (event) {
         if(event.keyCode === '13'){
-            event.preventDefault();
             submit();
         }else{
             var inputVal = $emailInput.val();

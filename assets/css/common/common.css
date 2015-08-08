@@ -14,15 +14,20 @@ html {
 .ui.form input[type=tel],
 .ui.form input[type=time],
 .ui.form input[type=url],
-.ui.form input[type=number] {
+.ui.form input[type=number],
+.ui.text.container,
+.ui.button,
+.ui.steps .step .title {
   font-family: "Microsoft Yahei", sans-serif;
 }
-.ui.form .field > label {
+.ui.form .field > label,
+.ui.button,
+.ui.steps .step .title {
   font-weight: 400;
 }
 body {
   font-family: "Microsoft Yahei", sans-serif;
-  margin-bottom: 60px;
+  padding-bottom: 55px;
 }
 h1,
 h2,

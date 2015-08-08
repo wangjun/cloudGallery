@@ -1,0 +1,61 @@
+<div class="email-register-step">
+    <div class="ui ordered steps" id="email-register-step1">
+        {# step1 #}
+        {% if step == 'step1' %}
+            <div class="active step">
+                <div class="content">
+                    <div class="title">填写邮箱地址</div>
+                    <div class="description">此邮箱地址将会是你的登录账号</div>
+                </div>
+            </div>
+        {% else %}
+            <div class="completed step">
+                <div class="content">
+                    <div class="title">填写邮箱地址</div>
+                    <div class="description">此邮箱地址将会是你的登录账号</div>
+                </div>
+            </div>
+        {% endif %}
+        {# step2 #}
+        {% if step == 'step2' %}
+            <div class="active step">
+                <div class="content">
+                    <div class="title">查收验证邮件</div>
+                    <div class="description">在当前浏览器打开邮件内链接</div>
+                </div>
+            </div>
+        {% else %}
+            {% if step == 'step1' %}
+                <div class="step">
+                    <div class="content">
+                        <div class="title">查收验证邮件</div>
+                        <div class="description">在当前浏览器打开邮件内链接</div>
+                    </div>
+                </div>
+            {% else %}
+                <div class="completed step">
+                    <div class="content">
+                        <div class="title">查收验证邮件</div>
+                        <div class="description">在当前浏览器打开邮件内链接</div>
+                    </div>
+                </div>
+            {% endif %}
+        {% endif %}
+        {# step3 #}
+        {% if step == 'step3' %}
+            <div class="active step">
+                <div class="content">
+                    <div class="title">填写密码</div>
+                    <div class="description">输入一个6-20位的密码</div>
+                </div>
+            </div>
+        {% else %}
+            <div class="step">
+                <div class="content">
+                    <div class="title">填写密码</div>
+                    <div class="description">输入一个6-20位的密码</div>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+</div>

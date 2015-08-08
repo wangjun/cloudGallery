@@ -12,137 +12,137 @@
 </head>
 <body>
 <div class="pusher">
-<div class="ui container" id="header1">
-    {% block nav %}
-        <div class="ui secondary large pointing menu">
-            <a class="active item" href="/">
-                LazyCoffee云相册
-            </a>
-            <div class="right menu">
-                {% if session.user %}
-                    <a href="/my-gallery" class="item">
-                        <i class="cloud icon"></i>我的相册
-                    </a>
-                    {% if session.user.type == 'admin' %}
-                        <a href="/admin" class="ui item"><i class="spy icon"></i>管理后台</a>
+    <div class="ui container" id="header1">
+        {% block nav %}
+            <div class="ui secondary large pointing menu">
+                <a class="active item" href="/">
+                    LazyCoffee云相册
+                </a>
+                <div class="right menu">
+                    {% if session.user %}
+                        <a href="/my-gallery" class="item">
+                            <i class="cloud icon"></i>我的相册
+                        </a>
+                        {% if session.user.type == 'admin' %}
+                            <a href="/admin" class="ui item"><i class="spy icon"></i>管理后台</a>
+                        {% endif %}
+                        <a href="/users/logout" class="item"><i class="sign out icon"></i>退出</a>
+                    {% else %}
+                        <a class="ui item" href="/users/email/register">
+                            注册
+                        </a>
+                        <a href="/users/email/login" class="ui item">
+                            登录
+                        </a>
                     {% endif %}
-                    <a href="/users/logout" class="item"><i class="sign out icon"></i>退出</a>
-                {% else %}
-                    <a class="ui item" href="/users/email/register">
-                        注册
-                    </a>
-                    <a href="/users/email/login" class="ui item">
-                        登录
-                    </a>
+                </div>
+            </div>
+        {% endblock %}
+    </div>
+    {% block flashMessages %}
+        {% if messages.success or messages.info or messages.warning or messages.danger %}
+            <div class="ui container" id="messages">
+                {% if messages.base %}
+                    {% for msg in messages.base %}
+                        <div class="ui message">
+                            <div class="header">
+                                提示
+                            </div>
+                            <p>{{ msg }}</p>
+                        </div>
+                    {% endfor %}
                 {% endif %}
+                {% if messages.success %}
+                    {% for msg in messages.success %}
+                        <div class="ui success message">
+                            <i class="close icon"></i>
+
+                            <div class="header">
+                                成功
+                            </div>
+                            <p>{{ msg }}</p>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+                {% if messages.info %}
+                    {% for msg in messages.info %}
+                        <div class="ui info message">
+                            <i class="close icon"></i>
+
+                            <div class="header">
+                                温馨提示
+                            </div>
+                            <p>{{ msg|safe }}</p>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+                {% if messages.warning %}
+                    {% for msg in messages.warning %}
+                        <div class="ui warning message">
+                            <i class="close icon"></i>
+
+                            <div class="header">
+                                提示
+                            </div>
+                            <p>
+                                {{ msg }}
+                            </p>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+                {% if messages.danger %}
+                    {% for msg in messages.danger %}
+                        <div class="ui negative message">
+                            <i class="close icon"></i>
+
+                            <div class="header">
+                                错误
+                            </div>
+                            <p>{{ msg }}</p>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            </div>
+        {% endif %}
+    {% endblock %}
+
+    {% block body %}
+    {% endblock %}
+
+    {% block footer %}{% endblock %}
+    {% block modal %}
+        <div class="ui modal" id="modal">
+            <i class="close icon"></i>
+            <div class="header">
+                {% block modalTitle %}{% endblock %}
+            </div>
+            <div class="content">
+                {% block modalBody %}{% endblock %}
+            </div>
+            <div class="actions">
+                <div class="ui black deny button">
+                    关闭
+                </div>
+                <div class="ui positive right labeled icon button">
+                    确定
+                </div>
             </div>
         </div>
     {% endblock %}
-</div>
-{% block flashMessages %}
-    {% if messages.success or messages.info or messages.warning or messages.danger %}
-        <div class="ui container" id="messages">
-            {% if messages.base %}
-                {% for msg in messages.base %}
-                    <div class="ui message">
-                        <div class="header">
-                            提示
-                        </div>
-                        <p>{{ msg }}</p>
-                    </div>
-                {% endfor %}
-            {% endif %}
-            {% if messages.success %}
-                {% for msg in messages.success %}
-                    <div class="ui success message">
-                        <i class="close icon"></i>
-
-                        <div class="header">
-                            成功
-                        </div>
-                        <p>{{ msg }}</p>
-                    </div>
-                {% endfor %}
-            {% endif %}
-            {% if messages.info %}
-                {% for msg in messages.info %}
-                    <div class="ui info message">
-                        <i class="close icon"></i>
-
-                        <div class="header">
-                            温馨提示
-                        </div>
-                        <p>{{ msg|safe }}</p>
-                    </div>
-                {% endfor %}
-            {% endif %}
-            {% if messages.warning %}
-                {% for msg in messages.warning %}
-                    <div class="ui warning message">
-                        <i class="close icon"></i>
-
-                        <div class="header">
-                            提示
-                        </div>
-                        <p>
-                            {{ msg }}
-                        </p>
-                    </div>
-                {% endfor %}
-            {% endif %}
-            {% if messages.danger %}
-                {% for msg in messages.danger %}
-                    <div class="ui negative message">
-                        <i class="close icon"></i>
-
-                        <div class="header">
-                            错误
-                        </div>
-                        <p>{{ msg }}</p>
-                    </div>
-                {% endfor %}
-            {% endif %}
-        </div>
-    {% endif %}
-{% endblock %}
-
-{% block body %}
-{% endblock %}
-
-{% block footer %}{% endblock %}
-{% block modal %}
-    <div class="ui modal" id="modal">
-        <i class="close icon"></i>
-        <div class="header">
-            {% block modalTitle %}{% endblock %}
-        </div>
-        <div class="content">
-            {% block modalBody %}{% endblock %}
-        </div>
-        <div class="actions">
-            <div class="ui black deny button">
-                关闭
+    {% block alertModal %}
+        <div class="ui modal" id="alertModal">
+            <i class="close icon"></i>
+            <div class="header">
             </div>
-            <div class="ui positive right labeled icon button">
-                确定
+            <div class="content">
+            </div>
+            <div class="actions">
+                <div class="ui black deny button">
+                    关闭
+                </div>
             </div>
         </div>
-    </div>
-{% endblock %}
-{% block alertModal %}
-    <div class="ui modal" id="alertModal">
-        <i class="close icon"></i>
-        <div class="header">
-        </div>
-        <div class="content">
-        </div>
-        <div class="actions">
-            <div class="ui black deny button">
-                关闭
-            </div>
-        </div>
-    </div>
-{% endblock %}
+    {% endblock %}
 </div>
 <script src="/vendor/jquery/dist/jquery.min.js"></script>
 <script src="/vendor/semantic-ui/dist/semantic.min.js"></script>
