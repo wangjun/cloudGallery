@@ -2,29 +2,6 @@ html {
   position: relative;
   min-height: 100%;
 }
-.ui.header,
-.ui.menu,
-.ui.form input:not([type]),
-.ui.form input[type=text],
-.ui.form input[type=email],
-.ui.form input[type=search],
-.ui.form input[type=password],
-.ui.form input[type=date],
-.ui.form input[type=datetime-local],
-.ui.form input[type=tel],
-.ui.form input[type=time],
-.ui.form input[type=url],
-.ui.form input[type=number],
-.ui.text.container,
-.ui.button,
-.ui.steps .step .title {
-  font-family: "Microsoft Yahei", sans-serif;
-}
-.ui.form .field > label,
-.ui.button,
-.ui.steps .step .title {
-  font-weight: 400;
-}
 .ui.header > .icon {
   padding-top: 0;
 }
@@ -62,17 +39,6 @@ img {
 }
 .shadow-box {
   box-shadow: 1px 2px 10px #ddd;
-}
-.wizard {
-  position: relative;
-}
-.wizard > [data-step] {
-  position: absolute;
-  display: none;
-  width: 100%;
-}
-.wizard > .active {
-  display: block;
 }
 .spin {
   animation-name: spin;

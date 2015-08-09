@@ -1,68 +1,55 @@
-'use strict';
 $(document).ready(function () {
+    'use strict';
     //init dom
     var $uploadButton = $('#upload-button');
-    var $uploadBox = $('#upload-box');
     var $uploadInput = $('#upload-input');
     var $images = $('#images');
-    var $lovelyLink = $('#lovely-link');
-    var $lovelyLinkModal = $('#lovely-link-modal');
     var $removeImageButton = $('#remove-image-button');
     var $showImageModal = $('#show-image-modal');
     var $galleryId = $('#gallery-id');
     var galleryId = $galleryId.data('galleryId');
-    //images uploader
-    (function () {
-        //trigger input click event
-        $uploadBox.on('click', function (event) {
-            event.preventDefault();
-            $uploadInput.trigger('click');
-        });
-        $uploadButton.on('click', function (event) {
-            event.preventDefault();
-            $uploadInput.trigger('click');
-        });
-        $uploadInput.on('change', function () {
-            var files = this.files;
-            for (var i = 0; i < files.length; i++) {
-                var file = files[i];
-                var imageUploader = new Uploader(file, $images);
-                imageUploader.upload();
-            }
-        });
-    })();
-    //lovely link
-    $lovelyLink.on('click', function (event) {
+    /* images uploader */
+    //trigger input click event
+    //var $uploadBox = $('#upload-box');
+    //$uploadBox.on('click', function (event) {
+    //    event.preventDefault();
+    //    $uploadInput.trigger('click');
+    //});
+    $uploadButton.on('click', function (event) {
         event.preventDefault();
-        $lovelyLinkModal.modal('show');
+        $uploadInput.trigger('click');
     });
+    $uploadInput.on('change', function () {
+        var files = this.files;
+        for (var i = 0; i < files.length; i++) {
+            var file = files[i];
+            var imageUploader = new Uploader(file, $images);
+            imageUploader.upload();
+        }
+    });
+    //var $lovelyLink = $('#lovely-link');
+    //var $lovelyLinkModal = $('#lovely-link-modal');
+    ////lovely link
+    //$lovelyLink.on('click', function (event) {
+    //    event.preventDefault();
+    //    $lovelyLinkModal.modal('show');
+    //});
 
     //show image
     var imgSrc;
-    var $modalImg;
-    var $modalBody = $showImageModal.find('.modal-body');
-    $(document).on('click', '.thumbnail', function (event) {
+    $(document).on('click', '.card', function (event) {
         event.preventDefault();
         if($(this).hasClass('uploading')){
-            window.alertModal('上传中，请稍等~');
+            window.alertModal('上传中，请耐心等待...');
         }else{
             var fileName = $(this).attr('data-name');
             imgSrc = '//cdn.lazycoffee.com/' + $(this).attr('data-key') + '_w868';
-            $modalImg = $('<img src="' + imgSrc + '" alt="' + fileName + '" />').hide();
             var key = $(this).attr('data-key');
-            $modalBody.html('<span class="glyphicon glyphicon-refresh spin" aria-hidden="true"></span>');
             $showImageModal.find('[data-key]').attr('data-key', key);
-            $showImageModal.find('.modal-title').text(fileName);
+            $showImageModal.find('.header').text(fileName);
+            $showImageModal.find('img').attr('src', imgSrc);
             $showImageModal.modal('show');
         }
-    });
-    $showImageModal.on('shown.bs.modal', function () {
-        $modalBody.html('').prepend($modalImg);
-        $showImageModal.imagesLoaded(function () {
-            var windowHeight = $(window).height();
-            $modalImg.css({'max-height': windowHeight - 150});
-            $modalImg.slideDown();
-        });
     });
     //remove image
     $(document).on('click', '[data-action=deleteItem]', function (event) {
@@ -85,6 +72,5 @@ $(document).ready(function () {
     });
     $showImageModal.on('hidden.bs.modal', function () {
         $removeImageButton.text('删除').prop('disabled', false);
-        $modalBody.html('<span class="glyphicon glyphicon-refresh spin" aria-hidden="true"></span>');
     });
 });

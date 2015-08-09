@@ -6,7 +6,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     {% block meta %}{% endblock %}
     <title>{% block title %}{{ title }} | LazyCoffee{% endblock %}</title>
-    <link rel="stylesheet" href="/vendor/semantic-ui/dist/semantic.min.css">
+    {#<link rel="stylesheet" href="/vendor/semantic-ui/dist/semantic.min.css">#}
+    <link rel="stylesheet" href="/semantic/dist/semantic.min.css"/>
     <link href="/css/common/common.css" rel="stylesheet">
     {% block css %}{% endblock %}
 </head>
@@ -133,6 +134,7 @@
         <div class="ui modal" id="alertModal">
             <i class="close icon"></i>
             <div class="header">
+                提示
             </div>
             <div class="content">
             </div>

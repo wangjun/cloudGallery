@@ -76,11 +76,11 @@ module.exports = function (grunt) {
             },
             css: {
                 files: ['assets/less/**/*'],
-                tasks: ['css']
+                tasks: ['newer:less', 'newer:postcss', 'newer:cssmin']
             },
             js: {
                 files: ['assets/js/**/*'],
-                tasks: ['uglify']
+                tasks: ['newer:uglify']
             }
         }
     });
@@ -92,6 +92,7 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks('grunt-contrib-cssmin');
     grunt.loadNpmTasks('grunt-contrib-uglify');
     grunt.loadNpmTasks('grunt-contrib-watch');
+    grunt.loadNpmTasks('grunt-newer');
     //custom tasks
     grunt.registerTask('fresh', ['clean', 'copy']);
     grunt.registerTask('css', ['less', 'postcss', 'cssmin']);
