@@ -26,27 +26,21 @@
             <input id="upload-input" multiple type="file"/>
         </form>
         <div>
-            <div class="btn-group">
-                <button id="upload-button" class="btn btn-primary">上传照片</button>
+            <button id="upload-button" class="ui button blue">上传照片</button>
+            {% if session.user %}
+            <div class="ui dropdown button">
+                <div class="text">分享相册</div>
+                <i class="dropdown icon"></i>
+                <div class="menu">
+                    <div class="item" id="lovely-link">简洁链接</div>
+                    <div class="item">微信朋友圈</div>
+                    <div class="item">新浪微博</div>
+                    <div class="item">微信</div>
+                </div>
             </div>
-            <div class="btn-group" id="share-btn">
-                <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true"
-                        aria-expanded="false">
-                    分享相册 <span class="caret"></span>
-                </button>
-                <ul class="dropdown-menu">
-                    <li><a href="#" id="lovely-link">易记链接</a></li>
-                    <li><a href="#">微信朋友圈</a></li>
-                    <li><a href="#">新浪微博</a></li>
-                    <li><a href="#">微信</a></li>
-                </ul>
-            </div>
-            <div class="btn-group">
-                <button type="button" class="btn btn-default">设置相册头像</button>
-            </div>
-            <div class="btn-group">
-                <button type="button" class="btn btn-default">设置相册背景</button>
-            </div>
+            {% endif %}
+            <button class="ui button">设置相册头像</button>
+            <button class="ui button">设置相册背景</button>
         </div>
         <div class="ui divider"></div>
         <div class="row" id="images">

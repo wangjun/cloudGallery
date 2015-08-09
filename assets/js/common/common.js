@@ -11,5 +11,7 @@ $(document).ready(function () {
         $alertModal.find('.modal-body').html('');
         $alertModal.find('#alertModalLabel').text('提示');
     });
+    //enable semantic ui features
     $('.ui.checkbox').checkbox();
+    $('.ui.dropdown').dropdown();
 });
