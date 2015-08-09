@@ -78,7 +78,7 @@ router.get('/register', csrfProtection, function (req, res) {
         csrfToken: req.csrfToken(),
         title: '注册'
     };
-    res.render('users/register', frontValue);
+    res.render('users/phone/register', frontValue);
 });
 
 /* phone register processor */
@@ -99,7 +99,7 @@ router.post('/register', parseForm, csrfProtection, function (req, res, next) {
         errors.forEach(function (error) {
             req.flash('warning', error.msg);
         });
-        res.redirect('/users/register');
+        res.redirect('/users/phone/register');
     } else {
         var newUser = new Users({
             mobile: userMobile,

@@ -91,7 +91,7 @@ router.post('/remove', function (req, res, next) {
                         }else{
                             res.json({
                                 state: 4,
-                                msg: 'We found the gallery and we gonna to remove it. But faild.' +
+                                msg: 'We found the gallery and we gonna to remove it. But failed.' +
                                 'probably because the database error.'
                             });
                         }

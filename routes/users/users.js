@@ -25,6 +25,13 @@ router.get('/login', function (req, res) {
     };
     res.render('users/login', frontValue);
 });
+/* get register page */
+router.get('/register', function (req, res) {
+    var frontValue = {
+        title: '选择一种注册方式'
+    };
+    res.render('users/register', frontValue);
+});
 /* logout */
 router.get('/logout', function (req, res) {
     var sess = req.session;

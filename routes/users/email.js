@@ -12,7 +12,7 @@ router.get('/register', function (req, res) {
         title: '使用邮箱注册 - 第一步',
         step: 'step1'
     };
-    res.render('users/email_register', frontValue);
+    res.render('users/email/register', frontValue);
 });
 
 router.post('/register', function (req, res, next) {
@@ -71,7 +71,7 @@ router.get('/sent', function (req, res) {
         title: '验证邮件发送成功！',
         step: 'step2'
     };
-    res.render('users/email-sent', fontValues);
+    res.render('users/email/sent', fontValues);
 });
 
 /* email register next step page(after email verification)  */
@@ -83,7 +83,7 @@ router.get('/register/step2/:code', function (req, res) {
             title: '邮箱注册 - 第三步',
             step: 'step3'
         };
-        res.render('users/email-register-step2', frontValue);
+        res.render('users/email/register-password', frontValue);
     }
     if (req.session.isEmailVerified) {
         resToStep2();
@@ -110,7 +110,7 @@ router.post('/register/step2', function (req, res, next) {
             errors.forEach(function (error) {
                 req.flash('warning', error.msg);
             });
-            res.redirect('/users/email-register');
+            res.redirect('/users/email/register');
         } else {
             Users.findOne({email: email})
                 .exec(function (findErr, foundUser) {
@@ -164,7 +164,7 @@ router.get('/login', function (req, res) {
     var frontValues = {
         title: '使用邮箱地址登录LazyCoffee'
     };
-    res.render('users/email_login', frontValues);
+    res.render('users/email/login', frontValues);
 });
 
 

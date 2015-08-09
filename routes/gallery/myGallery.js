@@ -5,7 +5,6 @@ var Galleries = require('../../model/galleries');
 var mongoose = require('mongoose');
 var ObjectId = mongoose.Types.ObjectId;
 var moment = require('moment');
-var handyObject = require('../../lib/handy/object');
 
 router.get('/', function (req, res, next) {
     var user = req.session.user;
@@ -21,8 +20,9 @@ router.get('/', function (req, res, next) {
                     galleries[i] = foundGalleries[i];
                     galleries[i].date = date;
                 }
-                res.render('gallery/myGallery.html', {
-                    galleries: galleries
+                res.render('gallery/myGallery', {
+                    galleries: galleries,
+                    title: '我的相册'
                 });
             });
     }else{

@@ -25,6 +25,9 @@ html {
 .ui.steps .step .title {
   font-weight: 400;
 }
+.ui.header > .icon {
+  padding-top: 0;
+}
 body {
   font-family: "Microsoft Yahei", sans-serif;
   padding-bottom: 55px;

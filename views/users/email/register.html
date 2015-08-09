@@ -1,4 +1,4 @@
-{% extends '../layouts/layout.html' %}
+{% extends '../../layouts/layout.html' %}
 
 {% block css %}
     <link rel="stylesheet" href="/css/users/email/register.css"/>
@@ -12,10 +12,11 @@
 {% endblock %}
 
 {% block body %}
-    {% include '../blocks/email-register-step.html' %}
+    {% include '../../blocks/email-register-step.html' %}
     <div id="email-register">
         <form class="ui form" method="POST" id="email-register-form" action="/users/email/register">
             <h2 class="ui header">
+                <i class="mail outline icon"></i>
                 <div class="content">
                     请填写你的邮箱地址
                 </div>

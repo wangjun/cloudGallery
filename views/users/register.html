@@ -1,5 +1,19 @@
 {% extends '../layouts/layout.html' %}
-
+{% block css %}
+    <link rel="stylesheet" href="/css/users/register.css"/>
+{% endblock %}
 {% block body %}
-
+    <div class="ui center aligned grid">
+        <div class="column" id="choose-register">
+            <h2 class="ui header">
+                <i class="add user icon"></i>
+                <div class="content">
+                    任意选择一种注册方式
+                </div>
+            </h2>
+            <div class="ui divider"></div>
+            <a href="/users/email/register" class="ui black button"><i class="mail outline icon"></i>邮箱</a>
+            <a href="/users/phone/register" class="ui disabled button" id="phone-login"><i class="mobile icon"></i>手机</a>
+        </div>
+    </div>
 {% endblock %}

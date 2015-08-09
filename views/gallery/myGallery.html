@@ -1,13 +1,11 @@
 {% extends '../layouts/layout.html' %}
-
 {% block css %}
     <link rel="stylesheet" href="/css/gallery/my-gallery.css"/>
 {% endblock %}
-
 {% block js %}
     <script src="/js/gallery/my-gallery.js"></script>
 {% endblock %}
-
+{% block title %}我的相册 | LazyCoffee{% endblock %}
 {% block body %}
     <div class="ui container">
         {% if galleries.length %}
@@ -15,9 +13,9 @@
                 <a href="/gallery/add" class="ui button primary"><i class="plus icon"></i>新增相册</a>
             </div>
             <div class="ui divider"></div>
-            <div class="ui link cards">
+            <div class="ui cards">
                 {% for item in galleries %}
-                    <div class="card">
+                    <div class="card" id="{{ item._id }}">
                         <div class="image">
                             {% if item.thumbnail %}
                                 <img src="{{ item.thumbnail.url }}" alt="{{ item.thumbnail.name }}">
@@ -28,7 +26,7 @@
                         <div class="content">
                             <div class="header">{{ item.title }}</div>
                             <div class="meta">
-                                <a>{{ item.date }}</a>
+                                <span>{{ item.date }}</span>
                             </div>
                             <div class="description">
                                 {% if item.story %}
@@ -36,12 +34,16 @@
                                 {% endif %}
                             </div>
                         </div>
-                        <div class="extra content">
-                            <a href="/gallery/{{ item.id }}" class="ui button">查看相册</a>
-                            <div class="ui button other-features-btn"
-                                    data-gallery="{{ item._id }}">
-                                选项
+                        <div class="ui three bottom attached buttons">
+                            <div class="ui button other-features-btn" data-gallery="{{ item._id }}">
+                                <i class="setting icon"></i>选项
                             </div>
+                            <div class="ui button">
+                                <i class="share alternate icon"></i>分享
+                            </div>
+                            <a href="/gallery/{{ item.id }}" class="ui black button">
+                                <i class="exchange icon"></i>查看
+                            </a>
                         </div>
                     </div>
                 {% endfor %}
@@ -57,7 +59,7 @@
         <div class="content">
             <div>
                 <div class="ui button red remove-gallery-btn">
-                    删除相册
+                    <i class="trash outline icon"></i>删除相册
                 </div>
             </div>
         </div>
@@ -79,7 +81,8 @@
         </div>
         <div class="actions">
             <div class="ui black deny button">关闭</div>
-            <div class="ui button red" id="remove-gallery-confirmed">确认删除</div>
+            <div class="ui button red loading disabled" id="remove-gallery-confirmed"><i class="trash outline icon"></i>确认删除</div>
+            {#<div class="ui button loading red" id="remove-gallery-confirmed">loading</div>#}
         </div>
     </div>
 {% endblock %}
