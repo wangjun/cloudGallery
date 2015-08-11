@@ -1,8 +1,10 @@
 {% extends '../layouts/layout.html' %}
+{% block title %}管理后台 | LazyCoffee{% endblock %}
 {% block body %}
-<div class="container">
-	<h1>LazyCoffee管理后台</h1>
+<div class="ui container">
+	<h1>管理后台</h1>
 	<hr/>
-	<a class="btn btn-default" href="/admin/users" role="button">用户管理</a>
+	<a class="ui button" href="/admin/user" role="button">用户管理</a>
+    <a href="/admin/gallery" class="ui button">相册管理</a>
 </div>
 {% endblock %}

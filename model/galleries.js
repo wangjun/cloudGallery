@@ -1,5 +1,6 @@
 'use strict';
 var mongoose = require('mongoose');
+var moment = require('moment');
 
 var Schema = mongoose.Schema;
 
@@ -14,6 +15,14 @@ var galleriesSchema = new Schema({
     images: [{type: Schema.Types.ObjectId, ref: 'Images'}]
 });
 
+galleriesSchema.virtual('createDate')
+    .get(function () {
+        return moment(this.createTime).format('YYYY年M月DD日');
+    });
+galleriesSchema.virtual('updateDate')
+    .get(function () {
+        return moment(this.updateTime).format('YYYY年M月DD日');
+    });
 
 var Galleries = mongoose.model('Galleries', galleriesSchema);
 

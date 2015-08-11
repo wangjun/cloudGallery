@@ -1,6 +1,47 @@
 {% extends '../../layouts/layout.html' %}
-
+{% block title %}相册管理 | LazyCoffee{% endblock %}
 {% block body %}
-<div class="container">
-    <table class="table"></table>
+<div class="ui container">
+    <h1>相册管理</h1>
+    <table class="ui small compact striped celled table selectable">
+        <thead>
+        <tr>
+            <th class="one wide">Id</th>
+            <th class="two wide">title</th>
+            <th class="four wide">story</th>
+            <th class="two wide">images</th>
+            <th class="two wide">thumbnail</th>
+            <th class="one wide">createTime</th>
+            <th class="one wide">updateTime</th>
+            <th class="one wide">owner</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for gallery in galleries %}
+            <tr>
+                <td>{{ gallery._id }}</td>
+                <td>{{ gallery.title }}</td>
+                <td>{{ gallery.story }}</td>
+                <td>
+                    {% for image in gallery.images %}
+                        {{ image._id }}:{{ image.title }}{% if not loop.last %}<br>{% endif %}
+                    {% endfor %}
+                </td>
+                <td>
+                    {{ gallery.thumbnail._id }}
+                </td>
+                <td>
+                    {{ gallery.createDate }}
+                </td>
+                <td>
+                    {{ gallery.updateDate }}
+                </td>
+                <td>
+                    {{ gallery.owner._id }}:{{ gallery.owner.email }}
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
 </div>
+{% endblock %}

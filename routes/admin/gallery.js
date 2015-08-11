@@ -3,13 +3,15 @@ var express = require('express');
 var Galleries = require('../../model/galleries');
 var router = express.Router();
 
-router.get('/gallery', function (req, res, next) {
+router.get('/', function (req, res, next) {
     Galleries.find()
         .populate('images')
+        .populate('owner')
         .exec(function (findGalleriesErr, foundGalleries) {
         if(findGalleriesErr){return next(findGalleriesErr); }
         if(foundGalleries){
-            res.render('admin/galleries.html', foundGalleries);
+            console.log(foundGalleries);
+            res.render('admin/galleries/galleries.html', {galleries: foundGalleries});
         }
     });
 });
