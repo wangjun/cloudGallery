@@ -11,8 +11,16 @@ var imagesSchema = new Schema({
     fileName: { type: String},
     belongGalleries: [{ type: Schema.Types.ObjectId, ref: 'Galleries'}],
     createTime: { type: Date, 'default': Date.now },
-    owners: [{ type: Schema.Types.ObjectId, ref: 'Users'}]
+    owners: [{ type: Schema.Types.ObjectId, ref: 'Users'}],
+    state: {
+        fsize: {type: Number},
+        hash: {type: String},
+        mimeType: {type: String},
+        putTime: {type: Number}
+    }
 });
+
+
 
 
 var Images = mongoose.model('Images', imagesSchema);

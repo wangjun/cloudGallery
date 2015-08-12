@@ -1,6 +1,7 @@
 'use strict';
 var express = require('express');
 var Galleries = require('../../model/galleries');
+var image = require('../../lib/gallery/image');
 var router = express.Router();
 
 router.get('/', function (req, res, next) {
@@ -10,7 +11,11 @@ router.get('/', function (req, res, next) {
         .exec(function (findGalleriesErr, foundGalleries) {
         if(findGalleriesErr){return next(findGalleriesErr); }
         if(foundGalleries){
-            console.log(foundGalleries);
+            foundGalleries.forEach(function (foundGallery) {
+                foundGallery.images.forEach(function (foundImage) {
+                    image.getState(foundImage._id);
+                });
+            });
             res.render('admin/galleries/galleries.html', {galleries: foundGalleries});
         }
     });

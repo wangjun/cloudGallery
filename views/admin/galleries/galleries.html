@@ -20,7 +20,7 @@
                 <td>{{ gallery._id }}</td>
                 <td>
                     {% for image in gallery.images %}
-                        {{ image._id }}:{{ image.hash }}{% if not loop.last %}<br>{% endif %}
+                        {{ image.key }}{% if not loop.last %}<br>{% endif %}
                     {% endfor %}
                 </td>
                 <td>
