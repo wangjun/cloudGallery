@@ -74,13 +74,14 @@ router.get('/sent', function (req, res) {
     res.render('users/email/sent', fontValues);
 });
 
+
 /* email register next step page(after email verification)  */
-router.get('/register/step2/:code', function (req, res) {
+router.get('/register/password/:code', function (req, res) {
     var code = req.params.code;
 
     function resToStep2() {
         let frontValue = {
-            title: '邮箱注册 - 第三步',
+            title: '邮箱注册 - 填写密码',
             step: 'step3'
         };
         res.render('users/email/register-password', frontValue);
@@ -92,25 +93,25 @@ router.get('/register/step2/:code', function (req, res) {
         resToStep2();
     } else {
         req.flash('info', '验证码不正确，是否链接过期了？是否在当前浏览器申请验证邮件？');
-        res.redirect('/users/register');
+        res.redirect('/users/email/register/password/code');
     }
 });
 
 /* email register next step request process */
-router.post('/register/step2', function (req, res, next) {
+router.post('/register/password', function (req, res, next) {
     if (req.session.isEmailVerified) {
         var password = req.body.password;
         var email = req.session.registerEmail;
         req.checkBody('password', '密码不能为空').notEmpty();
-        req.checkBody('password', '密码长度在6-20个字符之间').isLength(6, 20);
+        req.checkBody('password', '密码长度在6-20个字符之间').isLength(8, 20);
         req.checkBody('rePassword', '确认密码不能为空').notEmpty();
         req.checkBody('rePassword', '确认密码必须与密码一致').equals(password);
         var errors = req.validationErrors();
         if (errors) {
             errors.forEach(function (error) {
-                req.flash('warning', error.msg);
+                req.flash('info', error.msg);
             });
-            res.redirect('/users/email/register');
+            res.redirect('/users/email/register/password/code');
         } else {
             Users.findOne({email: email})
                 .exec(function (findErr, foundUser) {
@@ -158,6 +159,10 @@ router.post('/register/step2', function (req, res, next) {
             msg: '尚未通过邮件验证'
         });
     }
+});
+/* register success */
+router.get('/register/success', function (req, res) {
+    res.render('users/email/success');
 });
 /* email login page */
 router.get('/login', function (req, res) {

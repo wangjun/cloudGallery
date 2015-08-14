@@ -3,7 +3,9 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "start": "node ./bin/www"
+    "postinstall": "bower install",
+    "prestart": "npm install",
+    "start": "iojs ./bin/www"
   },
   "dependencies": {
     "ascii-captcha": "^0.0.3",

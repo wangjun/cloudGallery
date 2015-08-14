@@ -1,17 +1,16 @@
 {% extends '../../layouts/layout.html' %}
-
 {% block css %}
-    <link rel="stylesheet" href="/css/users/email/sent.css"/>
+    <link rel="stylesheet" href="/css/users/email/success.css"/>
 {% endblock %}
-{% block title %}成功发送验证邮件 | LazyCoffee{% endblock %}
+{% block title %}注册成功 | LazyCoffee{% endblock %}
 {% block body %}
     {% include '../../blocks/email-register-step.html' %}
-    <div id="email-sent">
+    <div id="success">
         <div>
-            <h2 class="ui header">我们给你发了封邮件</h2>
+            <h2 class="ui header">LazyCoffee用户注册成功</h2>
             <hr/>
             <p>
-                邮件里面有验证链接，请在当前浏览器打开该链接，并按提示继续完成注册。
+                恭喜，你的账户已创建成功！请牢记你的账号和密码哟~
             </p>
             <p>
                 <a href="/" class="ui black basic button">返回首页</a>
