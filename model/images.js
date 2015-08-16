@@ -21,7 +21,6 @@ var imagesSchema = new Schema({
 });
 
 imagesSchema.statics.updateState = function (fsize, hash, mimeType, putTime) {
-    console.log(this);
     console.log(fsize, hash, mimeType, putTime);
 };
 
