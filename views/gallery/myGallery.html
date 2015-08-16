@@ -49,8 +49,18 @@
                 {% endfor %}
             </div>
         {% else %}
-            <p class="text-center" id="no-gallery-text">你还没有创建作何相册，现在立即创建？</p>
-            <p class="text-center"><a class="btn btn-primary" href="/gallery/add">创建相册</a></p>
+            <div id="no-gallery">
+                <h2 class="ui icon header">
+                    <i class="remove circle outline icon"></i>
+                    <div class="content">
+                        没有相册
+                        <div class="sub header">
+                            <p>你还没有创建作何相册，现在立即创建？</p>
+                            <p><a class="ui basic button black" href="/gallery/add">创建相册</a></p>
+                        </div>
+                    </div>
+                </h2>
+            </div>
         {% endif %}
     </div>
     {#other features modal #}

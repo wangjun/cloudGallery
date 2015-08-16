@@ -4,26 +4,28 @@
     <link href="/css/gallery/add.css" type="text/css" rel="stylesheet" />
 {% endblock %}
 {% block body %}
-    <div class="container shadow-box" id="add">
-        <h1>新建相册</h1>
-        <hr/>
-        <form action="/gallery/add" class="form-horizontal" method="post">
-            <input type="hidden" name="_csrf" value="{{ csrfToken }}">
-            <div class="form-group">
-                <div class="col-sm-7">
-                    <input type="text" name="title" class="form-control" placeholder="相册名称，不能为空，至少3个字"/>
+    <div class="ui container" id="add-wrapper">
+        <div id="add">
+            <h1>新建相册</h1>
+            <hr/>
+            <form action="/gallery/add" class="form-horizontal" method="post">
+                <input type="hidden" name="_csrf" value="{{ csrfToken }}">
+                <div class="form-group">
+                    <div class="col-sm-7">
+                        <input type="text" name="title" class="form-control" placeholder="相册名称，不能为空，至少3个字"/>
+                    </div>
                 </div>
-            </div>
-            <div class="form-group">
-                <div class="col-sm-12">
-                    <textarea name="story" id="story" rows="10" class="form-control" placeholder="相册故事，不能为空，至少15个字个"></textarea>
+                <div class="form-group">
+                    <div class="col-sm-12">
+                        <textarea name="story" id="story" rows="10" class="form-control" placeholder="相册故事，不能为空，至少15个字个"></textarea>
+                    </div>
                 </div>
-            </div>
-            <div class="form-group">
-                <div class="col-sm-4">
-                    <button class="btn btn-primary btn-block" type="submit">立即创建</button>
+                <div class="form-group">
+                    <div class="col-sm-4">
+                        <button class="btn btn-primary btn-block" type="submit">立即创建</button>
+                    </div>
                 </div>
-            </div>
-        </form>
+            </form>
+        </div>
     </div>
 {% endblock %}

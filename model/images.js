@@ -1,6 +1,6 @@
 'use strict';
 var mongoose = require('mongoose');
-
+var logs = require('../lib/admin/log');
 var Schema = mongoose.Schema;
 
 var imagesSchema = new Schema({
@@ -20,10 +20,22 @@ var imagesSchema = new Schema({
     }
 });
 
-imagesSchema.statics.updateState = function (fsize, hash, mimeType, putTime) {
-    console.log(fsize, hash, mimeType, putTime);
+imagesSchema.statics.updateState = function (_id, fsize, hash, mimeType, putTime) {
+    this.findOneAndUpdate({_id: _id}, {
+        $set: {
+            state:
+            {
+                fsize: fsize,
+                hash: hash,
+                mimeType: mimeType,
+                putTime: putTime
+            }
+        }
+    }, function(updateImageErr, updatedImage){
+        if(updateImageErr){return logs.add('err', JSON.stringify(updateImageErr), 'updateImageErr'); }
+        console.log(updatedImage);
+    });
 };
-
 
 var Images = mongoose.model('Images', imagesSchema);
 

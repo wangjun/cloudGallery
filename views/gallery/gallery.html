@@ -17,6 +17,7 @@
     <div class="ui container">
         <h2 class="ui header">
             <i class="photo icon"></i>
+
             <div class="content">
                 {{ gallery.title }}
                 <div class="sub header">{{ gallery.story }}</div>
@@ -28,71 +29,82 @@
         <div>
             <button id="upload-button" class="ui button blue"><i class="cloud upload icon"></i>上传照片</button>
             {% if session.user %}
-            <div class="ui dropdown button">
-                <i class="share alternate icon"></i>
-                <div class="text">分享相册</div>
-                <i class="dropdown icon"></i>
-                <div class="menu">
-                    {#<div class="item" id="lovely-link">简洁链接</div>#}
-                    <div class="item">微信朋友圈</div>
-                    <div class="item">新浪微博</div>
-                    <div class="item">微信</div>
+                <div class="ui dropdown button">
+                    <i class="share alternate icon"></i>
+
+                    <div class="text">分享相册</div>
+                    <i class="dropdown icon"></i>
+
+                    <div class="menu">
+                        {#<div class="item" id="lovely-link">简洁链接</div>#}
+                        <div class="item">微信朋友圈</div>
+                        <div class="item">新浪微博</div>
+                        <div class="item">微信</div>
+                    </div>
                 </div>
-            </div>
             {% endif %}
             {#<button class="ui button">设置相册头像</button>#}
             {#<button class="ui button">设置相册背景</button>#}
         </div>
         <div class="ui divider"></div>
         {% if gallery.images.length %}
-        <div class="ui five cards">
-            {% for item in gallery.images %}
-            <div class="card" data-key="{{ item.key }}">
-                <div class="image" data-name="{{ item.fileName }}" data-key="{{ item.key }}" data-hash="{{ item.hash }}">
-                    <img src="//cdn.lazycoffee.com/{{ item.key }}_w1024"/>
-                </div>
+            <div class="ui five cards">
+                {% for item in gallery.images %}
+                    <div class="card" data-key="{{ item.key }}">
+                        <div class="image" data-name="{{ item.fileName }}" data-key="{{ item.key }}"
+                             data-hash="{{ item.hash }}">
+                            <img src="//cdn.lazycoffee.com/{{ item.key }}_w1024"/>
+                        </div>
+                    </div>
+                {% endfor %}
             </div>
-            {% endfor %}
-        </div>
-            {% else %}
-                <p class="text-center text-muted" id="no-image-gallery">相册内目前没有照片，你可以通过点击左上方蓝色按钮上传图片。</p>
-            {% endif %}
+        {% else %}
+            <div id="no-image-gallery">
+                <h2 class="ui icon header">
+                    <i class="remove circle outline icon"></i>
+                    <div class="content">
+                        没有相册
+                        <div class="sub header">相册内目前没有照片，你可以通过点击左上方蓝色按钮上传图片。</div>
+                    </div>
+                </h2>
+            </div>
+        {% endif %}
     </div>
-
     <div class="hidden" id="gallery-id" data-gallery-id="{{ gallery._id.toHexString() }}"></div>
     {#<div class="ui modal" id="lovely-link-modal">#}
-        {#<i class="close icon"></i>#}
-        {#<div class="header">#}
-            {#创建该相册的短链接#}
-        {#</div>#}
-        {#<div class="content">#}
-            {#<div class="ui form">#}
-                {#<div class="form-group">#}
-                    {#<label id="lovely-link-result">将此链接发送给你的朋友:</label>#}
-                    {#<p class="form-control-static">#}
-                        {#http://www.lazycoffee.com/gallery/<strong>{% raw %}{{ lovelyLink }}{% endraw %}</strong>#}
-                    {#</p>#}
-                {#</div>#}
-                {#<div class="form-group">#}
-                    {#<label for="lovely-link">易记链接(仅英文):</label>#}
-                    {#<input name="lovely-link" type="text" ng-model="lovelyLink" class="form-control"#}
-                           {#placeholder="输入一个易记的英文名称，例如:james-australia-trip"/>#}
-                {#</div>#}
-                {#<input type="hidden" value="{{ csrfToken }}"/>#}
-            {#</div>#}
-        {#</div>#}
-        {#<div class="actions">#}
-            {#<div class="ui black deny button">#}
-                {#关闭#}
-            {#</div>#}
-            {#<div class="ui positive right labeled icon button">#}
-                {#确定#}
-            {#</div>#}
-        {#</div>#}
+    {#<i class="close icon"></i>#}
+    {#<div class="header">#}
+    {#创建该相册的短链接#}
+    {#</div>#}
+    {#<div class="content">#}
+    {#<div class="ui form">#}
+    {#<div class="form-group">#}
+    {#<label id="lovely-link-result">将此链接发送给你的朋友:</label>#}
+    {#<p class="form-control-static">#}
+    {#http://www.lazycoffee.com/gallery/<strong>{% raw %}{{ lovelyLink }}{% endraw %}</strong>#}
+    {#</p>#}
+    {#</div>#}
+    {#<div class="form-group">#}
+    {#<label for="lovely-link">易记链接(仅英文):</label>#}
+    {#<input name="lovely-link" type="text" ng-model="lovelyLink" class="form-control"#}
+    {#placeholder="输入一个易记的英文名称，例如:james-australia-trip"/>#}
+    {#</div>#}
+    {#<input type="hidden" value="{{ csrfToken }}"/>#}
+    {#</div>#}
+    {#</div>#}
+    {#<div class="actions">#}
+    {#<div class="ui black deny button">#}
+    {#关闭#}
+    {#</div>#}
+    {#<div class="ui positive right labeled icon button">#}
+    {#确定#}
+    {#</div>#}
+    {#</div>#}
     {#</div>#}
 
     <div class="ui fullscreen modal" id="show-image-modal">
         <i class="close icon"></i>
+
         <div class="header">
             Image name
         </div>
