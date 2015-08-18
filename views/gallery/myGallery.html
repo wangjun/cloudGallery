@@ -50,15 +50,9 @@
             </div>
         {% else %}
             <div id="no-gallery">
-                <h2 class="ui icon header">
-                    <i class="remove circle outline icon"></i>
-                    <div class="content">
-                        没有相册
-                        <div class="sub header">
-                            <p>你还没有创建作何相册，现在立即创建？</p>
-                            <p><a class="ui basic button black" href="/gallery/add">创建相册</a></p>
-                        </div>
-                    </div>
+                <h2 class="ui center aligned header">
+                    <p>还没有创建作何相册，现在立即创建？</p>
+                    <p><a class="ui basic button black" href="/gallery/add">现在创建相册</a></p>
                 </h2>
             </div>
         {% endif %}
@@ -82,17 +76,16 @@
     {# remove gallery confirmation modal #}
     <div class="ui modal" id="removeGalleryModal">
         <div class="header">
-            确定删除相册吗？
+            抱歉，无法删除含有照片的相册...
         </div>
         <div class="content">
             <div>
-                请考虑清楚，相册及里面的照片都会被删除，并且无法恢复。确定删除？
+                对不起，我们不允许删除含有照片的相册，因为我们认为每张照片都是非常重要的。
+                如仍要删除该相册，请进入该相册内批量删除照片，然后再删除该相册。
             </div>
         </div>
         <div class="actions">
             <div class="ui black deny button">关闭</div>
-            <div class="ui button red loading disabled" id="remove-gallery-confirmed"><i class="trash outline icon"></i>确认删除</div>
-            {#<div class="ui button loading red" id="remove-gallery-confirmed">loading</div>#}
         </div>
     </div>
 {% endblock %}

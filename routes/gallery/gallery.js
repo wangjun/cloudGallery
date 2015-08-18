@@ -77,25 +77,35 @@ router.post('/add', parseForm, csrfProtection, function (req, res, next) {
 router.post('/remove', function (req, res, next) {
     var galleryId = req.body.galleryId;
     Galleries.findOne({_id: galleryId})
-            .populate('owner')
-            .exec(function (findErr, foundGallery) {
+        .populate('owner')
+        .populate('images')
+        .exec(function (findErr, foundGallery) {
             if(findErr){return next(findErr); }
             if(foundGallery){
+                console.log(foundGallery);
                 if(foundGallery.owner._id.toHexString() === req.session.user._id){
-                    gallery.removeOne(galleryId ,function (removeRes) {
-                        if(removeRes.state === 1){
-                            res.json({
-                                state: 3,
-                                msg: 'Remove gallery success!'
-                            });
-                        }else{
-                            res.json({
-                                state: 4,
-                                msg: 'We found the gallery and we gonna to remove it. But failed.' +
-                                'probably because the database error.'
-                            });
-                        }
-                    });
+                    if(foundGallery.images.length === 0){
+                        gallery.removeOne(galleryId ,function (removeRes) {
+                            if(removeRes.state === 1){
+                                res.json({
+                                    state: 3,
+                                    msg: 'Remove gallery success!'
+                                });
+                            }else{
+                                res.json({
+                                    state: 4,
+                                    msg: 'We found the gallery and we gonna to remove it. But failed.' +
+                                    'probably because the database error.'
+                                });
+                            }
+                        });
+                    }else{
+                        res.json({
+                            state: 5,
+                            msg: 'We can not delete a gallery has image. Please remove the images first.'
+                        })
+                    }
+
                 }else{
                     res.json({
                         state: 2,
@@ -117,12 +127,14 @@ router.post('/save-image', function (req, res, next) {
     var key = req.body.key;
     var fileName = req.body.fileName;
     var galleryId = req.body.galleryId;
+    var date = req.body.date;
     var user = req.session.user;
     if (user) {
         var userObjectId = new ObjectId(user._id);
         var galleryObjectId = new ObjectId(galleryId);
         Galleries.findOne({_id: galleryObjectId})
             .populate('owner')
+            .populate('images')
             .exec(function (findGalleryErr, foundGallery) {
                 if (findGalleryErr) {
                     return next(findGalleryErr);
@@ -133,29 +145,37 @@ router.post('/save-image', function (req, res, next) {
                         status: '没有找到该相册'
                     });
                 } else if (foundGallery.owner._id.toHexString() === user._id) {
-                    var updateGallery = function (formalGalleryObjectId, image, status) {
-                        if (foundGallery.images.indexOf(image._id) === -1) {
+                    //gallery update function
+                    var updateGallery = function (image, status) {
+                        var getImageIdIndex = function (imageId) {
+                            var imageIds = [];
+                            foundGallery.images.forEach(function (eachImage) {
+                                imageIds.push(eachImage._id);
+                            });
+                            return imageIds.indexOf(imageId);
+                        };
+                        if (getImageIdIndex(image._id) === -1) {
                             Galleries.findOneAndUpdate(
-                                {_id: formalGalleryObjectId},
-                                {$push: {images: image._id}},
+                                {_id: galleryObjectId},
+                                {$addToSet: {images: image._id}},
                                 {'new': true},
-                                function (err, result) {
-                                    if (err) {
-                                        return next(err);
+                                function (updateGalleryErr, updatedGallery) {
+                                    if (updateGalleryErr) {
+                                        return next(updateGalleryErr);
                                     }
                                     if (status === 1) {
                                         res.json({
                                             state: 3,
                                             status: '该图片已存在，不必再上传，但保存了图片与相册之间的关系。',
                                             image: image,
-                                            gallery: result
+                                            gallery: updatedGallery
                                         });
                                     } else if (status === 2) {
                                         res.json({
                                             state: 4,
                                             status: '图片上传成功，并保存与相册之间的关系。',
                                             image: image,
-                                            gallery: result
+                                            gallery: updatedGallery
                                         });
                                     }
 
@@ -170,17 +190,20 @@ router.post('/save-image', function (req, res, next) {
                             });
                         }
                     };
+                    //update image
+                    //found an image
                     Images.findOneAndUpdate(
                         {hash: hash},
-                        {$push: {belongGalleries: gallery._id, owners: userObjectId}},
+                        {$addToSet: {belongGalleries: gallery._id, owners: userObjectId}},
                         {'new': true},
-                        function (updateImageErr, result) {
+                        function (updateImageErr, updatedImage) {
                             if (updateImageErr) {
                                 return next(updateImageErr);
                             }
-                            if (result) {
-                                updateGallery(galleryObjectId, result, 1);
-                            } else {
+                            if (updatedImage) {
+                                updateGallery(result, 1);
+                            }else{
+                                //found no image, create a new one.
                                 var newImage = new Images({
                                     hash: hash,
                                     key: key,
@@ -188,11 +211,11 @@ router.post('/save-image', function (req, res, next) {
                                     belongGalleries: galleryObjectId,
                                     owners: userObjectId
                                 });
-                                newImage.save(function (err, saveResult) {
-                                    if (err) {
-                                        return next(err);
+                                newImage.save(function (saveImageErr, savedImage) {
+                                    if (saveImageErr) {
+                                        return next(saveImageErr);
                                     }
-                                    updateGallery(galleryObjectId, saveResult, 2);
+                                    updateGallery( savedImage, 2);
                                 });
                             }
                         }
@@ -230,15 +253,18 @@ router.post('/remove-image', function (req, res, next) {
                     if(image.belongGalleries.length > 1){
                         image.belongGalleries.forEach(function (eachGallery) {
                             if(eachGallery._id.toHexString() === galleryId){
-                                Galleries.findOneAndUpdate({_id: eachGallery._id}, {$pull: {images: {_id: image._id}}}, function (updateGalleryErr, updatedGallery) {
-                                    if(updateGalleryErr){return next(updateGalleryErr); }
-                                    res.json({
-                                        image: image,
-                                        gallery: updatedGallery,
-                                        state: 1,
-                                        msg: 'Image removed and removed imageId in gallery'
+                                Galleries.findOneAndUpdate(
+                                    {_id: eachGallery._id},
+                                    {$pull: {images: {_id: image._id}}},
+                                    function (updateGalleryErr, updatedGallery) {
+                                        if(updateGalleryErr){return next(updateGalleryErr); }
+                                        res.json({
+                                            image: image,
+                                            gallery: updatedGallery,
+                                            state: 1,
+                                            msg: 'Image removed and removed imageId in gallery'
+                                        });
                                     });
-                                });
                             }
                         });
                     }else{

@@ -1,29 +1,17 @@
 @import "../variables/variables.less";
 
-#add-images{
-  text-align:center;
-  a{
-    font-size: 76px;
-    line-height: 0.7;
-    padding: 30px 0;
-  }
-}
 canvas{
   max-width:100%;
 }
-.image{
-  .progress{
-    margin:0;
-  }
-}
-#drop-here{
-  font-size: 14px;
-}
-#show-image-modal{
-  .modal-dialog{
-  }
-  .modal-body{
-    text-align: center;
-    min-height: 1px;
+#images{
+  .card{
+    >.content{
+      >.header{
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        display: block;
+      }
+    }
   }
 }

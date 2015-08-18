@@ -1,5 +1,8 @@
 'use strict';
 $(document).ready(function () {
+    //config
+    moment.locale('zh-cn');
+    //alert modal
     var $alertModal = $('#alertModal');
     window.alertModal = function (content, title) {
         var modalTitle = title || '提示';

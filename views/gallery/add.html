@@ -6,24 +6,18 @@
 {% block body %}
     <div class="ui container" id="add-wrapper">
         <div id="add">
-            <h1>新建相册</h1>
-            <hr/>
-            <form action="/gallery/add" class="form-horizontal" method="post">
+            <h2>新建相册</h2>
+            <div class="ui divider"></div>
+            <form action="/gallery/add" class="ui form" method="post">
                 <input type="hidden" name="_csrf" value="{{ csrfToken }}">
-                <div class="form-group">
-                    <div class="col-sm-7">
-                        <input type="text" name="title" class="form-control" placeholder="相册名称，不能为空，至少3个字"/>
-                    </div>
+                <div class="field">
+                    <input type="text" name="title" class="form-control" placeholder="相册名称，至少3个字"/>
                 </div>
-                <div class="form-group">
-                    <div class="col-sm-12">
-                        <textarea name="story" id="story" rows="10" class="form-control" placeholder="相册故事，不能为空，至少15个字个"></textarea>
-                    </div>
+                <div class="field">
+                    <textarea name="story" id="story" rows="10" class="form-control" placeholder="相册故事，至少15个字"></textarea>
                 </div>
-                <div class="form-group">
-                    <div class="col-sm-4">
-                        <button class="btn btn-primary btn-block" type="submit">立即创建</button>
-                    </div>
+                <div class="field">
+                    <button class="ui button black basic" type="submit">立即创建</button>
                 </div>
             </form>
         </div>

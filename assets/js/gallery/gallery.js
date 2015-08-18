@@ -27,13 +27,6 @@ $(document).ready(function () {
             imageUploader.upload();
         }
     });
-    //var $lovelyLink = $('#lovely-link');
-    //var $lovelyLinkModal = $('#lovely-link-modal');
-    ////lovely link
-    //$lovelyLink.on('click', function (event) {
-    //    event.preventDefault();
-    //    $lovelyLinkModal.modal('show');
-    //});
 
     //show image
     var imgSrc;

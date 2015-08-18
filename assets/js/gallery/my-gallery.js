@@ -11,6 +11,7 @@ $(document).ready(function () {
         $otherFeaturesModal.modal('show');
     });
     $removeGalleryBtn.on('touchstart click', function () {
+
         $removeGalleryModal.modal('show');
     });
     $removeGalleryConfirmed.on('touchstart click', function (event) {

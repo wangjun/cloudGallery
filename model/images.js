@@ -1,6 +1,7 @@
 'use strict';
 var mongoose = require('mongoose');
 var logs = require('../lib/admin/log');
+var moment = require('moment');
 var Schema = mongoose.Schema;
 
 var imagesSchema = new Schema({
@@ -12,6 +13,9 @@ var imagesSchema = new Schema({
     belongGalleries: [{ type: Schema.Types.ObjectId, ref: 'Galleries'}],
     createTime: { type: Date, 'default': Date.now },
     owners: [{ type: Schema.Types.ObjectId, ref: 'Users'}],
+    exif: {
+        DateTime: {type: Date}
+    },
     state: {
         fsize: {type: Number},
         hash: {type: String},

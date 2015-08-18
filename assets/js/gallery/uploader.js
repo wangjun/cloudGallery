@@ -23,10 +23,14 @@ Uploader.prototype.upload = function () {
 Uploader.prototype.getOrientation = function (cb){
     var self = this;
     loadImage.parseMetaData(self.file, function (data) {
+        var exif = data.exif.getAll();
         var orientation = data.exif.get('Orientation');
         if(orientation){
             self.orientation = orientation;
+            self.exif = exif;
             cb();
+        }else{
+            console.log('this is not a photo.');
         }
     });
 };
@@ -36,19 +40,21 @@ Uploader.prototype.showImage = function (cb){
         this.file,
         function(img){
             $('#no-image-gallery').remove();
+            var date = moment(self.exif.DateTime, 'YYYY:MM:DD HH:mm:ss').format('LL');
             var $previewHtml = $('<div/>');
-            $previewHtml.addClass('col-xs-3 image')
-                .append('<a class="thumbnail" data-name="' + self.file.name + '"></a>');
-            $previewHtml.find('.thumbnail').append(img)
-                .append('<div class="caption">' +
-                '<div class="progress">' +
-                '<div class="progress-bar progress-bar-striped active" style="width:0"></div>' +
+            $previewHtml.addClass('card')
+                .append('<div class="image"></div>')
+                .append('<div class="content">' +
+                '<span class="header">' + self.file.name + '</span>' +
+                '<div class="meta">' +
+                '<span class="date">摄于'+ date +'</span>' +
                 '</div>' +
+                '</div>')
+                .append('<div class="ui bottom attached progress active" data-percent="0">' +
+                '<div class="bar" style="width:0;"></div>' +
                 '</div>');
-            $previewHtml.css({'display': 'none'});
+            $previewHtml.find('.image').append(img);
             self.$dom.append($previewHtml);
-            self.$dom.find('#upload-des').remove();
-            $previewHtml.fadeIn('slow');
             self.$preview = $previewHtml;
             cb();
         },
@@ -64,24 +70,20 @@ Uploader.prototype.uploadImage = function (cb){
     var self = this;
     var xhr = new XMLHttpRequest();
     var fd = new FormData();
-    self.$preview.find('.thumbnail').addClass('uploading');
     xhr.open('POST', self.uploadUrl, true);
     xhr.upload.onprogress = function(event){
         var percent = Math.ceil((event.loaded / event.total) * 100);
-        self.$preview.find('.progress-bar').css({width: percent + '%'}).text(percent + '%');
+        self.$preview.find('.bar').css({width: percent + '%'}).attr('data-percent', percent);
     };
     xhr.onreadystatechange = function(){
         if(xhr.readyState === 4 && xhr.status === 200){
             self.uploadResponse = JSON.parse(xhr.response);
-            self.$preview.find('.thumbnail')
+            self.$preview.find('.image')
                 .attr('data-hash', self.uploadResponse.hash)
-                .attr('data-key', self.uploadResponse.key)
-                .removeClass('uploading');
+                .attr('data-key', self.uploadResponse.key);
             var $img = '<img src="//cdn.lazycoffee.com/' + self.uploadResponse.key + '_w1024" alt="' + self.file.name + '">';
-            self.$preview.find('canvas').fadeOut(function () {
-                $(this).replaceWith($img).fadeIn();
-            });
-            self.$preview.find('.progress-bar').text('上传成功！');
+            self.$preview.find('canvas').replaceWith($img);
+            self.$preview.find('.progress').removeClass('active').addClass('blue');
             cb();
         }
     };
@@ -108,22 +110,19 @@ Uploader.prototype.saveImageInDatabase = function (){
     postData.key = response.key;
     postData.galleryId = $('#gallery-id').data('galleryId');
     postData.fileName = self.file.name;
+    postData.date = self.exif.DateTime;
     $.post('/image/save', postData, function (data, status) {
         console.log(data);
         if(status === 'success'){
             if(data.state === 5) {
-                self.$preview.fadeOut(function () {
-                    $(this).remove();
-                });
+                self.$preview.find('.content>span').text('重复上传（已删除）');
+                self.$preview.find('.progress').removeClass('blue');
             }else if([2, 4].indexOf(data.state) === -1){
                 window.alertModal('抱歉，服务器发生错误，保存不了你的图片...');
             }else {
-                self.$preview.find('.caption').slideUp(function () {
-                    $(this).remove();
-                });
+                self.$preview.find('.progress').removeClass('blue').addClass('success');
             }
         }else{
-            self.$preview.find('.progress-bar').addClass('progress-bar-danger').text('上传失败。');
             console.error('Sorry,保存相册到数据库的时候出现网络错误了...');
         }
     });
