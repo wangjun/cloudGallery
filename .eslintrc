@@ -32,6 +32,7 @@
   "globals": {
     "loadImage": true,
     "validator": true,
+    "moment": true,
     "Uploader": true
   }
 }

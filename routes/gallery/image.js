@@ -5,12 +5,15 @@ var images = require('../../model/images');
 var galleries = require('../../model/galleries');
 var mongoose = require('mongoose');
 var ObjectId = mongoose.Types.ObjectId;
+var moment = require('moment');
 
 router.post('/save', function(req, res, next){
     var galleryId = new ObjectId(req.body.galleryId);
     var imageHash = req.body.hash;
     var imageKey = req.body.key;
     var imageName = req.body.fileName;
+    var imageDate = moment(req.body.date, 'YYYY:MM:DD HH:mm:ss').toDate();
+    console.log(imageDate);
     var isImageExist = false;
     galleries.findOne({_id: galleryId})
         .populate('images')
@@ -33,10 +36,10 @@ router.post('/save', function(req, res, next){
                         msg: 'Image has already exist in this gallery. No need to update anything.'
                     });
                 }else{
-                    images.findOneAndUpdate({hash: imageHash}, {$push: {belongGalleries: galleryId}}, function (findImageErr, updatedImage) {
+                    images.findOneAndUpdate({hash: imageHash}, {$addToSet: {belongGalleries: galleryId}}, function (findImageErr, updatedImage) {
                         if(findImageErr){return next(findImageErr); }
                         if(updatedImage){
-                            galleries.findOneAndUpdate({_id: galleryId}, {$push: {images: updatedImage._id}}, function (updateGalleryErr, updatedGallery) {
+                            galleries.findOneAndUpdate({_id: galleryId}, {$addToSet: {images: updatedImage._id}}, function (updateGalleryErr, updatedGallery) {
                                 if(updateGalleryErr){return next(updateGalleryErr); }
                                 if(updatedGallery){
                                     res.json({
@@ -47,7 +50,7 @@ router.post('/save', function(req, res, next){
                                     });
                                 }else{
                                     res.json({
-                                        state: 5,
+                                        state: 6,
                                         msg: 'Before update this gallery. I found the gallery. But do not know why now can not find it again.'
                                     });
                                 }
@@ -58,12 +61,13 @@ router.post('/save', function(req, res, next){
                                 key: imageKey,
                                 fileName: imageName,
                                 belongGalleries: galleryId,
-                                owners: new ObjectId(req.session.user._id)
+                                owners: new ObjectId(req.session.user._id),
+                                exif: {DateTime: imageDate}
                             });
                             newImage.save(function (saveImageErr, savedImage) {
                                 if(saveImageErr){return next(saveImageErr); }
                                 if(savedImage){
-                                    galleries.findOneAndUpdate({_id: galleryId}, {$push: {images: savedImage._id}}, function (updateGalleryErr, updatedGallery) {
+                                    galleries.findOneAndUpdate({_id: galleryId}, {$addToSet: {images: savedImage._id}}, function (updateGalleryErr, updatedGallery) {
                                         if(updateGalleryErr){return next(updateGalleryErr); }
                                         if(updatedGallery){
                                             res.json({
@@ -74,7 +78,7 @@ router.post('/save', function(req, res, next){
                                             });
                                         }else{
                                             res.json({
-                                                state: 5,
+                                                state: 7,
                                                 file: savedImage,
                                                 msg: 'Before update this gallery. I found the gallery. But do not know why now can not find it again. ' +
                                                 'At least we save the image.'
@@ -84,7 +88,7 @@ router.post('/save', function(req, res, next){
                                 }else{
                                     res.json({
                                         state: 3,
-                                        msg: 'Saved error. Can not save into database.'
+                                        msg: 'Saved image error. Can not save into database.'
                                     });
                                 }
                             });

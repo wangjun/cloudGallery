@@ -47,10 +47,10 @@ Uploader.prototype.showImage = function (cb){
                 .append('<div class="content">' +
                 '<span class="header">' + self.file.name + '</span>' +
                 '<div class="meta">' +
-                '<span class="date">摄于'+ date +'</span>' +
+                '<span class="date">摄于' + date + '</span>' +
                 '</div>' +
                 '</div>')
-                .append('<div class="ui bottom attached progress active" data-percent="0">' +
+                .append('<div class="ui bottom attached progress active yellow" data-percent="0">' +
                 '<div class="bar" style="width:0;"></div>' +
                 '</div>');
             $previewHtml.find('.image').append(img);
@@ -83,7 +83,7 @@ Uploader.prototype.uploadImage = function (cb){
                 .attr('data-key', self.uploadResponse.key);
             var $img = '<img src="//cdn.lazycoffee.com/' + self.uploadResponse.key + '_w1024" alt="' + self.file.name + '">';
             self.$preview.find('canvas').replaceWith($img);
-            self.$preview.find('.progress').removeClass('active').addClass('blue');
+            self.$preview.find('.progress').removeClass('active yellow').addClass('blue');
             cb();
         }
     };
@@ -116,11 +116,11 @@ Uploader.prototype.saveImageInDatabase = function (){
         if(status === 'success'){
             if(data.state === 5) {
                 self.$preview.find('.content>span').text('重复上传（已删除）');
-                self.$preview.find('.progress').removeClass('blue');
+                self.$preview.find('.progress').removeClass('blue yellow');
             }else if([2, 4].indexOf(data.state) === -1){
                 window.alertModal('抱歉，服务器发生错误，保存不了你的图片...');
             }else {
-                self.$preview.find('.progress').removeClass('blue').addClass('success');
+                self.$preview.find('.progress').removeClass('yellow').addClass('success');
             }
         }else{
             console.error('Sorry,保存相册到数据库的时候出现网络错误了...');

@@ -13,7 +13,6 @@ var ObjectId = mongoose.Types.ObjectId;
 var config = require('../../lib/admin/config');
 var log = require('../../lib/admin/log');
 var qiniu = require('qiniu');
-var moment = require('moment');
 
 //csrf protection
 var csrfProtection = csrf({cookie: true});
@@ -85,7 +84,7 @@ router.post('/remove', function (req, res, next) {
                 console.log(foundGallery);
                 if(foundGallery.owner._id.toHexString() === req.session.user._id){
                     if(foundGallery.images.length === 0){
-                        gallery.removeOne(galleryId ,function (removeRes) {
+                        gallery.removeOne(galleryId, function (removeRes) {
                             if(removeRes.state === 1){
                                 res.json({
                                     state: 3,
@@ -103,7 +102,7 @@ router.post('/remove', function (req, res, next) {
                         res.json({
                             state: 5,
                             msg: 'We can not delete a gallery has image. Please remove the images first.'
-                        })
+                        });
                     }
 
                 }else{
@@ -201,7 +200,7 @@ router.post('/save-image', function (req, res, next) {
                                 return next(updateImageErr);
                             }
                             if (updatedImage) {
-                                updateGallery(result, 1);
+                                updateGallery(updatedImage, 1);
                             }else{
                                 //found no image, create a new one.
                                 var newImage = new Images({
@@ -215,7 +214,7 @@ router.post('/save-image', function (req, res, next) {
                                     if (saveImageErr) {
                                         return next(saveImageErr);
                                     }
-                                    updateGallery( savedImage, 2);
+                                    updateGallery(savedImage, 2);
                                 });
                             }
                         }
