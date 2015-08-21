@@ -23,7 +23,10 @@ var imagesSchema = new Schema({
         putTime: {type: Number}
     }
 });
-
+imagesSchema.virtual('DateFormatted')
+    .get(function () {
+        return moment(this.exif.DateTime).format('YYYY年M月DD日');
+    });
 imagesSchema.statics.updateState = function (_id, fsize, hash, mimeType, putTime) {
     this.findOneAndUpdate({_id: _id}, {
         $set: {
