@@ -1,6 +1,7 @@
 {% extends '../layouts/layout.html' %}
 {% block title %}{{ gallery.title }}{% endblock %}
 {% block js %}
+    <script src="/vendor/masonry/dist/masonry.pkgd.min.js"></script>
     <script src="/vendor/imagesloaded/imagesloaded.pkgd.min.js"></script>
     <script src="/vendor/blueimp-load-image/js/load-image.all.min.js"></script>
     <script src="/js/gallery/image.js"></script>
@@ -45,7 +46,7 @@
             {#<button class="ui button">设置相册背景</button>#}
         </div>
         <div class="ui divider"></div>
-        <div class="ui five cards" id="images">
+        <div class="ui four link cards" id="images">
             {% if gallery.images.length %}
                 {% for item in gallery.images %}
                     <div class="card" data-key="{{ item.key }}">
@@ -56,7 +57,7 @@
                         <div class="content">
                             <span class="header">{{ item.fileName }}</span>
                             <div class="meta">
-                                <span class="date">摄于{{ item.DateFormatted }}</span>
+                                <span class="date">{{ item.DateFormatted }}</span>
                             </div>
                         </div>
                     </div>

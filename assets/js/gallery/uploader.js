@@ -47,7 +47,7 @@ Uploader.prototype.showImage = function (cb){
                 .append('<div class="content">' +
                 '<span class="header">' + self.file.name + '</span>' +
                 '<div class="meta">' +
-                '<span class="date">摄于' + date + '</span>' +
+                '<span class="date">' + date + '</span>' +
                 '</div>' +
                 '</div>')
                 .append('<div class="ui bottom attached progress active yellow" data-percent="0">' +
@@ -80,7 +80,8 @@ Uploader.prototype.uploadImage = function (cb){
             self.uploadResponse = JSON.parse(xhr.response);
             self.$preview.find('.image')
                 .attr('data-hash', self.uploadResponse.hash)
-                .attr('data-key', self.uploadResponse.key);
+                .attr('data-key', self.uploadResponse.key)
+                .attr('data-name', self.file.name);
             var $img = '<img src="//cdn.lazycoffee.com/' + self.uploadResponse.key + '_w1024" alt="' + self.file.name + '">';
             self.$preview.find('canvas').replaceWith($img);
             self.$preview.find('.progress').removeClass('active yellow').addClass('blue');

@@ -30,7 +30,7 @@ $(document).ready(function () {
 
     //show image
     var imgSrc;
-    $(document).on('click', '.card', function (event) {
+    $(document).on('click', '.image', function (event) {
         event.preventDefault();
         if($(this).hasClass('uploading')){
             window.alertModal('上传中，请耐心等待...');
@@ -41,7 +41,10 @@ $(document).ready(function () {
             $showImageModal.find('[data-key]').attr('data-key', key);
             $showImageModal.find('.header').text(fileName);
             $showImageModal.find('img').attr('src', imgSrc);
-            $showImageModal.modal('show');
+            imagesLoaded($showImageModal.find('img').get(0), function () {
+                $showImageModal.modal('show');
+            });
+
         }
     });
     //remove image
@@ -66,4 +69,9 @@ $(document).ready(function () {
     $showImageModal.on('hidden.bs.modal', function () {
         $removeImageButton.text('删除').prop('disabled', false);
     });
+    $images.masonry({
+        // set itemSelector so .grid-sizer is not used in layout
+        itemSelector: '.card',
+        percentPosition: true
+    })
 });
