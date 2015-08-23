@@ -1,4 +1,5 @@
 'use strict';
+var $images = $('#images');
 var Uploader = function (file, $dom) {
     this.file = file || null;
     this.$dom = $dom || null;
@@ -54,7 +55,10 @@ Uploader.prototype.showImage = function (cb){
                 '<div class="bar" style="width:0;"></div>' +
                 '</div>');
             $previewHtml.find('.image').append(img);
-            self.$dom.append($previewHtml);
+            //self.$dom.append($previewHtml);
+            window.$imagesLayout.prepend( $previewHtml )
+                .masonry('prepended', $previewHtml)
+                .masonry('layout');
             self.$preview = $previewHtml;
             cb();
         },
@@ -78,9 +82,10 @@ Uploader.prototype.uploadImage = function (cb){
     xhr.onreadystatechange = function(){
         if(xhr.readyState === 4 && xhr.status === 200){
             self.uploadResponse = JSON.parse(xhr.response);
-            self.$preview.find('.image')
+            self.$preview
                 .attr('data-hash', self.uploadResponse.hash)
                 .attr('data-key', self.uploadResponse.key)
+                .attr('id', 'image-' + self.uploadResponse.hash)
                 .attr('data-name', self.file.name);
             var $img = '<img src="//cdn.lazycoffee.com/' + self.uploadResponse.key + '_w1024" alt="' + self.file.name + '">';
             self.$preview.find('canvas').replaceWith($img);
@@ -137,7 +142,7 @@ Uploader.prototype.removeItem = function (hash, galleryId, cb){
             if(status === 'success'){
                 callback(data);
             }else{
-                console.error('删除照片时发生网络错误，这种情况一般源于网络传输故障，与本站无关，请与你的电信服务商联系。');
+                console.error('删除照片时发生网络错误，这种情况一般源于网络传输故障，与本站无关，请与你的网络服务商联系。');
             }
         });
     });

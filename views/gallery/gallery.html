@@ -48,10 +48,13 @@
         <div class="ui divider"></div>
         <div class="ui four link cards" id="images">
             {% if gallery.images.length %}
-                {% for item in gallery.images %}
-                    <div class="card" data-key="{{ item.key }}">
-                        <div class="image" data-name="{{ item.fileName }}" data-key="{{ item.key }}"
-                             data-hash="{{ item.hash }}">
+                {% for item in gallery.images|reverse() %}
+                    <div class="card"
+                         data-key="{{ item.key }}"
+                         data-hash="{{ item.hash }}"
+                         data-name="{{ item.fileName }}"
+                         id="image-{{ item.hash }}">
+                        <div class="image">
                             <img src="//cdn.lazycoffee.com/{{ item.key }}_w1024"/>
                         </div>
                         <div class="content">
@@ -80,7 +83,7 @@
             <img src="" alt=""/>
         </div>
         <div class="actions">
-            <div class="ui red deny button" id="remove-image-button" data-action="deleteItem" data-key="">
+            <div class="ui red deny button" id="remove-image-button" data-action="deleteItem" data-key="" data-hash="">
                 <i class="trash outline icon"></i>
                 删除
             </div>
