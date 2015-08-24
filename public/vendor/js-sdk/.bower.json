@@ -1,12 +1,12 @@
 {
   "name": "js-sdk",
   "homepage": "https://github.com/qiniu/js-sdk",
-  "version": "1.0.6-beta",
-  "_release": "1.0.6-beta",
+  "version": "1.0.8-beta",
+  "_release": "1.0.8-beta",
   "_resolution": {
     "type": "version",
-    "tag": "v1.0.6-beta",
-    "commit": "cc60e7c265cca4548b4bd4160e122a550396be54"
+    "tag": "v1.0.8-beta",
+    "commit": "7e2379b04881f6303d323f261ad0cebc55ea731e"
   },
   "_source": "git://github.com/qiniu/js-sdk.git",
   "_target": "~1.0.4-beta",

@@ -55,7 +55,6 @@ qiniu-js-sdk
 * 初始化上传
 
     ```javascript
-
     var uploader = Qiniu.uploader({
         runtimes: 'html5,flash,html4',    //上传模式,依次退化
         browse_button: 'pickfiles',       //上传选择的点选按钮，**必需**
@@ -132,6 +131,24 @@ qiniu-js-sdk
     // domain 为七牛空间（bucket)对应的域名，选择某个空间后，可通过"空间设置->基本设置->域名设置"查看获取
 
     // uploader 为一个plupload对象，继承了所有plupload的方法，参考http://plupload.com/docs
+
+    ```
+
+    如果一个页面中有多个上传实例，可以如下操作
+    ```javascript
+    var option1 = {
+        key : val ,
+        ……
+    };
+    var uploader = Qiniu.uploader(option1);
+
+    var Qiniu2 = new QiniuJsSDK();
+    var option2 = {
+        key : val ,
+        ……
+    };
+    var uploader2 = Qiniu2.uploader(option2);
+
     ```
 
 * 运行网站，通过点击`pickfiles`元素，选择文件后上传

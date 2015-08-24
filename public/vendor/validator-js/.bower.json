@@ -16,12 +16,12 @@
     "Makefile",
     "package.json"
   ],
-  "version": "3.41.2",
-  "_release": "3.41.2",
+  "version": "3.42.0",
+  "_release": "3.42.0",
   "_resolution": {
     "type": "version",
-    "tag": "3.41.2",
-    "commit": "1e5acbcbcbb1a3ff187daeabe9c36890c9b8d97e"
+    "tag": "3.42.0",
+    "commit": "39e2d36ab956daf1f33b3ce4bc927d4d38b2d32a"
   },
   "_source": "git://github.com/chriso/validator.js.git",
   "_target": "^3.41.2",
