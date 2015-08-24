@@ -4,6 +4,7 @@ var router = express.Router();
 //get router objects
 var email = require('./email');
 var phone = require('./phone');
+var society = require('./society');
 /* user profile */
 router.get('/', function (req, res) {
     var sess = req.session;
@@ -18,6 +19,8 @@ router.get('/', function (req, res) {
 router.use('/email', email);
 //phone logic
 router.use('/phone', phone);
+//society logic
+router.use('/society', society);
 /* login page */
 router.get('/login', function (req, res) {
     var frontValue = {
