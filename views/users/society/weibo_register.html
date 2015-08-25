@@ -1,0 +1,29 @@
+{% extends '../../layouts/layout.html' %}
+{% block js %}
+    <script src="/js/users/society/weibo_register.js"></script>
+{% endblock %}
+{% block css %}
+    <link rel="stylesheet" href="/css/users/society/society.css"/>
+{% endblock %}
+{% block body %}
+    <div id="finish-register">
+    {% if isLegal %}
+        <h2 class="ui header">
+            <i class="icon weibo"></i>
+            <div class="content">
+                授权成功，请验证邮箱地址
+            </div>
+        </h2>
+        <div class="ui form">
+            <div class="field">
+                <input type="text" name="email" placeholder="邮箱地址"/>
+            </div>
+            <div class="field">
+                <button class="ui button fluid" type="submit">确定</button>
+            </div>
+        </div>
+    {% else %}
+        <h2 class="ui header">抱歉，请求不合法...</h2>
+    {% endif %}
+    </div>
+{% endblock %}

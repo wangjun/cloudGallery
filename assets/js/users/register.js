@@ -8,15 +8,26 @@ $(document).ready(function () {
         .popup({
             content: '新浪微博',
             position: 'top center'
-        })
-        .on('click', function () {
-            $.post('https://api.weibo.com/oauth2/authorize',{
-                    client_id: '2521804735',
-                    redirect_url: '//www.lazycoffee.com/users/society/weibo/register'
-                }, function (data, status) {
-                    console.log(data);
-                    console.log(status);
-                }
-            );
         });
+        //.on('click', function () {
+        //    $.ajax('https://api.weibo.com/oauth2/authorize', {
+        //        crossDomain: true,
+        //        type: 'POST',
+        //        dataType: 'json',
+        //        xhrFields: {
+        //            withCredentials: true
+        //        },
+        //        header: {
+        //            'Access-Control-Allow-Origin': '*'
+        //        },
+        //        data: {
+        //            client_id: '2521804735',
+        //            redirect_url: '//lazycoffee.com:3100/users/society/weibo/register'
+        //        },
+        //        success: function (data, status) {
+        //            console.log(data);
+        //            console.log(status);
+        //        }
+        //    });
+        //});
 });

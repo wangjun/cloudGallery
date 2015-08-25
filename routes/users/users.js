@@ -1,6 +1,7 @@
 'use strict';
 var express = require('express');
 var router = express.Router();
+var randomstring = require('randomstring');
 //get router objects
 var email = require('./email');
 var phone = require('./phone');
@@ -30,8 +31,11 @@ router.get('/login', function (req, res) {
 });
 /* get register page */
 router.get('/register', function (req, res) {
+    var buf = randomstring.generate(5);
+    req.session.buf = buf;
     var frontValue = {
-        title: '选择一种注册方式'
+        title: '选择注册方式',
+        buf: buf
     };
     res.render('users/register', frontValue);
 });
