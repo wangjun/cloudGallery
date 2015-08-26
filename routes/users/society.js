@@ -51,7 +51,7 @@ router.get('/weibo/register', function (req, res) {
                     req.flash('info', '抱歉，无法获取授权，请重试一次：<br>' + data);
                     res.redirect('/users/register');
                 }else{
-                    req.session.accessToken.expireDate = moment().add(req.session.accessToken.expires_in, 's').format('YYYY年MM月DD日');
+                    req.session.accessToken.expireDate = moment().add(req.session.accessToken.expires_in, 's').format('YYYY年MM月DD日HH时mm分ss秒');
                     callback(req.session.accessToken);
                 }
             });
@@ -83,6 +83,7 @@ router.get('/weibo/register', function (req, res) {
                     console.log(err);
                 }
                 callback(req.session.weiboInfo);
+
             });
         });
         weiboInfoReq.end();

@@ -13,6 +13,10 @@ var usersSchema = new Schema({
     authToken: { type: String },
     registerTime: { type: Date, 'default': Date.now },
     type: { type: String, 'default': 'RegisteredUser' },
+    sinaWeiboId:{type: String},
+    sinaWeiboInfo: {
+        id: {type: String}
+    },
     galleries: [{ type: Schema.Types.ObjectId, ref: 'Galleries' }]
 });
 /* methods */
