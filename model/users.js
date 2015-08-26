@@ -1,9 +1,7 @@
 'use strict';
 var mongoose = require('mongoose');
 var bcrypt = require('bcrypt-nodejs');
-
 var Schema = mongoose.Schema;
-
 var usersSchema = new Schema({
     name: { type: String },
     email: { type: String },
@@ -13,7 +11,8 @@ var usersSchema = new Schema({
     authToken: { type: String },
     registerTime: { type: Date, 'default': Date.now },
     type: { type: String, 'default': 'RegisteredUser' },
-    galleries: [{ type: Schema.Types.ObjectId, ref: 'Galleries' }]
+    galleries: [{ type: Schema.Types.ObjectId, ref: 'Galleries' }],
+    sinaWeibo: {type: Schema.Types.ObjectId, ref: 'SinaWeibo'}
 });
 /* methods */
 usersSchema.methods.checkPassword = function (inPassword, cb) {
@@ -21,7 +20,6 @@ usersSchema.methods.checkPassword = function (inPassword, cb) {
     var user = this;
     var salt = user.salt;
     var blankFunction = function () {};
-    console.log(user);
     bcrypt.hash(inPassword, salt, blankFunction, function(hashErr, encrypted) {
         if(hashErr){return hashErr; }
         if(encrypted){
@@ -32,11 +30,7 @@ usersSchema.methods.checkPassword = function (inPassword, cb) {
         }
     });
 };
-
-/**
- * Virtuals
- */
-
+/* Virtual */
 usersSchema
     .virtual('password')
     .set(function(password) {
@@ -46,8 +40,5 @@ usersSchema
         this.hashedPassword = bcrypt.hashSync(password, salt);
     })
     .get(function() { return this._password; });
-
-
-var Users = mongoose.model('Users', usersSchema);
-
-module.exports = Users;
+var users = mongoose.model('Users', usersSchema);
+module.exports = users;
