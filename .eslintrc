@@ -4,6 +4,10 @@
             2,
             4
         ],
+      "camelcase":[
+        2,
+        {"properties": "never"}
+      ],
         "quotes": [
             2,
             "single"

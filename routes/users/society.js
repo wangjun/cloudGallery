@@ -13,12 +13,13 @@ router.get('/weibo/register', function (req, res, next) {
     var code = req.query.code;
     var isLegal = reqBuf === buf;
     var accessToken = req.session.accessToken;
-    if(typeof accessToken === 'string'){
+    if (typeof accessToken === 'string') {
         accessToken = JSON.parse(accessToken);
     }
     //get access token
     var getAccessToken = function (cb) {
-        var callback = cb || function(){};
+        var callback = cb || function () {
+            };
         var postData = querystring.stringify({
             client_id: '2521804735',
             client_secret: 'ab70dca632a59972d7fc6103fda187b9',
@@ -45,7 +46,7 @@ router.get('/weibo/register', function (req, res, next) {
             });
             accessTokenRes.on('end', function () {
                 req.session.accessToken = JSON.parse(data);
-                if(req.session.accessToken.error){
+                if (req.session.accessToken.error) {
                     req.flash('info', '抱歉，无法获取授权，请重试一次：<br>' + data);
                     res.redirect('/users/register');
                 }else{
@@ -61,7 +62,8 @@ router.get('/weibo/register', function (req, res, next) {
         });
     };
     var getWeiboInfo = function (cb) {
-        var callback = cb || function(){};
+        var callback = cb || function () {
+            };
         var option = {
             hostname: 'api.weibo.com',
             port: 443,
@@ -75,9 +77,9 @@ router.get('/weibo/register', function (req, res, next) {
                 data += chunk;
             });
             weiboInfoRes.on('end', function () {
-                try{
+                try {
                     req.session.weiboInfo = JSON.parse(data);
-                }catch(err){
+                } catch (err) {
                     console.log(err);
                 }
                 callback(req.session.weiboInfo);
@@ -179,16 +181,16 @@ router.get('/weibo/register', function (req, res, next) {
             });
         });
     };
-    if(accessToken === undefined){
+    if (accessToken === undefined) {
         getAccessToken(function (accessTokenArg) {
             routeRes(accessTokenArg);
         });
-    }else{
-        if(accessToken.error){
+    } else {
+        if (accessToken.error) {
             getAccessToken(function (accessTokenArg) {
                 routeRes(accessTokenArg);
             });
-        }else{
+        } else {
             routeRes(accessToken);
         }
     }
@@ -197,4 +199,4 @@ router.post('/weibo/register', function (req, res) {
     res.json({content: 'you passed'});
 });
 
-module .exports = router;
+module.exports = router;
