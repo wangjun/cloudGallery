@@ -4,12 +4,10 @@ var router = express.Router();
 var https = require('https');
 var querystring = require('querystring');
 var moment = require('moment');
-//router.all('/', function (req, res, next) {
-//    res.header("Access-Control-Allow-Origin", "*");
-//    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-//    next();
-//});
-router.get('/weibo/register', function (req, res) {
+var Users = require('../../model/users');
+var Weibo = require('.././model/sinaWeibo');
+var log = require('../../lib/admin/log');
+router.get('/weibo/register', function (req, res, next) {
     var reqBuf = req.query.state;
     var buf = req.session.buf;
     var code = req.query.code;
@@ -25,7 +23,7 @@ router.get('/weibo/register', function (req, res) {
             client_id: '2521804735',
             client_secret: 'ab70dca632a59972d7fc6103fda187b9',
             grant_type: 'authorization_code',
-            scope:'email',
+            scope: 'email',
             code: code,
             redirect_uri: 'http://www.lazycoffee.com/users/society/weibo/register'
         });
@@ -67,7 +65,7 @@ router.get('/weibo/register', function (req, res) {
         var option = {
             hostname: 'api.weibo.com',
             port: 443,
-            path: '/2/users/show.json?uid='+accessToken.uid+'&access_token='+accessToken.access_token,
+            path: '/2/users/show.json?uid=' + accessToken.uid + '&access_token=' + accessToken.access_token,
             method: 'GET'
         };
         var weiboInfoReq = https.request(option, function (weiboInfoRes) {
@@ -83,7 +81,6 @@ router.get('/weibo/register', function (req, res) {
                     console.log(err);
                 }
                 callback(req.session.weiboInfo);
-
             });
         });
         weiboInfoReq.end();
@@ -91,18 +88,94 @@ router.get('/weibo/register', function (req, res) {
             console.log(err);
         });
     };
+    var saveWeiboInfo = function (weiboInfo, cb) {
+        var callback = cb || function(){};
+        Weibo.findOne({id: weiboInfo.id}, function (findWeiboErr, foundWeibo) {
+            if(findWeiboErr){return next(findWeiboErr); }
+            if(foundWeibo){
+                Users.findOne({_id: foundWeibo.user}, function(findUserErr, foundUser){
+                    if(findUserErr){return next(findUserErr); }
+                    if(foundUser){
+                        req.session.users = {
+                            _id: foundUser._id,
+                            name: foundUser.name,
+                            type: foundUser.type
+                        };
+                        callback();
+                    }else{
+                        log.add('Error', 'We can not find user base on weibo\'s user objectId.', 'Get user info error.');
+                        req.flash('info', '抱歉，获取用户信息失败，无法登录');
+                        res.redirect('/users/register');
+                    }
+                });
+            }else{
+                var newWeibo = new Weibo(function () {
+                    var returnObject = {};
+                    for(var key in weiboInfo){
+                        if(weiboInfo.hasOwnProperty(key)){
+                            returnObject[key] = weiboInfo[key];
+                        }
+                    }
+                    returnObject.expires_in = req.session.accessToken.expires_in;
+                    returnObject.expireDate = req.session.accessToken.expireDate;
+                    returnObject.access_token = req.session.accessToken.access_token;
+                    returnObject.uid = req.session.accessToken.uid;
+                    return returnObject;
+                });
+                newWeibo.save(function (saveWeiboErr, savedWeibo) {
+                    if(saveWeiboErr){return next(saveWeiboErr); }
+                    if(savedWeibo){
+                        var newUser = new Users({
+                            sinaWeibo: savedWeibo._id,
+                            name: weiboInfo.screen_name,
+                            type: 'RegisteredUser'
+                        });
+                        newUser.save(function (saveUserErr, savedUser) {
+                            if(saveUserErr){return next(saveUserErr); }
+                            if(savedUser){
+                                Weibo.findOneAndUpdate({_id: savedUser.sinaWeibo},
+                                    {user: savedUser._id},
+                                    function (updateWeiboErr, updatedWeibo) {
+                                        if(updateWeiboErr){return next(updateWeiboErr); }
+                                        if(updatedWeibo){
+                                            req.session.users = {
+                                                _id: savedUser._id,
+                                                name: savedUser.name,
+                                                type: savedUser.type
+                                            };
+                                            callback();
+                                        }else{
+                                            log.add('Error', 'We can not update weibo info.', 'Update weibo info error.');
+                                            req.flash('info', '抱歉，更新用户微博资料失败，无法登录');
+                                            res.redirect('/users/register');
+                                        }
+                                    }
+                                );
+                            }else{
+                                log.add('Error', 'We can not save user info.', 'Save user info error.');
+                                req.flash('info', '抱歉，保存用户资料失败，无法登录');
+                                res.redirect('/users/register');
+                            }
+                        });
+                    }else{
+                        log.add('Error', 'We can not save weibo info.', 'Save weibo info error.');
+                        req.flash('info', '抱歉，保存用户微博资料失败，无法登录');
+                        res.redirect('/users/register');
+                    }
+                });
+            }
+        });
+    };
     var routeRes = function (accessTokenPassed) {
         getWeiboInfo(function (weiboInfo) {
-            console.log(weiboInfo);
-            res.render('users/society/weibo_register', {
-                title: '补充资料',
-                buf: buf,
-                isLegal: isLegal,
-                expires_in: accessTokenPassed.expires_in,
-                expireDate: accessTokenPassed.expireDate,
-                uid: accessTokenPassed.uid,
-                access_token: accessTokenPassed.access_token,
-                weiboInfo: weiboInfo
+            saveWeiboInfo(weiboInfo, function () {
+                res.render('users/society/weibo_register', {
+                    title: '登录成功',
+                    isLegal: isLegal,
+                    expireDate: accessTokenPassed.expireDate,
+                    uid: accessTokenPassed.uid,
+                    access_token: accessTokenPassed.access_token
+                });
             });
         });
     };

@@ -7,7 +7,7 @@ qiniu.conf.ACCESS_KEY = 'kJhScafDxwS76FQZ4RNORIpRLsPFaa-1mNmoxo8X';
 qiniu.conf.SECRET_KEY = 'GPsOPek--mTpl5qREbmXUeEk_CDzMzUrGM-Bdqdz';
 
 router.get('/uptoken', function (req, res) {
-    var uptoken = function uptoken() {
+    var uptoken = function () {
         var putPolicy = new qiniu.rs.PutPolicy('lazycoffee');
         //putPolicy.callbackUrl = callbackUrl;
         //putPolicy.callbackBody = callbackBody;
