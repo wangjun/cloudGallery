@@ -17,7 +17,7 @@ router.get('/', function(req, res) {
     res.render('index');
 });
 
-router.use('/my-gallery', myGallery);
+router.use('/my-gallery', checkUser.isLogin, myGallery);
 router.use('/users', users);
 router.use('/articles', articles);
 router.use('/utility', utility);
@@ -25,5 +25,10 @@ router.use('/cdn', cdn);
 router.use('/gallery', gallery);
 router.use('/admin', checkUser.isLogin, checkUser.isAdmin, admin);
 router.use('/image', image);
+//router.use('/test', function (req, res) {
+//    var libUser = require('../lib/user/user');
+//    libUser.saveAvatarByUrl(req.session.weiboInfo.avatar_hd, req.session.user._id);
+//    res.json('test');
+//});
 
 module.exports = router;

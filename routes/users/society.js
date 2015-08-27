@@ -5,8 +5,9 @@ var https = require('https');
 var querystring = require('querystring');
 var moment = require('moment');
 var Users = require('../../model/users');
-var Weibo = require('.././model/sinaWeibo');
+var Weibo = require('../../model/sinaWeibo');
 var log = require('../../lib/admin/log');
+var libUser = require('../../lib/user/user');
 router.get('/weibo/register', function (req, res, next) {
     var reqBuf = req.query.state;
     var buf = req.session.buf;
@@ -67,7 +68,7 @@ router.get('/weibo/register', function (req, res, next) {
         var option = {
             hostname: 'api.weibo.com',
             port: 443,
-            path: '/2/users/show.json?uid=' + accessToken.uid + '&access_token=' + accessToken.access_token,
+            path: '/2/users/show.json?uid=' + req.session.accessToken.uid + '&access_token=' + req.session.accessToken.access_token,
             method: 'GET'
         };
         var weiboInfoReq = https.request(option, function (weiboInfoRes) {
@@ -92,13 +93,14 @@ router.get('/weibo/register', function (req, res, next) {
     };
     var saveWeiboInfo = function (weiboInfo, cb) {
         var callback = cb || function(){};
-        Weibo.findOne({id: weiboInfo.id}, function (findWeiboErr, foundWeibo) {
+        Weibo.findOne({uid: weiboInfo.id}, function (findWeiboErr, foundWeibo) {
             if(findWeiboErr){return next(findWeiboErr); }
             if(foundWeibo){
                 Users.findOne({_id: foundWeibo.user}, function(findUserErr, foundUser){
                     if(findUserErr){return next(findUserErr); }
                     if(foundUser){
-                        req.session.users = {
+                        console.log('Already has weibo account, just login.');
+                        req.session.user = {
                             _id: foundUser._id,
                             name: foundUser.name,
                             type: foundUser.type
@@ -111,19 +113,15 @@ router.get('/weibo/register', function (req, res, next) {
                     }
                 });
             }else{
-                var newWeibo = new Weibo(function () {
-                    var returnObject = {};
-                    for(var key in weiboInfo){
-                        if(weiboInfo.hasOwnProperty(key)){
-                            returnObject[key] = weiboInfo[key];
-                        }
-                    }
-                    returnObject.expires_in = req.session.accessToken.expires_in;
-                    returnObject.expireDate = req.session.accessToken.expireDate;
-                    returnObject.access_token = req.session.accessToken.access_token;
-                    returnObject.uid = req.session.accessToken.uid;
-                    return returnObject;
+                var expreDataObject = moment(req.session.accessToken.expireDate, 'YYYY年MM月DD日HH时mm分ss秒').toDate();
+                var newWeibo = new Weibo({
+                    weiboInfo: weiboInfo,
+                    expires_in: req.session.accessToken.expires_in,
+                    expireDate: expreDataObject,
+                    access_token: req.session.accessToken.access_token,
+                    uid: req.session.accessToken.uid
                 });
+                newWeibo.markModified('weiboInfo');
                 newWeibo.save(function (saveWeiboErr, savedWeibo) {
                     if(saveWeiboErr){return next(saveWeiboErr); }
                     if(savedWeibo){
@@ -140,12 +138,11 @@ router.get('/weibo/register', function (req, res, next) {
                                     function (updateWeiboErr, updatedWeibo) {
                                         if(updateWeiboErr){return next(updateWeiboErr); }
                                         if(updatedWeibo){
-                                            req.session.users = {
-                                                _id: savedUser._id,
-                                                name: savedUser.name,
-                                                type: savedUser.type
-                                            };
-                                            callback();
+                                            console.log('Did not have weibo account, but now has already saved it and login.');
+                                            libUser.login(savedUser, req);
+                                            libUser.saveAvatarByUrl(savedWeibo.weiboInfo.avatar_hd, savedUser._id, function () {
+                                                callback();
+                                            });
                                         }else{
                                             log.add('Error', 'We can not update weibo info.', 'Update weibo info error.');
                                             req.flash('info', '抱歉，更新用户微博资料失败，无法登录');
@@ -171,29 +168,38 @@ router.get('/weibo/register', function (req, res, next) {
     var routeRes = function (accessTokenPassed) {
         getWeiboInfo(function (weiboInfo) {
             saveWeiboInfo(weiboInfo, function () {
-                res.render('users/society/weibo_register', {
-                    title: '登录成功',
-                    isLegal: isLegal,
-                    expireDate: accessTokenPassed.expireDate,
-                    uid: accessTokenPassed.uid,
-                    access_token: accessTokenPassed.access_token
+                libUser.getAvatar(req.session.user._id, function (avatar) {
+                    res.render('users/society/weibo_register', {
+                        title: '登录成功',
+                        isLegal: isLegal,
+                        expireDate: accessTokenPassed.expireDate,
+                        uid: accessTokenPassed.uid,
+                        access_token: accessTokenPassed.access_token,
+                        avatar: avatar
+                    });
                 });
             });
         });
     };
-    if (accessToken === undefined) {
-        getAccessToken(function (accessTokenArg) {
-            routeRes(accessTokenArg);
-        });
-    } else {
-        if (accessToken.error) {
+    if(isLegal){
+        if (accessToken === undefined) {
             getAccessToken(function (accessTokenArg) {
                 routeRes(accessTokenArg);
             });
         } else {
-            routeRes(accessToken);
+            if (accessToken.error) {
+                getAccessToken(function (accessTokenArg) {
+                    routeRes(accessTokenArg);
+                });
+            } else {
+                routeRes(accessToken);
+            }
         }
+    }else{
+        req.flash('error', '请求不合法');
+        res.redirect('/users/register');
     }
+
 });
 router.post('/weibo/register', function (req, res) {
     res.json({content: 'you passed'});

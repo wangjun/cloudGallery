@@ -7,24 +7,26 @@
 {% endblock %}
 {% block body %}
     <div id="choose-register">
-        <h2 class="ui header">
+        <h2 class="ui header" id="register-header">
+            <i class="add user icon"></i>
             <div class="content">
                 选择注册方式
             </div>
         </h2>
         <div class="ui divider"></div>
-        <a href="/users/email/register" class="ui black button"><i class="mail outline icon"></i>邮箱</a>
+        <a href="/users/email/register" class="ui basic black button"><i class="mail outline icon"></i>邮箱</a>
         <span id="phone-register-wrap">
-            <a href="/users/phone/register" class="ui black disabled button" id="phone-register">
+            <a href="/users/phone/register" class="ui disabled button " id="phone-register">
                 <i class="mobile icon"></i>手机
             </a>
         </span>
+        <a href="/users/login" class="ui button basic black">已有账号？</a>
         <div class="ui horizontal divider">
-            or
+            OR
         </div>
-        <a class="ui button circular icon basic yellow"
+        <a class="ui button circular icon basic"
            id="weibo-register-button"
-           href="https://api.weibo.com/oauth2/authorize?client_id=2521804735&redirect_uri=http://localhost:3100/users/society/weibo/register&state={{ buf }}">
+           href="https://api.weibo.com/oauth2/authorize?client_id=2521804735&redirect_uri=http://lazycoffee.com:3100/users/society/weibo/register&state={{ buf }}">
             <i class="weibo icon"></i>
         </a>
     </div>

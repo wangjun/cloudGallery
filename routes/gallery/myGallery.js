@@ -8,27 +8,22 @@ var moment = require('moment');
 
 router.get('/', function (req, res, next) {
     var user = req.session.user;
-    if(user){
-        var userObjectId = new ObjectId(user._id);
-        Galleries.find({owner: userObjectId})
-            .populate('thumbnail')
-            .exec(function (err, foundGalleries) {
-                if(err){return next(err); }
-                var galleries = [];
-                for(let i = 0; i < foundGalleries.length; i++){
-                    var date = moment(foundGalleries[i].updateTime).format('YYYY年M月DD日');
-                    galleries[i] = foundGalleries[i];
-                    galleries[i].date = date;
-                }
-                res.render('gallery/myGallery', {
-                    galleries: galleries,
-                    title: '我的相册'
-                });
+    var userObjectId = new ObjectId(user._id);
+    Galleries.find({owner: userObjectId})
+        .populate('thumbnail')
+        .exec(function (err, foundGalleries) {
+            if(err){return next(err); }
+            var galleries = [];
+            for(let i = 0; i < foundGalleries.length; i++){
+                var date = moment(foundGalleries[i].updateTime).format('YYYY年M月DD日');
+                galleries[i] = foundGalleries[i];
+                galleries[i].date = date;
+            }
+            res.render('gallery/myGallery', {
+                galleries: galleries,
+                title: '我的相册'
             });
-    }else{
-        req.flash('warning', '请先登录~');
-        res.redirect('/users/login');
-    }
+        });
 });
 
 module.exports = router;

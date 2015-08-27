@@ -24,14 +24,17 @@ router.use('/phone', phone);
 router.use('/society', society);
 /* login page */
 router.get('/login', function (req, res) {
+    var buf = randomstring.generate(10);
+    req.session.buf = buf;
     var frontValue = {
-        title: '选择一种登录方式'
+        title: '选择一种登录方式',
+        buf: buf
     };
     res.render('users/login', frontValue);
 });
 /* get register page */
 router.get('/register', function (req, res) {
-    var buf = randomstring.generate(5);
+    var buf = randomstring.generate(10);
     req.session.buf = buf;
     var frontValue = {
         title: '选择注册方式',

@@ -15,15 +15,17 @@
             </div>
         </h2>
         <div class="ui divider"></div>
-        <a href="/users/email/login" class="ui black button"><i class="mail outline icon"></i>邮箱</a>
+        <a href="/users/email/login" class="ui basic black button"><i class="mail outline icon"></i>邮箱</a>
         <a href="/users/phone/login" class="ui disabled button" id="phone-login"><i class="mobile icon"></i>手机</a>
         <a href="/users/register" class="ui black basic button">没有账号？</a>
-        <h2 class="ui header">
-            <i class="sign in icon"></i>
-            <div class="content">
-                使用社交账号登录
-            </div>
-        </h2>
+        <div class="ui horizontal divider">
+            OR
+        </div>
+        <a class="ui button circular icon basic"
+           id="weibo-register-button"
+           href="https://api.weibo.com/oauth2/authorize?client_id=2521804735&redirect_uri=http://lazycoffee.com:3100/users/society/weibo/register&state={{ buf }}">
+            <i class="weibo icon"></i>
+        </a>
     </div>
 </div>
 {% endblock %}

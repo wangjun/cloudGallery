@@ -6,7 +6,11 @@
 {% block body %}
     <div class="ui container" id="add-wrapper">
         <div id="add">
-            <h2>新建相册</h2>
+            <h2 class="ui header">
+                <div class="content">
+                    新建相册
+                </div>
+            </h2>
             <div class="ui divider"></div>
             <form action="/gallery/add" class="ui form" method="post">
                 <input type="hidden" name="_csrf" value="{{ csrfToken }}">
