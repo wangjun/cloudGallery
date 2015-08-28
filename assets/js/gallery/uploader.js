@@ -51,20 +51,18 @@ Uploader.prototype.showImage = function (cb){
                 '<span class="date">' + date + '</span>' +
                 '</div>' +
                 '</div>')
-                .append('<div class="ui bottom attached progress active yellow" data-percent="0">' +
-                '<div class="bar" style="width:0;"></div>' +
+                .append('<div class="ui bottom attached progress active yellow" data-percent="1">' +
+                '<div class="bar" style="width:1px;"></div>' +
                 '</div>');
             $previewHtml.find('.image').append(img);
-            //self.$dom.append($previewHtml);
-            window.$imagesLayout.prepend( $previewHtml )
-                .masonry('prepended', $previewHtml)
-                .masonry('layout');
+            //self.$dom.prepend( $previewHtml );
+            window.$imagesLayout.prepend( $previewHtml ).masonry('prepended', $previewHtml);
             self.$preview = $previewHtml;
             cb();
         },
         {
             orientation: self.orientation,
-            maxWidth: 300,
+            maxWidth: 260,
             maxHeight: 500,
             canvas: true
         }
@@ -77,7 +75,7 @@ Uploader.prototype.uploadImage = function (cb){
     xhr.open('POST', self.uploadUrl, true);
     xhr.upload.onprogress = function(event){
         var percent = Math.ceil((event.loaded / event.total) * 100);
-        self.$preview.find('.bar').css({width: percent + '%'}).attr('data-percent', percent);
+        self.$preview.find('.bar').css({width: percent + '%'}).parent().attr('data-percent', percent);
     };
     xhr.onreadystatechange = function(){
         if(xhr.readyState === 4 && xhr.status === 200){
@@ -87,8 +85,6 @@ Uploader.prototype.uploadImage = function (cb){
                 .attr('data-key', self.uploadResponse.key)
                 .attr('id', 'image-' + self.uploadResponse.hash)
                 .attr('data-name', self.file.name);
-            var $img = '<img src="//cdn.lazycoffee.com/' + self.uploadResponse.key + '_w1024" alt="' + self.file.name + '">';
-            self.$preview.find('canvas').replaceWith($img);
             self.$preview.find('.progress').removeClass('active yellow').addClass('blue');
             cb();
         }
@@ -122,7 +118,7 @@ Uploader.prototype.saveImageInDatabase = function (){
         if(status === 'success'){
             if(data.state === 5) {
                 self.$preview.find('.content>span').text('重复上传（已删除）');
-                self.$preview.find('.progress').removeClass('blue yellow');
+                self.$preview.find('.progress').removeClass('blue yellow').addClass('disabled');
             }else if([2, 4].indexOf(data.state) === -1){
                 window.alertModal('抱歉，服务器发生错误，保存不了你的图片...');
             }else {
@@ -133,11 +129,11 @@ Uploader.prototype.saveImageInDatabase = function (){
         }
     });
 };
-Uploader.prototype.removeItem = function (hash, galleryId, cb){
+Uploader.prototype.removeItem = function (key, galleryId, cb){
     var self = this;
     var callback = cb || function (){};
     self.getUpToken(function () {
-        $.post(self.removeUrl, {hash: hash, galleryId: galleryId}, function (data, status) {
+        $.post(self.removeUrl, {key: key, galleryId: galleryId}, function (data, status) {
             console.log(data);
             if(status === 'success'){
                 callback(data);

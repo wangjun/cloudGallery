@@ -113,11 +113,11 @@ router.get('/weibo/register', function (req, res, next) {
                     }
                 });
             }else{
-                var expreDataObject = moment(req.session.accessToken.expireDate, 'YYYY年MM月DD日HH时mm分ss秒').toDate();
+                var expireDataObject = moment(req.session.accessToken.expireDate, 'YYYY年MM月DD日HH时mm分ss秒').toDate();
                 var newWeibo = new Weibo({
                     weiboInfo: weiboInfo,
                     expires_in: req.session.accessToken.expires_in,
-                    expireDate: expreDataObject,
+                    expireDate: expireDataObject,
                     access_token: req.session.accessToken.access_token,
                     uid: req.session.accessToken.uid
                 });

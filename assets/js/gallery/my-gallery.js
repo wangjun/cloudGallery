@@ -19,7 +19,6 @@ $(document).ready(function () {
         if($(this).hasClass('disabled')){
             window.alertModal('删除中，请稍等...');
         }else{
-            var thisDefaultText = $(this).html();
             $(this).addClass('disabled loading');
             $.post('/gallery/remove', {galleryId: currentGalleryId}, function (res, status) {
                 if(status === 'success'){

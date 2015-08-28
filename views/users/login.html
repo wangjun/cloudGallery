@@ -6,26 +6,26 @@
     <script src="/js/users/login.js"></script>
 {% endblock %}
 {% block body %}
-<div class="ui center aligned grid">
-    <div class="column" id="choose-login">
-        <h2 class="ui header">
-            <i class="sign in icon"></i>
-            <div class="content">
-                选择登录方式
+    <div class="ui center aligned grid">
+        <div class="column" id="choose-login">
+            <h2 class="ui header">
+                <i class="sign in icon"></i>
+                <div class="content">
+                    选择登录方式
+                </div>
+            </h2>
+            <div class="ui divider"></div>
+            <a href="/users/email/login" class="ui basic black button"><i class="mail outline icon"></i>邮箱</a>
+            <a href="/users/phone/login" class="ui disabled button" id="phone-login"><i class="mobile icon"></i>手机</a>
+            <a href="/users/register" class="ui black basic button">没有账号？</a>
+            <div class="ui horizontal divider">
+                OR
             </div>
-        </h2>
-        <div class="ui divider"></div>
-        <a href="/users/email/login" class="ui basic black button"><i class="mail outline icon"></i>邮箱</a>
-        <a href="/users/phone/login" class="ui disabled button" id="phone-login"><i class="mobile icon"></i>手机</a>
-        <a href="/users/register" class="ui black basic button">没有账号？</a>
-        <div class="ui horizontal divider">
-            OR
+            <a class="ui button circular icon basic"
+               id="weibo-register-button"
+               href="https://api.weibo.com/oauth2/authorize?client_id=2521804735&redirect_uri=http://www.lazycoffee.com/users/society/weibo/register&state={{ buf }}">
+                <i class="weibo icon"></i>
+            </a>
         </div>
-        <a class="ui button circular icon basic"
-           id="weibo-register-button"
-           href="https://api.weibo.com/oauth2/authorize?client_id=2521804735&redirect_uri=http://www.lazycoffee.comk/users/society/weibo/register&state={{ buf }}">
-            <i class="weibo icon"></i>
-        </a>
     </div>
-</div>
 {% endblock %}

@@ -1,10 +1,16 @@
 @import "../variables/variables.less";
 
-canvas{
-  max-width:100%;
-}
 #images{
-  .card{
+  margin: 0;
+  >.card{
+    width:23%;
+    margin: 1%;
+    >.image{
+      >canvas{
+        display: block;
+        width:100%;
+      }
+    }
     >.content{
       >.header{
         white-space: nowrap;
@@ -15,10 +21,17 @@ canvas{
         font-weight: 400;
       }
     }
+    &.disabled{
+      opacity: 0.5;
+      pointer-events: none;
+    }
   }
 }
 #show-image-modal{
   >.content{
     text-align: center;
   }
+}
+#no-image-gallery{
+  margin: 5% auto 0 auto;
 }

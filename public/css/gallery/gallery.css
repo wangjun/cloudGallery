@@ -1,1 +1,1 @@
-canvas{max-width:100%}#images .card>.content>.header{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block;font-size:1em;font-weight:400}#show-image-modal>.content{text-align:center}
+#images{margin:0}#images>.card{width:23%;margin:1%}#images>.card>.image>canvas{display:block;width:100%}#images>.card>.content>.header{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block;font-size:1em;font-weight:400}#images>.card.disabled{opacity:.5;pointer-events:none}#show-image-modal>.content{text-align:center}#no-image-gallery{margin:5% auto 0}

@@ -26,27 +26,26 @@
             <input id="upload-input" multiple type="file"/>
         </form>
         <div>
-            <button id="upload-button" class="ui button blue"><i class="cloud upload icon"></i>上传照片</button>
             {% if session.user %}
-                <div class="ui dropdown button">
-                    <i class="share alternate icon"></i>
-
-                    <div class="text">分享相册</div>
-                    <i class="dropdown icon"></i>
-
-                    <div class="menu">
-                        {#<div class="item" id="lovely-link">简洁链接</div>#}
-                        <div class="item">微信朋友圈</div>
-                        <div class="item">新浪微博</div>
-                        <div class="item">微信</div>
-                    </div>
-                </div>
+                <button id="upload-button" class="ui button blue"><i class="cloud upload icon"></i>上传照片</button>
             {% endif %}
+            <div class="ui green dropdown button">
+                <i class="share alternate icon"></i>
+                <div class="text">分享相册</div>
+                <i class="dropdown icon"></i>
+                <div class="menu">
+                    {#<div class="item" id="lovely-link">简洁链接</div>#}
+                    {#<div class="item">微信朋友圈</div>#}
+                    <div class="item" id="weibo-share-btn"><i class="weibo icon"></i>新浪微博</div>
+                    {#<div class="item">微信</div>#}
+                </div>
+            </div>
             {#<button class="ui button">设置相册头像</button>#}
             {#<button class="ui button">设置相册背景</button>#}
         </div>
         <div class="ui divider"></div>
         <div class="ui four link cards" id="images">
+            <div class="card-sizer"></div>
             {% if gallery.images.length %}
                 {% for item in gallery.images|reverse() %}
                     <div class="card"
@@ -55,13 +54,16 @@
                          data-name="{{ item.fileName }}"
                          id="image-{{ item.hash }}">
                         <div class="image">
-                            <img src="//cdn.lazycoffee.com/{{ item.key }}_w1024"/>
+                            <img src="//cdn.lazycoffee.com/{{ item.key }}_w260"/>
                         </div>
                         <div class="content">
                             <span class="header">{{ item.fileName }}</span>
                             <div class="meta">
                                 <span class="date">{{ item.DateFormatted }}</span>
                             </div>
+                        </div>
+                        <div class="ui bottom attached progress green" data-percent="100">
+                            <div class="bar" style="width: 100%;"></div>
                         </div>
                     </div>
                 {% endfor %}
@@ -80,18 +82,20 @@
             Image name
         </div>
         <div class="content">
-            <img src="" alt=""/>
+            <img src=""/>
         </div>
         <div class="actions">
-            <div class="ui red deny button" id="remove-image-button" data-action="deleteItem" data-key="" data-hash="">
-                <i class="trash outline icon"></i>
-                删除
-            </div>
-            <div class="ui button blue">
-                <i class="share alternate icon"></i>
-                分享
-            </div>
-            <div class="ui  button">
+            {% if session.user %}
+                <div class="ui red deny button" id="remove-image-button" data-action="deleteItem">
+                    <i class="trash outline icon"></i>
+                    删除
+                </div>
+            {% endif %}
+            {#<div class="ui button blue">#}
+                {#<i class="share alternate icon"></i>#}
+                {#分享#}
+            {#</div>#}
+            <div class="ui button" id="hide-image-modal">
                 <i class="remove icon"></i>
                 关闭
             </div>

@@ -8,6 +8,7 @@
     "start": "iojs ./bin/www"
   },
   "dependencies": {
+    "URIjs": "^1.16.0",
     "ascii-captcha": "^0.0.3",
     "bcrypt-nodejs": "^0.0.3",
     "body-parser": "^1.13.0",

@@ -126,7 +126,6 @@ router.post('/save-image', function (req, res, next) {
     var key = req.body.key;
     var fileName = req.body.fileName;
     var galleryId = req.body.galleryId;
-    var date = req.body.date;
     var user = req.session.user;
     if (user) {
         var userObjectId = new ObjectId(user._id);
@@ -227,8 +226,10 @@ router.post('/save-image', function (req, res, next) {
                 }
             });
     } else {
-        req.flash('warning', '请先登陆~');
-        res.redirect('/users/login');
+        req.json({
+            state: 5,
+            status: 'Have not login.'
+        });
     }
 
 });
@@ -239,94 +240,108 @@ router.post('/remove-image', function (req, res, next) {
     qiniu.conf.ACCESS_KEY = config.cdn.qiniu.AccessKey;
     qiniu.conf.SECRET_KEY = config.cdn.qiniu.SecretKey;
     if (user) {
-        var hash = req.body.hash;
+        var key = req.body.key;
         var galleryId = req.body.galleryId;
-        Images.findOneAndRemove({hash: hash})
+        Images.findOne({key: key})
             .populate('belongGalleries')
+            .populate('owners')
             .exec(function (findImageErr, image) {
-                if (findImageErr) {
-                    return next(findImageErr);
-                }
-                var client = new qiniu.rs.Client();
-                if (image) {
-                    if(image.belongGalleries.length > 1){
-                        image.belongGalleries.forEach(function (eachGallery) {
-                            if(eachGallery._id.toHexString() === galleryId){
-                                Galleries.findOneAndUpdate(
-                                    {_id: eachGallery._id},
-                                    {$pull: {images: {_id: image._id}}},
-                                    function (updateGalleryErr, updatedGallery) {
-                                        if(updateGalleryErr){return next(updateGalleryErr); }
-                                        res.json({
-                                            image: image,
-                                            gallery: updatedGallery,
-                                            state: 1,
-                                            msg: 'Image removed and removed imageId in gallery'
+                if (findImageErr) {return next(findImageErr); }
+                var ownerIds = [];
+                image.owners.forEach(function (eachOwner) {
+                    ownerIds.push(eachOwner._id.toHexString());
+                });
+                if(ownerIds.indexOf(user._id) === -1){
+                    req.json({
+                        state: 8,
+                        msg: 'You are not the image owner.'
+                    });
+                }else{
+                    var client = new qiniu.rs.Client();
+                    if (image) {
+                        if(image.belongGalleries.length > 1){
+                            Galleries.findOneAndUpdate(
+                                {_id: new ObjectId(galleryId)},
+                                {$pull: {images: {_id: image._id}}},
+                                function (updateGalleryErr, updatedGallery) {
+                                    if(updateGalleryErr){return next(updateGalleryErr); }
+                                    Images.findOneAndUpdate(
+                                        {_id: image._id},
+                                        {$pull: {belongGalleries: {_id: updatedGallery._id}, owners: {_id: new ObjectId(user._id)}}},
+                                        function (updateImageErr, updatedImage) {
+                                            if(updateImageErr){return next(updateImageErr); }
+                                            if(updatedImage){
+                                                res.json({
+                                                    image: image,
+                                                    gallery: updatedGallery,
+                                                    state: 1,
+                                                    msg: 'Image have not removed in CDN and database but removed imageId in this gallery and image belong gallery.'
+                                                });
+                                            }else{
+                                                res.json({
+                                                    image: image,
+                                                    gallery: updatedGallery,
+                                                    state: 5,
+                                                    msg: 'Image have not removed in CDN and database but removed imageId in this gallery but not image belong gallery.'
+                                                });
+                                            }
                                         });
+                                }
+                            );
+                        }else{
+                            client.remove(config.cdn.qiniu.BucketName, image.key, function (err, ret) {
+                                if (err) {
+                                    res.json({
+                                        state: 2,
+                                        status: 'ＣＤＮ上删除失败，数据库中不继续删除，具体原因请查看控制台。',
+                                        image: image,
+                                        err: err,
+                                        ret: ret
                                     });
-                            }
-                        });
+                                    // http://developer.qiniu.com/docs/v6/api/reference/codes.html
+                                } else {
+                                    // ok
+                                    Images.findOneAndRemove({_id: image._id}, function (removeImageErr, removedImage) {
+                                        if(removeImageErr){return next(removeImageErr); }
+                                        if(removedImage){
+                                            res.json({
+                                                    image: image,
+                                                    state: 4,
+                                                    status: 'Delete image both in CDN and database entirely.'
+                                                }
+                                            );
+                                        }
+                                    });
+
+                                }
+                            });
+                        }
                     }else{
-                        client.remove(config.cdn.qiniu.BucketName, image.key, function (err, ret) {
-                            var returnData = {};
-                            returnData.image = image;
+                        //数据库没有此照片
+                        client.remove(config.cdn.qiniu.BucketName, key, function (err, ret) {
                             if (err) {
-                                let situation1 = function* () {
-                                    returnData.state = 2;
-                                    returnData.status = '照片已从数据库中删除，但ＣＤＮ上删除失败，具体原因请查看控制台。';
-                                    returnData.err = err;
-                                    returnData.ret = ret;
-                                    console.log(returnData);
-                                    console.log(err);
-                                    console.log(ret);
-                                    yield res.json(returnData);
-                                };
-                                situation1().next();
-                                // http://developer.qiniu.com/docs/v6/api/reference/codes.html
+                                res.json({
+                                    state: 6,
+                                    status2: '数据库中没有此照片，而且ＣＤＮ上删除也失败，具体原因请查看控制台。',
+                                    err: err,
+                                    image: image,
+                                    ret: ret
+                                });
                             } else {
-                                // ok
-                                let situation2 = function* () {
-                                    returnData.state = 4;
-                                    returnData.status = '数据库和ＣＤＮ都已把照片删除。';
-                                    yield res.json(returnData);
-                                };
-                                situation2().next();
+                                res.json({
+                                    state: 7,
+                                    status2: '数据库中没有此照片，但ＣＤＮ上有，而且成功删除此照片。'
+                                });
                             }
                         });
                     }
-                } else {
-                    //数据库没有此照片
-                    client.remove(config.cdn.qiniu.BucketName, hash, function (err, ret) {
-                        var returnData = {};
-                        returnData.image = image;
-                        if (err) {
-                            let situation4 = function* () {
-                                returnData.state = 6;
-                                returnData.status2 = '数据库中没有此照片，而且ＣＤＮ上删除也失败，具体原因请查看控制台。';
-                                returnData.err = err;
-                                returnData.ret = ret;
-                                console.log(returnData);
-                                console.log(err);
-                                console.log(ret);
-                                yield res.json(returnData);
-                            };
-                            situation4().next();
-                            // http://developer.qiniu.com/docs/v6/api/reference/codes.html
-                        } else {
-                            // ok
-                            let situation5 = function* () {
-                                returnData.state = 7;
-                                returnData.status2 = '数据库中没有此照片，但ＣＤＮ上有，而且成功删除此照片。';
-                                yield res.json(returnData);
-                            };
-                            situation5().next();
-                        }
-                    });
                 }
             });
     } else {
-        req.flash('warning', '请先登录~');
-        res.redirect('/users/login');
+        req.json({
+            state: 3,
+            msg: '未登录，无法删除'
+        });
     }
 });
 
