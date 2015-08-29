@@ -88,7 +88,7 @@ router.get('/weibo/register', function (req, res, next) {
         });
         weiboInfoReq.end();
         weiboInfoReq.on('error', function (err) {
-            console.log(err);
+            next(err);
         });
     };
     var saveWeiboInfo = function (weiboInfo, cb) {

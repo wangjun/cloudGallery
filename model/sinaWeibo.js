@@ -7,6 +7,9 @@ var sinaWeiboSchema = new Schema({
     uid: {type: String},
     expires_in: {type: String},
     expireDate: {type: Date},
+    appkey: {type: String},
+    scope: {type: String},
+    create_at: {type: String},
     //weibo info
     weiboInfo: {type: Schema.Types.Mixed},
     //reference user model
