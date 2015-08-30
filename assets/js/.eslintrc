@@ -54,13 +54,14 @@
     "space-infix-ops": 2,
     "space-return-throw-case": 2,
     "space-unary-ops": [2, { "words": true, "nonwords": false }],
-    "strict": [2, "global"],
+    "strict": [2, "function"],
     "yoda": [2, "never"],
     "no-console": 0
   },
   "env": {
     "browser": true,
     "node": false,
-    "es6": true
+    "es6": true,
+    "jquery": true
   }
 }

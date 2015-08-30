@@ -6,6 +6,7 @@ var bodyParser = require('body-parser');
 var Users = require('../../model/users');
 var Galleries = require('../../model/galleries');
 var gallery = require('../../lib/gallery/gallery');
+var libImage = require('../../lib/gallery/image');
 var Images = require('../../model/images');
 var csrf = require('csurf');
 var mongoose = require('mongoose');
@@ -56,10 +57,14 @@ router.post('/add', parseForm, csrfProtection, function (req, res, next) {
                 owner: userObjectId
             });
             newGallery.save(function (saveGalleryErr, savedGallery) {
-                if (saveGalleryErr) {return next(saveGalleryErr); }
+                if (saveGalleryErr) {
+                    return next(saveGalleryErr);
+                }
                 Users.findOneAndUpdate({_id: userObjectId}, {$push: {galleries: savedGallery._id}}, {'new': true},
                     function (findUserErr) {
-                        if (findUserErr) {return next(findUserErr); }
+                        if (findUserErr) {
+                            return next(findUserErr);
+                        }
                         req.flash('success', '成功创建新相册~');
                         var newGalleryUrl = '/gallery/' + savedGallery._id.toHexString();
                         res.redirect(newGalleryUrl);
@@ -79,18 +84,20 @@ router.post('/remove', function (req, res, next) {
         .populate('owner')
         .populate('images')
         .exec(function (findErr, foundGallery) {
-            if(findErr){return next(findErr); }
-            if(foundGallery){
+            if (findErr) {
+                return next(findErr);
+            }
+            if (foundGallery) {
                 console.log(foundGallery);
-                if(foundGallery.owner._id.toHexString() === req.session.user._id){
-                    if(foundGallery.images.length === 0){
+                if (foundGallery.owner._id.toHexString() === req.session.user._id) {
+                    if (foundGallery.images.length === 0) {
                         gallery.removeOne(galleryId, function (removeRes) {
-                            if(removeRes.state === 1){
+                            if (removeRes.state === 1) {
                                 res.json({
                                     state: 3,
                                     msg: 'Remove gallery success!'
                                 });
-                            }else{
+                            } else {
                                 res.json({
                                     state: 4,
                                     msg: 'We found the gallery and we gonna to remove it. But failed.' +
@@ -98,20 +105,20 @@ router.post('/remove', function (req, res, next) {
                                 });
                             }
                         });
-                    }else{
+                    } else {
                         res.json({
                             state: 5,
                             msg: 'We can not delete a gallery has image. Please remove the images first.'
                         });
                     }
 
-                }else{
+                } else {
                     res.json({
                         state: 2,
                         msg: 'This is not your gallery, remove failed.'
                     });
                 }
-            }else{
+            } else {
                 res.json({
                     state: 1,
                     msg: 'Sorry, we can not find the gallery, no gallery removed.'
@@ -200,7 +207,7 @@ router.post('/save-image', function (req, res, next) {
                             }
                             if (updatedImage) {
                                 updateGallery(updatedImage, 1);
-                            }else{
+                            } else {
                                 //found no image, create a new one.
                                 var newImage = new Images({
                                     hash: hash,
@@ -246,38 +253,49 @@ router.post('/remove-image', function (req, res, next) {
             .populate('belongGalleries')
             .populate('owners')
             .exec(function (findImageErr, image) {
-                if (findImageErr) {return next(findImageErr); }
+                if (findImageErr) {
+                    return next(findImageErr);
+                }
                 var ownerIds = [];
                 image.owners.forEach(function (eachOwner) {
                     ownerIds.push(eachOwner._id.toHexString());
                 });
-                if(ownerIds.indexOf(user._id) === -1){
+                if (ownerIds.indexOf(user._id) === -1) {
                     req.json({
                         state: 8,
                         msg: 'You are not the image owner.'
                     });
-                }else{
+                } else {
                     var client = new qiniu.rs.Client();
                     if (image) {
-                        if(image.belongGalleries.length > 1){
+                        if (image.belongGalleries.length > 1) {
                             Galleries.findOneAndUpdate(
                                 {_id: new ObjectId(galleryId)},
                                 {$pull: {images: {_id: image._id}}},
                                 function (updateGalleryErr, updatedGallery) {
-                                    if(updateGalleryErr){return next(updateGalleryErr); }
+                                    if (updateGalleryErr) {
+                                        return next(updateGalleryErr);
+                                    }
                                     Images.findOneAndUpdate(
                                         {_id: image._id},
-                                        {$pull: {belongGalleries: {_id: updatedGallery._id}, owners: {_id: new ObjectId(user._id)}}},
+                                        {
+                                            $pull: {
+                                                belongGalleries: {_id: updatedGallery._id},
+                                                owners: {_id: new ObjectId(user._id)}
+                                            }
+                                        },
                                         function (updateImageErr, updatedImage) {
-                                            if(updateImageErr){return next(updateImageErr); }
-                                            if(updatedImage){
+                                            if (updateImageErr) {
+                                                return next(updateImageErr);
+                                            }
+                                            if (updatedImage) {
                                                 res.json({
                                                     image: image,
                                                     gallery: updatedGallery,
                                                     state: 1,
                                                     msg: 'Image have not removed in CDN and database but removed imageId in this gallery and image belong gallery.'
                                                 });
-                                            }else{
+                                            } else {
                                                 res.json({
                                                     image: image,
                                                     gallery: updatedGallery,
@@ -288,22 +306,33 @@ router.post('/remove-image', function (req, res, next) {
                                         });
                                 }
                             );
-                        }else{
+                        } else {
                             client.remove(config.cdn.qiniu.BucketName, image.key, function (err, ret) {
                                 if (err) {
-                                    res.json({
-                                        state: 2,
-                                        status: 'ＣＤＮ上删除失败，数据库中不继续删除，具体原因请查看控制台。',
-                                        image: image,
-                                        err: err,
-                                        ret: ret
-                                    });
+                                    if (err.code === 612) {
+                                        libImage.removeOneFromDatabase(image._id, galleryId, user._id,
+                                            function (removeImageErr, removedImage, updatedGallery) {
+                                                if (removeImageErr) {
+                                                    res.json(removeImageErr);
+                                                }
+                                                res.json({
+                                                    state: 2,
+                                                    status: 'ＣＤＮ上删除失败，数据库中删除，具体原因请查看控制台。',
+                                                    image: removedImage,
+                                                    gallery: updatedGallery,
+                                                    err: err,
+                                                    ret: ret
+                                                });
+                                            });
+                                    }
                                     // http://developer.qiniu.com/docs/v6/api/reference/codes.html
                                 } else {
                                     // ok
                                     Images.findOneAndRemove({_id: image._id}, function (removeImageErr, removedImage) {
-                                        if(removeImageErr){return next(removeImageErr); }
-                                        if(removedImage){
+                                        if (removeImageErr) {
+                                            return next(removeImageErr);
+                                        }
+                                        if (removedImage) {
                                             res.json({
                                                     image: image,
                                                     state: 4,
@@ -316,7 +345,7 @@ router.post('/remove-image', function (req, res, next) {
                                 }
                             });
                         }
-                    }else{
+                    } else {
                         //数据库没有此照片
                         client.remove(config.cdn.qiniu.BucketName, key, function (err, ret) {
                             if (err) {
@@ -352,16 +381,20 @@ router.get('/:galleryId', function (req, res, next) {
     Galleries.findOne({_id: galleryObjectId})
         .populate('images')
         .exec(function (err, foundGallery) {
-            if (err) {return next(err); }
+            if (err) {
+                return next(err);
+            }
             if (foundGallery) {
                 foundGallery.images.forEach(function (eachImage) {
                     Images.findOne({_id: eachImage._id}, function (findImageErr, foundImage) {
-                        if(!foundImage){
+                        if (!foundImage) {
                             Galleries.findOneAndUpdate({_id: galleryObjectId},
                                 {$pull: {images: {_id: eachImage._id}}},
                                 function (updateGalleryErr, updatedGallery) {
-                                    if(updateGalleryErr){return next(updateGalleryErr); }
-                                    if(updatedGallery){
+                                    if (updateGalleryErr) {
+                                        return next(updateGalleryErr);
+                                    }
+                                    if (updatedGallery) {
                                         log.add('warning',
                                             'Can not find this image: ' + eachImage._id + ' in ' + updatedGallery._id.toHexString() + '. So I am going to remove that gallery in database.',
                                             'remove a unrelated image in a gallery.');

@@ -43,7 +43,5 @@ imagesSchema.statics.updateState = function (_id, fsize, hash, mimeType, putTime
         console.log(updatedImage);
     });
 };
-
 var Images = mongoose.model('Images', imagesSchema);
-
 module.exports = Images;
