@@ -75,6 +75,16 @@ $(document).ready(function () {
     });
     $('#weibo-share-btn').on('click', function (event) {
         event.preventDefault();
+        $.post('/society/weibo/share', {
+            content: 'testing'
+        }, function (data, status) {
+            if(status === 'success'){
+                if(data.state === 4){
+                    window.alertModal('你尚未登录。');
+                }
+                console.log(data);
+            }
+        });
     });
     // init Masonry
     window.$imagesLayout = $images.masonry({

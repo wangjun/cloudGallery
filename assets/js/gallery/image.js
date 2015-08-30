@@ -1,6 +1,6 @@
-'use strict';
 window.image = {};
 window.image.uploadImage = function (file, galleryId) {
+    'use strict';
     $.get('/cdn/uptoken', function (tokenRes, status) {
         if(status === 'success'){
             var xhr = new XMLHttpRequest();
