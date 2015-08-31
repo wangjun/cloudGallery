@@ -1,26 +1,13 @@
 'use strict';
 var express = require('express');
 var router = express.Router();
-var libWeibo = require('../../lib/society/sinaWeibo');
-router.post('/share', function (req, res, next) {
+var weibo = require('../../lib/society/sinaWeibo');
+/* share gallery */
+router.post('/share-gallery', function (req, res, next) {
+    var userId = req.session.user._id;
     var content = req.body.content;
-    if(req.session.user){
-        var userId = req.session.user._id;
-        libWeibo.postAWeiboByUserId(userId, content, function (err, resWeibo) {
-            if(err){
-                res.json(err);
-            }
-            if(resWeibo){
-                res.json({
-                    weibo: resWeibo
-                });
-            }
-        });
-    }else{
-        res.json({
-            state: 4,
-            msg: 'You have not login.'
-        });
-    }
+    weibo.postAWeiboByUserId(userId, content, function (resWeibo) {
+        console.log(resWeibo);
+    });
 });
 module.exports = router;
