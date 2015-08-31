@@ -5,7 +5,7 @@ var upload = require('./upload');
 var bodyParser = require('body-parser');
 var Users = require('../../model/users');
 var Galleries = require('../../model/galleries');
-var gallery = require('../../lib/gallery/gallery');
+var libGallery = require('../../lib/gallery/gallery');
 var libImage = require('../../lib/gallery/image');
 var Images = require('../../model/images');
 var csrf = require('csurf');
@@ -35,51 +35,33 @@ router.get('/add', csrfProtection, function (req, res) {
     }
 });
 
-router.post('/add', parseForm, csrfProtection, function (req, res, next) {
+router.post('/add', libGallery.verifyGalleryReq, libCheckUser.isLogin, parseForm, csrfProtection, function (req, res, next) {
     var title = req.body.title;
     var story = req.body.story;
     var user = req.session.user;
     var userObjectId = new ObjectId(user._id);
-    req.checkBody('title', '相册必须有名称。').notEmpty();
-    req.checkBody('title', '相册名称不能少于3个字，也不能多于25个字。').isLength(2, 25);
-    req.checkBody('story', '相册的故事不能为空哦，说点什么吧~').notEmpty();
-    req.checkBody('story', '相册的故事至少需要十五个字哦，给大家讲点故事吧~').isLength(15, 9999);
-    var errors = req.validationErrors();
-    if (user) {
-        if (errors) {
-            errors.forEach(function (error) {
-                req.flash('warning', error.msg);
-            });
-            res.redirect('/gallery/add');
-        } else {
-            var newGallery = new Galleries({
-                title: title,
-                story: story,
-                owner: userObjectId
-            });
-            newGallery.save(function (saveGalleryErr, savedGallery) {
-                if (saveGalleryErr) {
-                    return next(saveGalleryErr);
-                }
-                Users.findOneAndUpdate({_id: userObjectId}, {$push: {galleries: savedGallery._id}}, {'new': true},
-                    function (findUserErr) {
-                        if (findUserErr) {
-                            return next(findUserErr);
-                        }
-                        req.flash('success', '成功创建新相册~');
-                        var newGalleryUrl = '/gallery/' + savedGallery._id.toHexString();
-                        res.redirect(newGalleryUrl);
-                    });
-            });
+    var newGallery = new Galleries({
+        title: title,
+        story: story,
+        owner: userObjectId
+    });
+    newGallery.save(function (saveGalleryErr, savedGallery) {
+        if (saveGalleryErr) {
+            return next(saveGalleryErr);
         }
-    } else {
-        req.session.backTo = '/gallery/add';
-        req.flash('warning', '请先登录');
-        res.redirect('/users/login');
-    }
+        Users.findOneAndUpdate({_id: userObjectId}, {$push: {galleries: savedGallery._id}}, {'new': true},
+            function (findUserErr) {
+                if (findUserErr) {
+                    return next(findUserErr);
+                }
+                req.flash('success', '成功创建新相册~');
+                var newGalleryUrl = '/gallery/' + savedGallery._id.toHexString();
+                res.redirect(newGalleryUrl);
+            });
+    });
 });
 //remove gallery
-router.post('/remove', function (req, res, next) {
+router.post('/remove', libCheckUser.isLogin, function (req, res, next) {
     var galleryId = req.body.galleryId;
     Galleries.findOne({_id: galleryId})
         .populate('owner')
@@ -92,7 +74,7 @@ router.post('/remove', function (req, res, next) {
                 console.log(foundGallery);
                 if (foundGallery.owner._id.toHexString() === req.session.user._id) {
                     if (foundGallery.images.length === 0) {
-                        gallery.removeOne(galleryId, function (removeRes) {
+                        libGallery.removeOne(galleryId, function (removeRes) {
                             if (removeRes.state === 1) {
                                 res.json({
                                     state: 3,
@@ -145,7 +127,7 @@ router.post('/save-image', function (req, res, next) {
                 if (findGalleryErr) {
                     return next(findGalleryErr);
                 }
-                if (gallery == null) {
+                if (foundGallery == null) {
                     res.json({
                         state: 1,
                         status: '没有找到该相册'
@@ -200,7 +182,7 @@ router.post('/save-image', function (req, res, next) {
                     //found an image
                     Images.findOneAndUpdate(
                         {hash: hash},
-                        {$addToSet: {belongGalleries: gallery._id, owners: userObjectId}},
+                        {$addToSet: {belongGalleries: foundGallery._id, owners: userObjectId}},
                         {'new': true},
                         function (updateImageErr, updatedImage) {
                             if (updateImageErr) {
@@ -269,22 +251,15 @@ router.get('/edit/:galleryId', csrfProtection, function (req, res, next) {
         res.redirect('/users/login');
     }
 });
-router.post('/edit/:galleryId', libCheckUser.isLogin, parseForm, csrfProtection, function (req, res, next) {
-    var user = req.session.user;
-    var galleryId = req.params.galleryId;
-    var title = req.body.title;
-    var story = req.body.story;
-    req.checkBody('title', '相册必须有名称。').notEmpty();
-    req.checkBody('title', '相册名称不能少于3个字，也不能多于25个字。').isLength(2, 25);
-    req.checkBody('story', '相册的故事不能为空哦，说点什么吧~').notEmpty();
-    req.checkBody('story', '相册的故事至少需要十五个字哦，给大家讲点故事吧~').isLength(15, 9999);
-    var errors = req.validationErrors();
-    if (errors) {
-        errors.forEach(function (error) {
-            req.flash('warning', error.msg);
-        });
-        res.redirect('/gallery/edit/' + galleryId);
-    }else{
+router.post('/edit/:galleryId',
+    libGallery.verifyGalleryReq,
+    libCheckUser.isLogin,
+    parseForm,
+    csrfProtection, function (req, res, next) {
+        var user = req.session.user;
+        var galleryId = req.params.galleryId;
+        var title = req.body.title;
+        var story = req.body.story;
         Galleries.findById(galleryId)
             .populate('owner')
             .exec(function (findGalleryErr, foundGallery) {
@@ -310,8 +285,7 @@ router.post('/edit/:galleryId', libCheckUser.isLogin, parseForm, csrfProtection,
                 }
             }
         );
-    }
-});
+    });
 //删除照片
 router.post('/remove-image', function (req, res, next) {
     var user = req.session.user;
