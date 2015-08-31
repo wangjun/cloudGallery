@@ -13,6 +13,7 @@ var mongoose = require('mongoose');
 var ObjectId = mongoose.Types.ObjectId;
 var config = require('../../lib/admin/config');
 var log = require('../../lib/admin/log');
+var libCheckUser = require('../../lib/user/check');
 var qiniu = require('qiniu');
 
 //csrf protection
@@ -241,6 +242,76 @@ router.post('/save-image', function (req, res, next) {
 
 });
 
+//编辑相册
+router.get('/edit/:galleryId', csrfProtection, function (req, res, next) {
+    var galleryId = req.params.galleryId;
+    var user = req.session.user;
+    if (user) {
+        Galleries.findById(galleryId)
+            .populate('owner')
+            .exec(function (findGalleryErr, foundGallery) {
+                if(findGalleryErr){next(findGalleryErr); }
+                if(foundGallery){
+                    if(foundGallery.owner._id.toHexString() === user._id){
+                        res.render('gallery/edit.html', {
+                            gallery: foundGallery,
+                            csrfToken: req.csrfToken()
+                        });
+                    }else{
+                        req.flash('warning', '这不是你的相册，无法编辑。');
+                        res.redirect('/my-gallery');
+                    }
+                }
+            });
+    } else {
+        req.flash('warning', '请先登录');
+        req.session.backTo = '/gallery/add';
+        res.redirect('/users/login');
+    }
+});
+router.post('/edit/:galleryId', libCheckUser.isLogin, parseForm, csrfProtection, function (req, res, next) {
+    var user = req.session.user;
+    var galleryId = req.params.galleryId;
+    var title = req.body.title;
+    var story = req.body.story;
+    req.checkBody('title', '相册必须有名称。').notEmpty();
+    req.checkBody('title', '相册名称不能少于3个字，也不能多于25个字。').isLength(2, 25);
+    req.checkBody('story', '相册的故事不能为空哦，说点什么吧~').notEmpty();
+    req.checkBody('story', '相册的故事至少需要十五个字哦，给大家讲点故事吧~').isLength(15, 9999);
+    var errors = req.validationErrors();
+    if (errors) {
+        errors.forEach(function (error) {
+            req.flash('warning', error.msg);
+        });
+        res.redirect('/gallery/edit/' + galleryId);
+    }else{
+        Galleries.findById(galleryId)
+            .populate('owner')
+            .exec(function (findGalleryErr, foundGallery) {
+                if(findGalleryErr){next(findGalleryErr); }
+                if(foundGallery.owner._id.toHexString() === user._id){
+
+                    Galleries.findOneAndUpdate({_id: new ObjectId(galleryId)}, {
+                            $set: {
+                                title: title,
+                                story: story
+                            }
+                        }, function (updateGalleryErr, updatedGallery) {
+                            if(updateGalleryErr){return next(updateGalleryErr); }
+                            if(updatedGallery){
+                                req.flash('success', '相册更新成功');
+                                res.redirect('/gallery/' + galleryId);
+                            }else{
+                                req.flash('info', '相册更新失败，无法保存相册。');
+                                res.redirect('/gallery/' + galleryId);
+                            }
+                        }
+                    );
+                }
+            }
+        );
+    }
+});
 //删除照片
 router.post('/remove-image', function (req, res, next) {
     var user = req.session.user;

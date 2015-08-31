@@ -1,0 +1,29 @@
+{% extends '../layouts/layout.html' %}
+{% block title %}修改相册{% endblock %}
+{% block css %}
+    <link href="/css/gallery/edit.css" type="text/css" rel="stylesheet" />
+{% endblock %}
+{% block body %}
+    <div class="ui container" id="edit-wrapper">
+        <div id="edit">
+            <h2 class="ui header">
+                <div class="content">
+                    编辑相册
+                </div>
+            </h2>
+            <div class="ui divider"></div>
+            <form class="ui form" method="post">
+                <input type="hidden" name="_csrf" value="{{ csrfToken }}">
+                <div class="field">
+                    <input type="text" name="title" class="form-control" placeholder="相册名称，至少3个字" value="{{ gallery.title }}"/>
+                </div>
+                <div class="field">
+                    <textarea name="story" id="story" rows="10" class="form-control" placeholder="相册故事，至少15个字">{{ gallery.story }}</textarea>
+                </div>
+                <div class="field">
+                    <button class="ui button black basic" type="submit">确定修改</button>
+                </div>
+            </form>
+        </div>
+    </div>
+{% endblock %}

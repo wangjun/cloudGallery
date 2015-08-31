@@ -28,6 +28,7 @@
         <div>
             {% if session.user %}
                 <button id="upload-button" class="ui button blue"><i class="cloud upload icon"></i>上传照片</button>
+                <a href="/gallery/edit/{{ gallery._id }}" class="ui button brown"><i class="edit icon"></i>编辑相册</a>
             {% endif %}
             <div class="ui green dropdown button">
                 <i class="share alternate icon"></i>
@@ -42,6 +43,7 @@
             </div>
             {#<button class="ui button">设置相册头像</button>#}
             {#<button class="ui button">设置相册背景</button>#}
+
         </div>
         <div class="ui divider"></div>
         <div class="ui four link cards" id="images">
