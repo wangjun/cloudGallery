@@ -1,0 +1,1 @@
+$(document).ready(function(){$(".accordion").accordion({selector:{trigger:".title"}})});
