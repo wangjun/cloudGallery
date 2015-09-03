@@ -41,7 +41,7 @@ router.post('/register', function (req, res, next) {
                         html: '<h1>请点击下方链接继续注册</h1>' +
                         '<p>' +
                         '<a href="http://www.lazycoffee.com/users/email/register/password/' + buf + '">' +
-                        'http://www.lazycoffee.com/users/email/register/step2/' + buf + '' +
+                        'http://www.lazycoffee.com/users/email/register/password/' + buf + '' +
                         '</a>' +
                         '</p>'
                     };
@@ -177,6 +177,7 @@ router.get('/login', function (req, res) {
 router.post('/login', function (req, res, next) {
     var email = req.body.email;
     var password = req.body.password;
+    var isRemember = req.body.isRemember;
     var isEmail = validator.isEmail(email);
     if(isEmail){
         Users.findOne({email: email})
@@ -185,6 +186,12 @@ router.post('/login', function (req, res, next) {
                 if(foundUser){
                     foundUser.checkPassword(password, function (isPasswordCorrect) {
                         if(isPasswordCorrect){
+                            if(isRemember){
+                                var hour = 3600000;
+                                req.session.cookie.maxAge = 14 * 24 * hour;
+                            }else{
+                                req.session.cookie.expires = false;
+                            }
                             req.flash('success', '登录成功！');
                             req.session.user = {
                                 _id: foundUser._id,
