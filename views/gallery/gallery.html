@@ -3,16 +3,16 @@
 {% block js %}
     <script src="/vendor/masonry/dist/masonry.pkgd.min.js"></script>
     <script src="/vendor/imagesloaded/imagesloaded.pkgd.min.js"></script>
+    <script src="/vendor/flickity/dist/flickity.pkgd.min.js"></script>
     <script src="/vendor/blueimp-load-image/js/load-image.all.min.js"></script>
     <script src="/js/gallery/image.js"></script>
     <script src="/js/gallery/uploader.js"></script>
     <script src="/js/gallery/gallery.js"></script>
 {% endblock %}
-
 {% block css %}
+    <link rel="stylesheet" href="/vendor/flickity/dist/flickity.min.css"/>
     <link rel="stylesheet" href="/css/gallery/gallery.css"/>
 {% endblock %}
-
 {% block body %}
     <div class="ui container">
         <h2 class="ui header">
@@ -84,7 +84,13 @@
             Image name
         </div>
         <div class="content">
-            <img src=""/>
+            <div class="main-gallery">
+                {% for item in gallery.images|reverse() %}
+                <div class="gallery-cell">
+                    <img src="//cdn.lazycoffee.com/{{ item.key }}_w900"/>
+                </div>
+                {% endfor %}
+            </div>
         </div>
         <div class="actions">
             {% if session.user %}

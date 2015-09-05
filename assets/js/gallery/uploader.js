@@ -1,5 +1,5 @@
 'use strict';
-var $images = $('#images');
+/* global loadImage, moment */
 var Uploader = function (file, $dom) {
     this.file = file || null;
     this.$dom = $dom || null;
@@ -43,7 +43,7 @@ Uploader.prototype.showImage = function (cb){
             $('#no-image-gallery').remove();
             var date = moment(self.exif.DateTime, 'YYYY:MM:DD HH:mm:ss').format('LL');
             var $previewHtml = $('<div/>');
-            $previewHtml.addClass('card')
+            $previewHtml.addClass('card uploading')
                 .append('<div class="image"></div>')
                 .append('<div class="content">' +
                 '<span class="header">' + self.file.name + '</span>' +
@@ -124,6 +124,7 @@ Uploader.prototype.saveImageInDatabase = function (){
             }else {
                 self.$preview.find('.progress').removeClass('yellow').addClass('success');
             }
+            self.$preview.removeClass('uploading');
         }else{
             console.error('Sorry,保存相册到数据库的时候出现网络错误了...');
         }

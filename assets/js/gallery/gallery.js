@@ -1,5 +1,6 @@
+'use strict';
+/* global Uploader */
 $(document).ready(function () {
-    'use strict';
     //init dom
     var $uploadButton = $('#upload-button');
     var $uploadInput = $('#upload-input');
@@ -35,14 +36,22 @@ $(document).ready(function () {
         if ($(this).hasClass('uploading')) {
             window.alertModal('上传中，请耐心等待...');
         } else {
-            currentSelected.fileName = $(this).attr('data-name');
-            currentSelected.imgSrc = '//cdn.lazycoffee.com/' + $(this).attr('data-key') + '_w900';
-            currentSelected.key = $(this).attr('data-key');
-            currentSelected.hash = $(this).attr('data-hash');
-            $showImageModal.find('.header').text(currentSelected.fileName);
-            $showImageModal.find('img').attr('src', currentSelected.imgSrc);
-            $showImageModal.imagesLoaded(function () {
-                $showImageModal.modal('show');
+            //currentSelected.fileName = $(this).attr('data-name');
+            //currentSelected.imgSrc = '//cdn.lazycoffee.com/' + $(this).attr('data-key') + '_w900';
+            //currentSelected.key = $(this).attr('data-key');
+            //currentSelected.hash = $(this).attr('data-hash');
+            //$showImageModal.find('.header').text(currentSelected.fileName);
+            //$showImageModal.find('img').attr('src', currentSelected.imgSrc);
+            //$showImageModal.imagesLoaded(function () {
+            //    $showImageModal.modal('show');
+            //});
+            $showImageModal.modal('show');
+            $('.main-gallery').flickity({
+                // options
+                cellAlign: 'left',
+                contain: true,
+                freeScroll: true,
+                pageDots: false
             });
         }
     });
