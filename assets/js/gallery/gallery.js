@@ -58,7 +58,7 @@ $(document).ready(function () {
     //remove image
     $(document).on('click', '[data-action=deleteItem]', function (event) {
         event.preventDefault();
-        var successStatus = [1, 4, 5, 7];
+        var successStatus = [1, 2, 4, 5, 7];
         var uploader = new Uploader();
         $removeImageButton.addClass('loading disabled');
         uploader.removeItem(currentSelected.key, galleryId, function (data) {

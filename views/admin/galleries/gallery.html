@@ -1,0 +1,30 @@
+{% extends '../../layouts/layout.html' %}
+{% block body %}
+    <div class="ui container">
+        <h1 class="ui header">
+            {{ gallery.title }}
+            <div class="sub header">
+                {{ gallery.story }}
+            </div>
+        </h1>
+        <div class="ui divider"></div>
+        <div class="ui list">
+            <div class="item">
+                <div class="header">ID</div>
+                {{ gallery._id }}
+            </div>
+            <div class="item">
+                <div class="header">Images.length</div>
+                {{ gallery.images.length }}
+            </div>
+            <div class="item">
+                <div class="header">Images</div>
+                {% for item in gallery.images %}
+                    <div>{{ item }}</div>
+                {% endfor %}
+            </div>
+        </div>
+        {{ gallery }}
+        {{ images }}
+    </div>
+{% endblock %}

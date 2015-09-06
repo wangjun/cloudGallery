@@ -59,10 +59,12 @@
     "no-console": 0
   },
   "ecmaFeatures": {
-    "blockBindings": true
+    "blockBindings": true,
+    "generators": true
   },
   "env": {
     "browser": false,
-    "node": true
+    "node": true,
+    "es6": true
   }
 }
