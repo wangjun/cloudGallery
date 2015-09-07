@@ -10,6 +10,7 @@ $(document).ready(function () {
     var $galleryId = $('#gallery-id');
     var galleryId = $galleryId.data('galleryId');
     var currentSelected = {};
+    var $mainGallery = $('.main-gallery');
     /* images uploader */
     //trigger input click event
     //var $uploadBox = $('#upload-box');
@@ -46,13 +47,6 @@ $(document).ready(function () {
             //    $showImageModal.modal('show');
             //});
             $showImageModal.modal('show');
-            $('.main-gallery').flickity({
-                // options
-                cellAlign: 'left',
-                contain: true,
-                freeScroll: true,
-                pageDots: false
-            });
         }
     });
     //remove image
@@ -98,10 +92,18 @@ $(document).ready(function () {
     // init Masonry
     window.$imagesLayout = $images.masonry({
         itemSelector: '.card',
-        percentPosition: true
+        percentPosition: false
     });
     // layout Masonry after each image loads
     window.$imagesLayout.imagesLoaded().progress(function () {
         window.$imagesLayout.masonry('layout');
+    });
+    //flickity init
+    $mainGallery.flickity({
+        // options
+        pageDots: false,
+        percentPosition: false,
+        imagesLoaded: true,
+        lazyLoad: 2
     });
 });

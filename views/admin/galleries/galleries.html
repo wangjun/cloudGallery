@@ -17,7 +17,7 @@
         <tbody>
         {% for gallery in galleries %}
             <tr>
-                <td>{{ gallery._id }}</td>
+                <td><a href="/admin/gallery/{{ gallery._id }}">{{ gallery._id }}</a></td>
                 <td>
                     {% for image in gallery.images %}
                         {{ image.key }}{% if not loop.last %}<br>{% endif %}

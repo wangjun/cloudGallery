@@ -1,6 +1,15 @@
 {% extends '../../layouts/layout.html' %}
+{% block js %}
+    <script src="/js/admin/gallery/gallery.js"></script>
+{% endblock %}
 {% block body %}
-    <div class="ui container">
+    <div class="ui container"
+         ng-controller="galleryCtr"
+         ng-init="
+         galleryId = '{{ gallery._id }}';
+         imagesNum = {{ gallery.images.length }};
+         imagesRealNum = {{ images.length }}
+         ">
         <h1 class="ui header">
             {{ gallery.title }}
             <div class="sub header">
@@ -10,21 +19,21 @@
         <div class="ui divider"></div>
         <div class="ui list">
             <div class="item">
-                <div class="header">ID</div>
+                <div class="header">Gallery ID</div>
                 {{ gallery._id }}
             </div>
             <div class="item">
                 <div class="header">Images.length</div>
-                {{ gallery.images.length }}
+                {[{imagesNum}]}
             </div>
             <div class="item">
-                <div class="header">Images</div>
-                {% for item in gallery.images %}
-                    <div>{{ item }}</div>
+                <div class="header">Images({[{ imagesRealNum }]})</div>
+                {% for item in images %}
+                    <div>{{ item._id }}</div>
                 {% endfor %}
             </div>
         </div>
-        {{ gallery }}
-        {{ images }}
+        <div class="ui divider"></div>
+        <button class="ui button blue" ng-class="isLoading" ng-click="cleanGallery()">Clean</button>
     </div>
 {% endblock %}

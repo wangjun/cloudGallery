@@ -1,4 +1,5 @@
 'use strict';
+/* global moment */
 $(document).ready(function () {
     //config
     moment.locale('zh-cn');
@@ -18,3 +19,11 @@ $(document).ready(function () {
     $('.ui.checkbox').checkbox();
     $('.ui.dropdown').dropdown();
 });
+/* global angular */
+var lcApp = angular.module('lcApp', []);
+lcApp.config([
+    '$interpolateProvider',
+    function($interpolateProvider) {
+        $interpolateProvider.startSymbol('{[{').endSymbol('}]}');
+    }]
+);

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html {% block html_property %}{% endblock %}>
+<html {% block html_property %}{% endblock %} ng-app="lcApp">
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -150,6 +150,7 @@
 <script src="/vendor/holderjs/holder.min.js"></script>
 {#<script src="/vendor/livereload/dist/livereload.js?host=localhost&port=35728"></script>#}
 <script src="/vendor/moment/min/moment-with-locales.min.js"></script>
+<script src="/vendor/angular/angular.min.js"></script>
 <script src="/js/common/common.js"></script>
 {% block js %}{% endblock %}
 </body>

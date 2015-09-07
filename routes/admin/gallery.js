@@ -2,8 +2,8 @@
 var express = require('express');
 var Images = require('../../model/images');
 var Galleries = require('../../model/galleries');
-var image = require('../../lib/gallery/image');
-var logs = require('../../lib/admin/log');
+var libImage = require('../../lib/gallery/image');
+var libGallery = require('../../lib/gallery/gallery');
 var router = express.Router();
 var mongoose = require('mongoose');
 var ObjectId = mongoose.Types.ObjectId;
@@ -14,18 +14,21 @@ router.get('/', function (req, res, next) {
         .populate('images')
         .populate('owner')
         .exec(function (findGalleriesErr, foundGalleries) {
-        if(findGalleriesErr){return next(findGalleriesErr); }
-        if(foundGalleries){
-            foundGalleries.forEach(function (foundGallery) {
-                foundGallery.images.forEach(function (foundImage) {
-                    image.getState(foundImage._id);
-                });
-            });
-            res.render('admin/galleries/galleries.html', {galleries: foundGalleries});
-        }
+            if(findGalleriesErr){return next(findGalleriesErr); }
+            if(foundGalleries){
+                res.render('admin/galleries/galleries.html', {galleries: foundGalleries});
+            }
+        });
+});
+router.post('/getState', function (req, res, jump) {
+    Galleries.findById(req.body.galleryId)
+        .populate('images')
+        .exec(function (findGalleryErr, foundGallery) {
+        foundGallery.images.forEach(function (foundImage) {
+            libImage.getState(foundImage._id);
+        });
     });
 });
-
 router.get('/remove', function (req, res, next) {
     var galleryObjectId = new ObjectId(req.query.id);
     console.log(galleryObjectId);
@@ -52,29 +55,22 @@ router.get('/:galleryId', function (req, res, jump) {
     Galleries.findById(req.params.galleryId)
         //.populate('images')
         .exec(function (findGalleryErr, foundGallery) {
-        if(findGalleryErr){return jump(findGalleryErr); }
-        if(foundGallery){
-            var getImages = function (cb) {
-                var images = [];
-                foundGallery.images.forEach(function* (eachImage) {
-                    yield Images.findById(eachImage)
-                        .exec(function(findImageErr, foundImage) {
-                            if(findImageErr){return jump(findImageErr); }
-                            if(foundImage){
-                                images.push(foundImage);
-                            }
-                        });
+            if(findGalleryErr){return jump(findGalleryErr); }
+            if(foundGallery){
+                Images.find({_id: {$in: foundGallery.images}}, function (findImageErr, foundImages) {
+                    if(findImageErr){return jump(findImageErr); }
+                    res.render('admin/galleries/gallery', {
+                        gallery: foundGallery,
+                        title: foundGallery.title,
+                        images: foundImages
+                    });
                 });
-                cb(images);
-            };
-            getImages(function (images) {
-                res.render('admin/galleries/gallery', {
-                    gallery: foundGallery,
-                    title: foundGallery.title,
-                    images: images
-                });
-            });
-        }
+            }
+        });
+});
+router.post('/clean', function (req, res, jump) {
+    libGallery.clean(req, res, jump, function (arg) {
+        res.json(arg);
     });
 });
 module.exports = router;
