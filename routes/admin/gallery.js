@@ -53,7 +53,6 @@ router.get('/remove', function (req, res, next) {
 });
 router.get('/:galleryId', function (req, res, jump) {
     Galleries.findById(req.params.galleryId)
-        //.populate('images')
         .exec(function (findGalleryErr, foundGallery) {
             if(findGalleryErr){return jump(findGalleryErr); }
             if(foundGallery){

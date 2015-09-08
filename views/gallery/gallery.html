@@ -14,7 +14,7 @@
     <link rel="stylesheet" href="/vendor/flickity/dist/flickity.min.css"/>
 {% endblock %}
 {% block body %}
-    <div class="ui container">
+    <div class="ui container" ng-controller="galleryCtr" ng-init="galleryId = '{{ gallery._id.toHexString() }}'">
         <h2 class="ui header">
             <i class="photo icon"></i>
             <div class="content">
@@ -54,7 +54,8 @@
                          data-key="{{ item.key }}"
                          data-hash="{{ item.hash }}"
                          data-name="{{ item.fileName }}"
-                         id="image-{{ item.hash }}">
+                         id="image-{{ item.hash }}"
+                            ng-click="selectImage('{{ item.hash }}', '{{ loop.index0 }}')">
                         <div class="image">
                             <img src="//cdn.lazycoffee.com/{{ item.key }}_w260"/>
                         </div>
@@ -78,27 +79,22 @@
             {% endif %}
         </div>
     </div>
-    <div class="hidden" id="gallery-id" data-gallery-id="{{ gallery._id.toHexString() }}"></div>
     <div class="ui modal" id="show-image-modal">
         <div class="header">
             Image name
         </div>
         <div class="content main-gallery">
-                {% for item in gallery.images|reverse() %}
+            {% for item in gallery.images|reverse() %}
                     <img src="//cdn.lazycoffee.com/{{ item.key }}_w900"/>
-                {% endfor %}
+            {% endfor %}
         </div>
         <div class="actions">
             {% if session.user %}
-                <div class="ui red deny button" id="remove-image-button" data-action="deleteItem">
+                <div class="ui red deny button" id="remove-image-button" ng-click="removeImage()">
                     <i class="trash outline icon"></i>
                     删除
                 </div>
             {% endif %}
-            {#<div class="ui button blue">#}
-            {#<i class="share alternate icon"></i>#}
-            {#分享#}
-            {#</div>#}
             <div class="ui button" id="hide-image-modal">
                 <i class="remove icon"></i>
                 关闭

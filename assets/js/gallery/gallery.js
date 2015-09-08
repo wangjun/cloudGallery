@@ -1,23 +1,15 @@
 'use strict';
-/* global Uploader */
-$(document).ready(function () {
+/* global Uploader lcApp */
+lcApp.controller('galleryCtr', ['$scope', function ($scope) {
     //init dom
     var $uploadButton = $('#upload-button');
     var $uploadInput = $('#upload-input');
     var $images = $('#images');
     var $removeImageButton = $('#remove-image-button');
     var $showImageModal = $('#show-image-modal');
-    var $galleryId = $('#gallery-id');
-    var galleryId = $galleryId.data('galleryId');
+    var galleryId = $scope.galleryId;
     var currentSelected = {};
     var $mainGallery = $('.main-gallery');
-    /* images uploader */
-    //trigger input click event
-    //var $uploadBox = $('#upload-box');
-    //$uploadBox.on('click', function (event) {
-    //    event.preventDefault();
-    //    $uploadInput.trigger('click');
-    //});
     $uploadButton.on('click', function (event) {
         event.preventDefault();
         $uploadInput.trigger('click');
@@ -37,35 +29,27 @@ $(document).ready(function () {
         if ($(this).hasClass('uploading')) {
             window.alertModal('上传中，请耐心等待...');
         } else {
-            //currentSelected.fileName = $(this).attr('data-name');
-            //currentSelected.imgSrc = '//cdn.lazycoffee.com/' + $(this).attr('data-key') + '_w900';
-            //currentSelected.key = $(this).attr('data-key');
-            //currentSelected.hash = $(this).attr('data-hash');
-            //$showImageModal.find('.header').text(currentSelected.fileName);
-            //$showImageModal.find('img').attr('src', currentSelected.imgSrc);
-            //$showImageModal.imagesLoaded(function () {
-            //    $showImageModal.modal('show');
-            //});
-            $showImageModal.modal('show');
+            $showImageModal.modal({
+                onVisible: function () {
+                    $mainGallery.flickity('resize');
+                }
+            }).modal('show');
         }
     });
     //remove image
-    $(document).on('click', '[data-action=deleteItem]', function (event) {
-        event.preventDefault();
+    $scope.removeImage = function () {
         var successStatus = [1, 2, 4, 5, 7];
         var uploader = new Uploader();
         $removeImageButton.addClass('loading disabled');
-        uploader.removeItem(currentSelected.key, galleryId, function (data) {
+        uploader.removeItem($scope.currentImageHash, galleryId, function (data) {
             if (successStatus.indexOf(data.state) === -1) {
                 $removeImageButton.html('删除失败').addClass('disabled');
             } else {
-                $removeImageButton.html('删除成功').removeClass('disabled');
-                $showImageModal.modal('hide');
-                //$('.card[data-hash=' + hash + ']').remove();
+                //reLayout masonry
                 window.$imagesLayout.masonry('remove', $('.card[data-hash=' + currentSelected.hash + ']')).masonry('layout');
             }
         });
-    });
+    };
     $('#hide-image-modal').on('click', function (event) {
         event.preventDefault();
         $showImageModal.modal('hide');
@@ -104,6 +88,12 @@ $(document).ready(function () {
         pageDots: false,
         percentPosition: false,
         imagesLoaded: true,
-        lazyLoad: 2
+        setGallerySize: false
     });
-});
+    //show image
+    $scope.selectImage = function (imageHash, imageIndex) {
+        var index = parseInt(imageIndex);
+        $scope.currentImageHash = imageHash;
+        $mainGallery.flickity('select', index);
+    };
+}]);
