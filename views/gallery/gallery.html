@@ -5,8 +5,6 @@
     <script src="/vendor/imagesloaded/imagesloaded.pkgd.min.js"></script>
     <script src="/vendor/blueimp-load-image/js/load-image.all.min.js"></script>
     <script src="/vendor/flickity/dist/flickity.pkgd.min.js"></script>
-    <script src="/js/gallery/image.js"></script>
-    <script src="/js/gallery/uploader.js"></script>
     <script src="/js/gallery/gallery.js"></script>
 {% endblock %}
 {% block css %}
@@ -14,7 +12,16 @@
     <link rel="stylesheet" href="/vendor/flickity/dist/flickity.min.css"/>
 {% endblock %}
 {% block body %}
-    <div class="ui container" ng-controller="galleryCtr" ng-init="galleryId = '{{ gallery._id.toHexString() }}'">
+    <div class="ui container" ng-controller="galleryCtr">
+        <div class="ui info message" ng-if="duplicateImages.length">
+            <i class="close icon"></i>
+            <div class="header">
+                以下图片重复上传（已删除）
+            </div>
+            <ul class="list">
+                <li ng-repeat="item in duplicateImages">{[{ item }]}</li>
+            </ul>
+        </div>
         <h2 class="ui header">
             <i class="photo icon"></i>
             <div class="content">
@@ -27,7 +34,7 @@
         </form>
         <div>
             {% if session.user %}
-                <button id="upload-button" class="ui button blue"><i class="cloud upload icon"></i>上传照片</button>
+                <button id="upload-button" class="ui button blue" ng-click="selectFiles()"><i class="cloud upload icon"></i>上传照片</button>
                 <a href="/gallery/edit/{{ gallery._id }}" class="ui button brown"><i class="edit icon"></i>编辑相册</a>
             {% endif %}
             <div class="ui green dropdown button">
@@ -51,11 +58,9 @@
             {% if gallery.images.length %}
                 {% for item in gallery.images|reverse() %}
                     <div class="card"
-                         data-key="{{ item.key }}"
-                         data-hash="{{ item.hash }}"
-                         data-name="{{ item.fileName }}"
                          id="image-{{ item.hash }}"
-                            ng-click="selectImage('{{ item.hash }}', '{{ loop.index0 }}')">
+                         ng-click="selectImage('{{ item.hash }}', '{{ loop.index0 }}')"
+                         ng-init="initImages({hash: '{{ item.hash }}', key: '{{ item.key }}', fileName: '{{ item.fileName }}'})">
                         <div class="image">
                             <img src="//cdn.lazycoffee.com/{{ item.key }}_w260"/>
                         </div>
@@ -78,26 +83,27 @@
                 </div>
             {% endif %}
         </div>
-    </div>
-    <div class="ui modal" id="show-image-modal">
-        <div class="header">
-            Image name
-        </div>
-        <div class="content main-gallery">
-            {% for item in gallery.images|reverse() %}
-                    <img src="//cdn.lazycoffee.com/{{ item.key }}_w900"/>
-            {% endfor %}
-        </div>
-        <div class="actions">
-            {% if session.user %}
-                <div class="ui red deny button" id="remove-image-button" ng-click="removeImage()">
-                    <i class="trash outline icon"></i>
-                    删除
+        <div ng-init="galleryId = '{{ gallery._id }}'"></div>
+        <div class="ui modal" id="show-image-modal">
+            <div class="header">
+                Image name
+            </div>
+            <div class="content main-gallery">
+                {% for item in gallery.images|reverse() %}
+                    <img data-flickity-lazyload="//cdn.lazycoffee.com/{{ item.key }}_w900" id="flickity-{{ item.hash }}"/>
+                {% endfor %}
+            </div>
+            <div class="actions">
+                {% if session.user %}
+                    <div class="ui red button" id="remove-image-button">
+                        <i class="trash outline icon"></i>
+                        删除
+                    </div>
+                {% endif %}
+                <div class="ui button close" id="hide-image-modal">
+                    <i class="remove icon"></i>
+                    关闭
                 </div>
-            {% endif %}
-            <div class="ui button" id="hide-image-modal">
-                <i class="remove icon"></i>
-                关闭
             </div>
         </div>
     </div>

@@ -292,9 +292,9 @@ router.post('/remove-image', function (req, res, next) {
     qiniu.conf.ACCESS_KEY = config.cdn.qiniu.AccessKey;
     qiniu.conf.SECRET_KEY = config.cdn.qiniu.SecretKey;
     if (user) {
-        var key = req.body.key;
+        var hash = req.body.hash;
         var galleryId = req.body.galleryId;
-        Images.findOne({key: key})
+        Images.findOne({hash: hash})
             .populate('belongGalleries')
             .populate('owners')
             .exec(function (findImageErr, image) {
