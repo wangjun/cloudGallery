@@ -392,7 +392,7 @@ router.post('/remove-image', function (req, res, next) {
                         }
                     } else {
                         //数据库没有此照片
-                        client.remove(config.cdn.qiniu.BucketName, key, function (err, ret) {
+                        client.remove(config.cdn.qiniu.BucketName, hash, function (err, ret) {
                             if (err) {
                                 res.json({
                                     state: 6,
@@ -450,7 +450,8 @@ router.get('/:galleryId', function (req, res, next) {
                     });
                 });
                 res.render('gallery/gallery.html', {
-                    gallery: foundGallery
+                    gallery: foundGallery,
+                    title: foundGallery.title
                 });
             } else {
                 req.flash('warning', '找不到该相册');

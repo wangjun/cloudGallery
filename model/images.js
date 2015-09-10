@@ -13,6 +13,7 @@ var imagesSchema = new Schema({
     belongGalleries: [{ type: Schema.Types.ObjectId, ref: 'Galleries'}],
     createTime: { type: Date, 'default': Date.now },
     owners: [{ type: Schema.Types.ObjectId, ref: 'Users'}],
+    order: {type: Number},//zero base
     exif: {
         DateTime: {type: Date}
     },
@@ -25,7 +26,7 @@ var imagesSchema = new Schema({
 });
 imagesSchema.virtual('DateFormatted')
     .get(function () {
-        return moment(this.exif.DateTime).format('YYYY年M月DD日');
+        return moment(this.exif.DateTime).format('YYYY年M月D日');
     });
 imagesSchema.statics.updateState = function (_id, fsize, hash, mimeType, putTime) {
     this.findOneAndUpdate({_id: _id}, {
