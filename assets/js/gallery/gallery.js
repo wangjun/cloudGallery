@@ -1,6 +1,6 @@
 'use strict';
 /* global lcApp loadImage moment */
-lcApp.controller('galleryCtr', ['$scope', '$http', function ($scope, $http) {
+lcApp.controller('galleryCtr', ['$scope', '$http', '$compile', function ($scope, $http, $compile) {
     //init dom
     var $uploadInput = $('#upload-input');
     var $images = $('#images');
@@ -27,7 +27,7 @@ lcApp.controller('galleryCtr', ['$scope', '$http', function ($scope, $http) {
         percentPosition: false,
         imagesLoaded: true,
         setGallerySize: false,
-        lazyLoad: 1
+        lazyLoad: 2
     });
     //uploader
     var Uploader = function (file, $domArg) {
@@ -75,7 +75,7 @@ lcApp.controller('galleryCtr', ['$scope', '$http', function ($scope, $http) {
                 $previewHtml.addClass('card uploading')
                     .append('<div class="image"></div>')
                     .append('<div class="content">' +
-                    '<span class="header">' + self.file.name + '</span>' +
+                    //'<span class="header">' + self.file.name + '</span>' +
                     '<div class="meta">' +
                     '<span class="date">' + date + '</span>' +
                     '</div>' +
@@ -111,10 +111,8 @@ lcApp.controller('galleryCtr', ['$scope', '$http', function ($scope, $http) {
                 self.uploadResponse = JSON.parse(xhr.response);
                 self.$preview
                     .attr('data-hash', self.uploadResponse.hash)
-                    .attr('data-key', self.uploadResponse.key)
                     .attr('id', 'image-' + self.uploadResponse.hash)
-                    .attr('data-name', self.file.name)
-                    .attr('ng-click', 'selectImage(' + self.uploadResponse.hash + ')');
+                    .attr('data-name', self.file.name);
                 self.$preview.find('.progress').removeClass('active yellow').addClass('blue');
                 cb();
             }
@@ -184,7 +182,7 @@ lcApp.controller('galleryCtr', ['$scope', '$http', function ($scope, $http) {
         var callback = cb || function (){};
         if(hash && id){
             self.getUpToken(function () {
-                $http.post(self.removeUrl, {hash: hash, galleryId: id}).then(function (res, status) {
+                $http.post(self.removeUrl, {hash: hash, galleryId: id}).then(function (res) {
                     var data = res.data;
                     console.log(data);
                     if(res.statusText === 'OK'){
@@ -199,15 +197,29 @@ lcApp.controller('galleryCtr', ['$scope', '$http', function ($scope, $http) {
         }
     };
     //show image
-    $scope.selectImage = function (imageHash) {
+    $images.on('click', '.card', function () {
+        var imageHash = $(this).attr('data-hash');
         var allImagesHash = [];
         $scope.images.forEach(function (eachImage) {
-            allImagesHash.push(eachImage.hash);
+            if(eachImage.hash){
+                allImagesHash.push(eachImage.hash);
+            }
         });
         var index = allImagesHash.indexOf(imageHash);
         $scope.currentImage = $scope.images[index];
         $mainGallery.flickity('select', index);
-    };
+        //show image
+        if ($(this).hasClass('uploading')) {
+            window.alertModal('上传中，请耐心等待...');
+        } else {
+            $showImageModal.modal({
+                onVisible: function () {
+                    $mainGallery.flickity('resize');
+                }
+            }).modal('show');
+        }
+        $scope.$apply();
+    });
     //init images
     $scope.initImages = function (image) {
         $scope.images.push(image);
@@ -219,28 +231,39 @@ lcApp.controller('galleryCtr', ['$scope', '$http', function ($scope, $http) {
     };
     //remove image
     $removeImageButton.on('click', function(){
-        console.log('trig');
         var successStatus = [1, 2, 4, 5, 7];
         var uploader = new Uploader();
+        var allImagesHash = [];
         $removeImageButton.addClass('loading');
-        uploader.removeItem($scope.currentImage.hash, $scope.galleryId, function (data) {
-            if (successStatus.indexOf(data.state) === -1) {
-                $removeImageButton.popup({content: '删除失败', on: 'focus'}).popup('show');
-            } else {
-                //reLayout masonry
-                $imagesLayout.masonry('remove', $('#image-' + $scope.currentImage.hash)).masonry('layout');
-                //remove value
-                var allImagesHash = [];
-                $scope.images.forEach(function (eachImage) {
-                    allImagesHash.push(eachImage.hash);
-                });
-                var index = allImagesHash.indexOf($scope.currentImage.hash);
-                $scope.images.splice(index, 1);
-                $mainGallery.flickity('remove', $('#flickity-' + $scope.currentImage.hash));
-                $removeImageButton.popup('destroy');
+        $scope.images.forEach(function (eachImage) {
+            if(eachImage.hash){
+                allImagesHash.push(eachImage.hash);
             }
-            $removeImageButton.removeClass('loading');
         });
+        var index = allImagesHash.indexOf($scope.currentImage.hash);
+        if(index !== -1){
+            uploader.removeItem($scope.currentImage.hash, $scope.galleryId, function (data) {
+                if (successStatus.indexOf(data.state) === -1) {
+                    $removeImageButton.popup({content: '删除失败', on: 'focus'}).popup('show');
+                } else {
+                    //reLayout masonry
+                    $imagesLayout.masonry('remove', $('#image-' + $scope.currentImage.hash)).masonry('layout');
+                    //remove value
+                    $scope.images.splice(index, 1);
+                    if($scope.images.length === index + 1){
+                        $scope.currentImage = $scope.images[0];
+                    }else{
+                        $scope.currentImage = $scope.images[index + 1];
+                    }
+                    console.log($scope.currentImage);
+                    $mainGallery.flickity('remove', $('#flickity-' + $scope.currentImage.hash));
+                    $removeImageButton.popup('destroy');
+                }
+                $removeImageButton.removeClass('loading');
+            });
+        }else{
+            return false;
+        }
     });
     $uploadInput.on('change', function () {
         var files = this.files;
@@ -250,20 +273,6 @@ lcApp.controller('galleryCtr', ['$scope', '$http', function ($scope, $http) {
             imageUploader.upload();
         }
     });
-    //show image
-    $(document).on('click', '.card', function (event) {
-        event.preventDefault();
-        if ($(this).hasClass('uploading')) {
-            window.alertModal('上传中，请耐心等待...');
-        } else {
-            $showImageModal.modal({
-                onVisible: function () {
-                    $mainGallery.flickity('resize');
-                }
-            }).modal('show');
-        }
-    });
-
     $('#hide-image-modal').on('click', function (event) {
         event.preventDefault();
         $showImageModal.modal('hide');

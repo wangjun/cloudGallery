@@ -54,18 +54,18 @@
         </div>
         <div class="ui divider"></div>
         <div class="ui four link cards" id="images">
-            <div class="card-sizer"></div>
             {% if gallery.images.length %}
                 {% for item in gallery.images|reverse() %}
                     <div class="card"
                          id="image-{{ item.hash }}"
+                         data-hash="{{ item.hash }}"
                          ng-click="selectImage('{{ item.hash }}', '{{ loop.index0 }}')"
                          ng-init="initImages({hash: '{{ item.hash }}', key: '{{ item.key }}', fileName: '{{ item.fileName }}'})">
                         <div class="image">
                             <img src="//cdn.lazycoffee.com/{{ item.key }}_w260"/>
                         </div>
                         <div class="content">
-                            <span class="header">{{ item.fileName }}</span>
+                            {#<span class="header">{{ item.fileName }}</span>#}
                             <div class="meta">
                                 <span class="date">{{ item.DateFormatted }}</span>
                             </div>
@@ -86,7 +86,7 @@
         <div ng-init="galleryId = '{{ gallery._id }}'"></div>
         <div class="ui modal" id="show-image-modal">
             <div class="header">
-                Image name
+                {[{ currentImage.fileName }]}
             </div>
             <div class="content main-gallery">
                 {% for item in gallery.images|reverse() %}
