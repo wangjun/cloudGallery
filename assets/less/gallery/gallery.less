@@ -30,8 +30,25 @@
 #show-image-modal{
   >.content{
     height:600px;
-    img{
-      margin: 0 0.5em;
+    background: #FAFAFA;
+    .gallery-cell{
+      width:98%;
+      margin-right: 10px;
+      background-color: #333;
+      height: 600px;
+      &.uploading{
+        opacity: 0.6;
+      }
+      .gallery-cell-image{
+        display: block;
+        max-height: 600px;
+        margin: 0 auto;
+        opacity: 0;
+        transition:opacity 0.4s;
+        &.flickity-lazyloaded, &.flickity-lazyerror{
+          opacity: 1;
+        }
+      }
     }
   }
 }

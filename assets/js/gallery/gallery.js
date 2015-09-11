@@ -23,6 +23,7 @@ lcApp.controller('galleryCtr', ['$scope', '$http', function ($scope, $http) {
     //flickity init
     $mainGallery.flickity({
         // options
+        cellSelector: '.gallery-cell',
         pageDots: false,
         percentPosition: false,
         imagesLoaded: true,
@@ -66,6 +67,7 @@ lcApp.controller('galleryCtr', ['$scope', '$http', function ($scope, $http) {
     };
     Uploader.prototype.showImage = function (cb){
         var self = this;
+        //load image for preview
         loadImage(
             self.file,
             function(img){
@@ -84,17 +86,31 @@ lcApp.controller('galleryCtr', ['$scope', '$http', function ($scope, $http) {
                     '<div class="bar" style="width:1px;"></div>' +
                     '</div>');
                 $previewHtml.find('.image').append(img);
-                //self.$dom.prepend( $previewHtml );
                 $imagesLayout.prepend( $previewHtml ).packery('prepended', $previewHtml);
                 self.$preview = $previewHtml;
                 //add image file name
                 $scope.images.unshift({fileName: self.file.name});
                 cb();
-            },
-            {
+            }, {
                 orientation: self.orientation,
                 maxWidth: 260,
-                maxHeight: 500,
+                maxHeight: 400,
+                canvas: true
+            }
+        );
+        //load image for flickity
+        loadImage(
+            self.file,
+            function (img) {
+                var $newFlickity = $('<div/>');
+                $newFlickity.addClass('gallery-cell uploading');
+                $newFlickity.attr('data-name', self.file.name);
+                $newFlickity.append(img);
+                $mainGallery.flickity('prepend', $newFlickity);
+            }, {
+                orientation: self.orientation,
+                maxWidth: 850,
+                maxHeight: 600,
                 canvas: true
             }
         );
@@ -115,7 +131,7 @@ lcApp.controller('galleryCtr', ['$scope', '$http', function ($scope, $http) {
                     .attr('data-hash', self.uploadResponse.hash)
                     .attr('id', 'image-' + self.uploadResponse.hash)
                     .attr('data-name', self.file.name);
-                self.$preview.find('.progress').removeClass('active yellow').addClass('blue');
+                self.$preview.find('.progress').removeClass('active').addClass('blue');
                 cb();
             }
         };
@@ -134,6 +150,17 @@ lcApp.controller('galleryCtr', ['$scope', '$http', function ($scope, $http) {
             }
         });
     };
+    Uploader.prototype.removeUploadingItem = function () {
+        $imagesLayout.packery('remove', self.$preview).packery('layout');
+        $mainGallery.flickity('remove', $mainGallery.find('.gallery-cell[data-name=' + self.file.name + ']'));
+        for(var j = 0; j < $scope.images.length; j++){
+            if($scope.images[j].fileName === self.file.name){
+                if(!$scope.images[j].hash){
+                    $scope.images.splice(j, 1);
+                }
+            }
+        }
+    };
     Uploader.prototype.saveImageInDatabase = function (){
         var self = this;
         var postData = {};
@@ -148,16 +175,10 @@ lcApp.controller('galleryCtr', ['$scope', '$http', function ($scope, $http) {
             if(res.statusText === 'OK'){
                 if(data.state === 5) {
                     $scope.duplicateImages.push(self.file.name);
-                    for(var j = 0; j < $scope.images.length; j++){
-                        if($scope.images[j].fileName === self.file.name){
-                            if(!$scope.images[j].hash){
-                                $scope.images.splice(j, 1);
-                            }
-                        }
-                    }
-                    $imagesLayout.packery('remove', self.$preview).packery('layout');
+                    self.removeUploadingItem();
                 }else if([2, 4].indexOf(data.state) === -1){
                     window.alertModal('抱歉，服务器发生错误，保存不了你的图片...');
+                    self.removeUploadingItem();
                 }else {
                     self.$preview.find('.progress').addClass('success');
                     console.log($scope.images);
@@ -166,18 +187,11 @@ lcApp.controller('galleryCtr', ['$scope', '$http', function ($scope, $http) {
                             if(!$scope.images[i].hash){
                                 $scope.images[i].hash = self.uploadResponse.hash;
                                 $scope.images[i].key = self.uploadResponse.key;
-                                var $newImage = $('<img id="flickity-' + self.uploadResponse.hash + '" data-flickity-lazyload="' + cdnPrefix + '/' + self.uploadResponse.key + '_w900"/>');
-                                console.log('index:' + i);
-                                if(i === 0){
-                                    $mainGallery.flickity('prepend', $newImage);
-                                    console.log('prepend');
-                                }else{
-                                    $mainGallery.flickity('insert', $newImage, i - 1);
-                                    console.log('insert:' + (i - 1));
-                                }
                             }
                         }
                     }
+                    //remove flickity uploading class
+                    $mainGallery.find('[data-name="' + self.file.name + '"]').removeClass('uploading');
                 }
                 self.$preview.removeClass('uploading');
             }else{
@@ -274,8 +288,15 @@ lcApp.controller('galleryCtr', ['$scope', '$http', function ($scope, $http) {
     //flickity select event
     $mainGallery.on( 'cellSelect', function() {
         var flickity = $(this).data('flickity');
+        //change the current image value
         $scope.currentImage = $scope.images[flickity.selectedIndex];
+        //change file name
         $imageFileName.text($scope.currentImage.fileName);
+        if($mainGallery.find('[data-name="' + $scope.currentImage.fileName + '"]').hasClass('uploading')){
+            $removeImageButton.addClass('disabled');
+        }else{
+            $removeImageButton.removeClass('disabled');
+        }
         console.log(flickity.selectedIndex);
     });
     $uploadInput.on('change', function () {

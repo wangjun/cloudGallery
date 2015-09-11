@@ -87,7 +87,9 @@
             </div>
             <div class="content main-gallery">
                 {% for item in gallery.images|reverse() %}
-                    <img data-flickity-lazyload="//cdn.lazycoffee.com/{{ item.key }}_w900" id="flickity-{{ item.hash }}"/>
+                    <div class="gallery-cell">
+                        <img class="gallery-cell-image" data-flickity-lazyload="//cdn.lazycoffee.com/{{ item.key }}_w900" id="flickity-{{ item.hash }}"/>
+                    </div>
                 {% endfor %}
             </div>
             <div class="actions">
