@@ -172,7 +172,6 @@ lcApp.controller('galleryCtr', ['$scope', '$http', function ($scope, $http) {
         postData.fileName = self.file.name;
         postData.date = self.exif.DateTime;
         $http.post('/image/save', postData).then(function (res) {
-            console.log(res);
             var data = res.data;
             if(res.statusText === 'OK'){
                 if(data.state === 5) {
@@ -183,7 +182,6 @@ lcApp.controller('galleryCtr', ['$scope', '$http', function ($scope, $http) {
                     self.removeUploadingItem();
                 }else {
                     self.$preview.find('.progress').addClass('success');
-                    console.log($scope.images);
                     for(var i = 0; i < $scope.images.length; i++){
                         if($scope.images[i].fileName === self.file.name){
                             if(!$scope.images[i].hash){
@@ -212,7 +210,6 @@ lcApp.controller('galleryCtr', ['$scope', '$http', function ($scope, $http) {
             self.getUpToken(function () {
                 $http.post(self.removeUrl, {hash: hash, galleryId: id}).then(function (res) {
                     var data = res.data;
-                    console.log(data);
                     if(res.statusText === 'OK'){
                         callback(data);
                     }else{
@@ -291,12 +288,11 @@ lcApp.controller('galleryCtr', ['$scope', '$http', function ($scope, $http) {
         $scope.currentImageIndex = flickity.selectedIndex;
         //change file name
         $imageFileName.text($scope.images[flickity.selectedIndex].fileName);
-        if($mainGallery.find('[data-name="' + $scope.images[flickity.selectedIndex].fileName + '"]').hasClass('uploading')){
-            $removeImageButton.addClass('disabled');
-        }else{
+        if($scope.images[$scope.currentImageIndex].hash){
             $removeImageButton.removeClass('disabled');
+        }else{
+            $removeImageButton.addClass('disabled');
         }
-        console.log(flickity.selectedIndex);
     });
     $uploadInput.on('change', function () {
         var files = this.files;
