@@ -152,8 +152,9 @@ lcApp.controller('galleryCtr', ['$scope', '$http', function ($scope, $http) {
         });
     };
     Uploader.prototype.removeUploadingItem = function () {
+        var self = this;
         $imagesLayout.packery('remove', self.$preview).packery('layout');
-        $mainGallery.flickity('remove', $mainGallery.find('.gallery-cell[data-name=' + self.file.name + ']'));
+        $mainGallery.flickity('remove', $mainGallery.find('[data-name="' + self.file.name + '"]'));
         for(var j = 0; j < $scope.images.length; j++){
             if($scope.images[j].fileName === self.file.name){
                 if(!$scope.images[j].hash){
