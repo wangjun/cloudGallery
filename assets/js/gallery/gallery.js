@@ -9,7 +9,6 @@ lcApp.controller('galleryCtr', ['$scope', '$http', function ($scope, $http) {
     var $mainGallery = $('.main-gallery');
     var $imageFileName = $('.image-file-name');
     //init variables
-    var cdnPrefix = 'http://cdn.lazycoffee.com';
     $scope.images = [];
     $scope.duplicateImages = [];
     $scope.currentImageIndex = 0;
@@ -31,6 +30,14 @@ lcApp.controller('galleryCtr', ['$scope', '$http', function ($scope, $http) {
         setGallerySize: false,
         lazyLoad: 2
     });
+    //public functions
+    var checkIsUploadAble = function () {
+        if($scope.images[$scope.currentImageIndex].hash){
+            $removeImageButton.removeClass('disabled');
+        }else{
+            $removeImageButton.addClass('disabled');
+        }
+    };
     //uploader
     var Uploader = function (file, $domArg) {
         this.file = file || null;
@@ -197,6 +204,7 @@ lcApp.controller('galleryCtr', ['$scope', '$http', function ($scope, $http) {
                         .attr('id', 'flickity-' + self.uploadResponse.hash);
                 }
                 self.$preview.removeClass('uploading');
+                checkIsUploadAble();
             }else{
                 console.error('Sorry,保存相册到数据库的时候出现网络错误了...');
                 $imagesLayout.packery('remove', self.$preview).packery('layout');
@@ -288,11 +296,7 @@ lcApp.controller('galleryCtr', ['$scope', '$http', function ($scope, $http) {
         $scope.currentImageIndex = flickity.selectedIndex;
         //change file name
         $imageFileName.text($scope.images[flickity.selectedIndex].fileName);
-        if($scope.images[$scope.currentImageIndex].hash){
-            $removeImageButton.removeClass('disabled');
-        }else{
-            $removeImageButton.addClass('disabled');
-        }
+        checkIsUploadAble();
     });
     $uploadInput.on('change', function () {
         var files = this.files;
