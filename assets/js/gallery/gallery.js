@@ -12,6 +12,7 @@ lcApp.controller('galleryCtr', ['$scope', '$http', function ($scope, $http) {
     var cdnPrefix = 'http://cdn.lazycoffee.com';
     $scope.images = [];
     $scope.duplicateImages = [];
+    $scope.currentImageIndex = 0;
     // init packery
     var $imagesLayout = $images.packery({
         itemSelector: '.card'
@@ -191,7 +192,10 @@ lcApp.controller('galleryCtr', ['$scope', '$http', function ($scope, $http) {
                         }
                     }
                     //remove flickity uploading class
-                    $mainGallery.find('[data-name="' + self.file.name + '"]').removeClass('uploading');
+                    $mainGallery
+                        .find('[data-name="' + self.file.name + '"]')
+                        .removeClass('uploading')
+                        .attr('id', 'flickity-' + self.uploadResponse.hash);
                 }
                 self.$preview.removeClass('uploading');
             }else{
@@ -226,10 +230,12 @@ lcApp.controller('galleryCtr', ['$scope', '$http', function ($scope, $http) {
         $scope.images.forEach(function (eachImage) {
             if(eachImage.hash){
                 allImagesHash.push(eachImage.hash);
+            }else{
+                allImagesHash.push(null);
             }
         });
         var index = allImagesHash.indexOf(imageHash);
-        $scope.currentImage = $scope.images[index];
+        $scope.currentImageIndex = index;
         $mainGallery.flickity('select', index);
         //show image
         if ($(this).hasClass('uploading')) {
@@ -254,32 +260,24 @@ lcApp.controller('galleryCtr', ['$scope', '$http', function ($scope, $http) {
     };
     //remove image
     $removeImageButton.on('click', function(){
-        var allImagesHash = [];
-        $removeImageButton.addClass('loading');
-        $scope.images.forEach(function (eachImage) {
-            if(eachImage.hash){
-                allImagesHash.push(eachImage.hash);
-            }
-        });
-        var index = allImagesHash.indexOf($scope.currentImage.hash);
+        var index = $scope.currentImageIndex;
         if(index !== -1){
+            $removeImageButton.addClass('loading disabled');
             var successStatus = [1, 2, 4, 5, 7];
             var uploader = new Uploader();
-            uploader.removeItem($scope.currentImage.hash, $scope.galleryId, function (data) {
+            uploader.removeItem($scope.images[index].hash, $scope.galleryId, function (data) {
                 if (successStatus.indexOf(data.state) === -1) {
                     $removeImageButton.popup({content: '删除失败', on: 'focus'}).popup('show');
                 } else {
                     //reLayout packery
-                    $imagesLayout.packery('remove', $('#image-' + $scope.currentImage.hash)).packery('layout');
+                    $imagesLayout.packery('remove', $('#image-' + $scope.images[index].hash)).packery('layout');
+                    //remove flickity image
+                    $mainGallery.flickity('remove', $('#flickity-' + $scope.images[index].hash));
                     //remove value
-                    console.log('current:', $scope.currentImage);
-                    console.log('before:', $scope.images);
                     $scope.images.splice(index, 1);
-                    console.log('after:', $scope.images);
-                    $mainGallery.flickity('remove', $('#flickity-' + $scope.currentImage.hash));
                     $removeImageButton.popup('destroy');
                 }
-                $removeImageButton.removeClass('loading');
+                $removeImageButton.removeClass('loading disabled');
             });
         }else{
             return false;
@@ -289,10 +287,10 @@ lcApp.controller('galleryCtr', ['$scope', '$http', function ($scope, $http) {
     $mainGallery.on( 'cellSelect', function() {
         var flickity = $(this).data('flickity');
         //change the current image value
-        $scope.currentImage = $scope.images[flickity.selectedIndex];
+        $scope.currentImageIndex = flickity.selectedIndex;
         //change file name
-        $imageFileName.text($scope.currentImage.fileName);
-        if($mainGallery.find('[data-name="' + $scope.currentImage.fileName + '"]').hasClass('uploading')){
+        $imageFileName.text($scope.images[flickity.selectedIndex].fileName);
+        if($mainGallery.find('[data-name="' + $scope.images[flickity.selectedIndex].fileName + '"]').hasClass('uploading')){
             $removeImageButton.addClass('disabled');
         }else{
             $removeImageButton.removeClass('disabled');
