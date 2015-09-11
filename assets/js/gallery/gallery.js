@@ -80,7 +80,7 @@ lcApp.controller('galleryCtr', ['$scope', '$http', function ($scope, $http) {
             self.file,
             function(img){
                 $('#no-image-gallery').remove();
-                var date = moment(self.exif.DateTime, 'YYYY:MM:DD HH:mm:ss').format('LL');
+                var date = moment(self.exif.DateTime, 'YYYY:MM:DD HH:mm:ss').format('YYYY年M月D日');
                 var $previewHtml = $('<div/>');
                 $previewHtml.addClass('card uploading')
                     .append('<div class="image"></div>')
