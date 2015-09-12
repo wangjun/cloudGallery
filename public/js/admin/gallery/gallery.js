@@ -1,1 +1,0 @@
-"use strict";lcApp.controller("galleryCtr",["$scope","$http",function(a,b){a.cleanGallery=function(){a.isLoading="loading",b.post("/admin/gallery/clean",{galleryId:a.galleryId}).then(function(b){a.imagesNum=b.data.images.length,a.isLoading="",a.imagesNum===a.imagesRealNum&&(a.isLoading="disabled")})},a.imagesNum===a.imagesRealNum&&(a.isLoading="disabled")}]);

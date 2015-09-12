@@ -1,1 +1,0 @@
-var Wizard=function(a){this.$parentDom=a,this.totalStepsLength=this.$parentDom.find("[data-step]").length};Wizard.prototype.nextStep=function(){var a=this.$parentDom.find(".active"),b=a.next();b.length&&a.animate({left:-500,opacity:0},function(){b.css({left:500,opacity:0,display:"block"}).animate({left:0,opacity:1})})};
