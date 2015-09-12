@@ -79,7 +79,6 @@ lcApp.controller('galleryCtr', ['$scope', '$http', function ($scope, $http) {
         loadImage(
             self.file,
             function(img){
-                $('#no-image-gallery').remove();
                 var date = moment(self.exif.DateTime, 'YYYY:MM:DD HH:mm:ss').format('YYYY年M月D日');
                 var $previewHtml = $('<div/>');
                 $previewHtml.addClass('card uploading')
@@ -98,6 +97,7 @@ lcApp.controller('galleryCtr', ['$scope', '$http', function ($scope, $http) {
                 self.$preview = $previewHtml;
                 //add image file name
                 $scope.images.unshift({fileName: self.file.name});
+                $scope.$apply();
                 cb();
             }, {
                 orientation: self.orientation,
@@ -282,6 +282,9 @@ lcApp.controller('galleryCtr', ['$scope', '$http', function ($scope, $http) {
                     //remove value
                     $scope.images.splice(index, 1);
                     $removeImageButton.popup('destroy');
+                }
+                if(!$scope.images.length){
+                    $showImageModal.modal('hide');
                 }
                 $removeImageButton.removeClass('loading disabled');
             });

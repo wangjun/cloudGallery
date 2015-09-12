@@ -12,6 +12,13 @@
 {% endblock %}
 {% block body %}
     <div class="ui container" ng-controller="galleryCtr">
+        <div class="ui breadcrumb">
+            <a class="section" href="/">首页</a>
+            <i class="right chevron icon divider"></i>
+            <a class="section" href="/my-gallery">所有相册</a>
+            <i class="right chevron icon divider"></i>
+            <div class="active section">{{ gallery.title }}</div>
+        </div>
         <div class="ui info message" ng-if="duplicateImages.length">
             <i class="close icon"></i>
             <div class="header">
@@ -32,7 +39,7 @@
             <input id="upload-input" multiple type="file"/>
         </form>
         <div>
-            {% if session.user %}
+            {% if session.user._id == gallery.owner._id %}
                 <button id="upload-button" class="ui button blue" ng-click="selectFiles()"><i class="cloud upload icon"></i>上传照片</button>
                 <a href="/gallery/edit/{{ gallery._id }}" class="ui button brown"><i class="edit icon"></i>编辑相册</a>
             {% endif %}
@@ -51,35 +58,34 @@
             {#<button class="ui button">设置相册背景</button>#}
         </div>
         <div class="ui divider"></div>
-        <div class="ui four link cards" id="images">
-            {% if gallery.images.length %}
-                {% for item in gallery.images|reverse() %}
-                    <div class="card"
-                         id="image-{{ item.hash }}"
-                         data-hash="{{ item.hash }}"
-                         ng-init="initImages({hash: '{{ item.hash }}', key: '{{ item.key }}', fileName: '{{ item.fileName }}'})">
-                        <div class="image">
-                            <img src="//cdn.lazycoffee.com/{{ item.key }}_w260"/>
-                        </div>
-                        <div class="content">
-                            {#<span class="header">{{ item.fileName }}</span>#}
-                            <div class="meta">
-                                <span class="date">{{ item.DateFormatted }}</span>
-                            </div>
-                        </div>
-                        <div class="ui bottom attached progress green" data-percent="100">
-                            <div class="bar" style="width: 100%;"></div>
+        <div class="ui four link cards" id="images" ng-show="images.length">
+            {% for item in gallery.images|reverse() %}
+                <div class="card"
+                     id="image-{{ item.hash }}"
+                     data-hash="{{ item.hash }}"
+                     ng-init="initImages({hash: '{{ item.hash }}', key: '{{ item.key }}', fileName: '{{ item.fileName }}'})">
+                    <div class="image">
+                        <img src="//cdn.lazycoffee.com/{{ item.key }}_w260"/>
+                    </div>
+                    <div class="content">
+                        {#<span class="header">{{ item.fileName }}</span>#}
+                        <div class="meta">
+                            <span class="date">{{ item.DateFormatted }}</span>
                         </div>
                     </div>
-                {% endfor %}
-            {% else %}
-                <div id="no-image-gallery">
-                    <h4 class="ui header">
-                        相册内目前没有照片，你可以通过点击左上方蓝色按钮上传图片。
-                    </h4>
+                    <div class="ui bottom attached progress green" data-percent="100">
+                        <div class="bar" style="width: 100%;"></div>
+                    </div>
                 </div>
-            {% endif %}
+            {% endfor %}
         </div>
+        <h3 class="ui icon header" ng-hide="images.length">
+            <i class="cloud upload icon"></i>
+            <div class="content">
+                相册内没有照片，你可以通过点击左上方蓝色按钮上传图片。
+                <div class="sub header">上传照片带有自动滤重功能，不必担心上传了同一张图片。</div>
+            </div>
+        </h3>
         <div ng-init="galleryId = '{{ gallery._id }}'"></div>
         <div class="ui modal" id="show-image-modal">
             <div class="header image-file-name">
@@ -93,7 +99,7 @@
                 {% endfor %}
             </div>
             <div class="actions">
-                {% if session.user %}
+                {% if session.user._id == gallery.owner._id %}
                     <div class="ui red button" id="remove-image-button">
                         <i class="trash outline icon"></i>
                         删除

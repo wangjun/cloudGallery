@@ -7,55 +7,57 @@
 {% endblock %}
 {% block title %}我的相册 | LazyCoffee{% endblock %}
 {% block body %}
-    <div class="ui container">
-        {% if galleries.length %}
-            <div>
-                <a href="/gallery/add" class="ui button primary"><i class="plus icon"></i>新增相册</a>
-            </div>
-            <div class="ui divider"></div>
-            <div class="ui cards">
-                {% for item in galleries %}
-                    <div class="card" id="{{ item._id }}">
-                        <div class="image">
-                            {% if item.thumbnail %}
-                                <img src="{{ item.thumbnail.url }}" alt="{{ item.thumbnail.name }}">
-                            {% else %}
-                                <img data-src="holder.js/242px200?text=相册头像">
+    <div class="ui container" ng-controller="myGalleryCtr">
+        <div class="ui breadcrumb">
+            <a class="section" href="/">首页</a>
+            <i class="right chevron icon divider"></i>
+            <div class="active section">所有相册</div>
+        </div>
+        <div>
+            <a href="/gallery/add" class="ui button primary"><i class="plus icon"></i>新增相册</a>
+        </div>
+        <div class="ui divider"></div>
+        <div class="ui cards" ng-show="galleries.length">
+            {% for item in galleries %}
+                <div class="card" id="{{ item._id }}" ng-init="initGalleries({_id:'{{ item._id }}', title:'{{ item.title }}'})">
+                    <div class="image">
+                        {% if item.thumbnail %}
+                            <img src="{{ item.thumbnail.url }}" alt="{{ item.thumbnail.name }}">
+                        {% else %}
+                            <img data-src="holder.js/242px200?text=相册头像">
+                        {% endif %}
+                    </div>
+                    <div class="content">
+                        <div class="header">{{ item.title }}</div>
+                        <div class="meta">
+                            <span>{{ item.date }}</span>
+                        </div>
+                        <div class="description">
+                            {% if item.story %}
+                                {{ item.story }}
                             {% endif %}
                         </div>
-                        <div class="content">
-                            <div class="header">{{ item.title }}</div>
-                            <div class="meta">
-                                <span>{{ item.date }}</span>
-                            </div>
-                            <div class="description">
-                                {% if item.story %}
-                                    {{ item.story }}
-                                {% endif %}
-                            </div>
-                        </div>
-                        <div class="ui three bottom attached buttons">
-                            <div class="ui button other-features-btn" data-gallery="{{ item._id }}">
-                                <i class="setting icon"></i>选项
-                            </div>
-                            <div class="ui button">
-                                <i class="share alternate icon"></i>分享
-                            </div>
-                            <a href="/gallery/{{ item.id }}" class="ui green button">
-                                <i class="exchange icon"></i>查看
-                            </a>
-                        </div>
                     </div>
-                {% endfor %}
-            </div>
-        {% else %}
-            <div id="no-gallery">
-                <h2 class="ui center aligned header">
-                    <p>还没有创建作何相册，现在立即创建？</p>
-                    <p><a class="ui basic button black" href="/gallery/add">现在创建相册</a></p>
-                </h2>
-            </div>
-        {% endif %}
+                    <div class="ui three bottom attached buttons">
+                        <div class="ui button other-features-btn" data-id="{{ item._id }}">
+                            <i class="setting icon"></i>选项
+                        </div>
+                        <div class="ui button">
+                            <i class="share alternate icon"></i>分享
+                        </div>
+                        <a href="/gallery/{{ item.id }}" class="ui green button">
+                            <i class="exchange icon"></i>查看
+                        </a>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+        <div id="no-gallery" ng-hide="galleries.length">
+            <h2 class="ui center aligned header">
+                <p>还没有创建作何相册，现在立即创建？</p>
+                <p><a class="ui basic button black" href="/gallery/add">现在创建相册</a></p>
+            </h2>
+        </div>
     </div>
     {#other features modal #}
     <div class="ui modal" id="otherFeaturesModal">

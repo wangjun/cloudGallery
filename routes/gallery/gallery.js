@@ -425,6 +425,7 @@ router.get('/:galleryId', function (req, res, next) {
     var galleryObjectId = new ObjectId(galleryId);
     Galleries.findOne({_id: galleryObjectId})
         .populate('images')
+        .populate('owner')
         .exec(function (err, foundGallery) {
             if (err) {
                 return next(err);
